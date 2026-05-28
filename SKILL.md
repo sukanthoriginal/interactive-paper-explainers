@@ -93,6 +93,8 @@ Only after explicit approval. Normal Mode goes in the `#tab-normal` panel and us
 - **Section: Limits** — the authors' own caveats, one per row, in plain language
 - **Section: Quiz** — 3 multiple-choice questions with click-to-reveal feedback. Each question should reward careful reading; the explanations should teach something the question alone doesn't.
 
+**Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — Brain Dead Mode already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
+
 When done, **ask before proceeding** to any optional extras:
 
 > "Normal Mode is in. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
@@ -160,6 +162,175 @@ Body is Georgia serif for prose, sans-serif (system default) for chrome (tabs, b
 | `.stats` + `.stat-box` | Headline-number grid |
 | `.quiz-box` | One multiple-choice question with feedback |
 | `.ez-hero`, `.ez-big`, `.ez-emoji-block`, `.ez-analogy`, `.ez-tldr` | Brain Dead Mode primitives |
+| `.bands-mode-toggle` + `.bands-table` + `.term[data-def]` + `.term-tip` | Dual-mode reference table with hover/tap glossary (see below) |
+
+---
+
+## Dual-mode reference tables (Plain ↔ Scientific + hover-glossary)
+
+**When to use:** the paper has a term-dense reference surface — a taxonomy of mechanisms (e.g. EEG bands), a comparison of named entities (e.g. five competing algorithms), or any table where each row carries technical vocabulary that's load-bearing but unfamiliar. The pattern gives the reader a plain-language version they can absorb fast *and* a scientific version where every jargon term has a hover/tap tooltip — so they can learn the real terminology against scaffolding they already understand.
+
+**When NOT to use:** narrative sections (Question / Method / Results / Implications) and any prose-heavy block. Brain Dead Mode already serves the no-jargon audience for narrative content. Forcing dual-versioning on prose just produces two worse copies of the same paragraph.
+
+**Structure:**
+1. A pill-style toggle (`.bands-mode-toggle`) above the table with two buttons: "Plain language" (default, active) and "Scientific (with jargon)"
+2. Two parallel tables — same rows, same columns, same source attribution — one with all jargon translated, one with jargon preserved
+3. In the scientific table, every technical term is wrapped in `<span class="term" title="one-line definition">term</span>`. JS upgrades `title` → `data-def` on load so the slow native browser tooltip never fires
+4. A single floating `.term-tip` element fires on hover (desktop, instant) and tap (mobile, toggle)
+5. A closing `.callout` ties the table back to the paper's central finding — *why* this taxonomy matters for what the paper is claiming
+
+**Authoring rules:**
+- Both tables must have the same number of rows in the same order, so flipping the toggle doesn't reflow the page
+- The Plain column should use everyday metaphors that stay accurate ("go cells / stop cells" for pyramidal cells / interneurons; "memory hub" for hippocampus). Don't invent metaphors that mislead
+- Every jargon term in the Scientific table needs a `title` — if you can't write a one-line definition, the term is either not load-bearing (drop it) or needs its own row (promote it)
+- Source attribution lives in a final `.source-row` spanning all columns, with primary references for both columns
+
+**Recipe (CSS):**
+
+```css
+.bands-mode-toggle {
+  display: inline-flex; background: var(--gray-light);
+  border: 1px solid #e5e7eb; border-radius: 999px;
+  padding: 4px; margin: 16px 0 0; font-family: sans-serif;
+}
+.bands-mode-toggle button {
+  border: none; background: transparent; padding: 8px 18px;
+  font-size: 0.88rem; font-weight: 600; color: var(--gray);
+  cursor: pointer; border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+}
+.bands-mode-toggle button.active {
+  background: white; color: var(--blue-dark);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.bands-table-wrap {
+  margin: 12px 0 28px; overflow-x: auto;
+  border: 1px solid #e5e7eb; border-radius: 12px; background: white;
+}
+.bands-table-wrap.hidden { display: none; }
+.bands-table { width: 100%; border-collapse: collapse;
+  font-family: sans-serif; font-size: 0.92rem; min-width: 720px; }
+.bands-table thead th { background: var(--gray-light); color: var(--gray-dark);
+  font-weight: 600; text-align: left; padding: 12px 14px;
+  border-bottom: 2px solid #e5e7eb; font-size: 0.78rem;
+  letter-spacing: 0.05em; text-transform: uppercase; }
+.bands-table tbody td { padding: 14px; border-bottom: 1px solid #f3f4f6;
+  vertical-align: top; line-height: 1.5; }
+.bands-table .source-row td { background: #fafafa; font-size: 0.82rem;
+  color: var(--gray); font-style: italic; }
+.bands-table .term { font-weight: 600; color: var(--gray-dark);
+  border-bottom: 1px dotted var(--gray); cursor: help; }
+.bands-table .term:hover, .bands-table .term.active { background: var(--orange-light); }
+
+.term-tip {
+  position: absolute; background: #1f2937; color: white;
+  padding: 10px 14px; border-radius: 8px; font-family: sans-serif;
+  font-size: 0.88rem; line-height: 1.45; max-width: 320px;
+  z-index: 9999; pointer-events: none; opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.term-tip.visible { opacity: 1; transform: translateY(0); }
+.term-tip::before {
+  content: ''; position: absolute; top: -6px; left: 16px;
+  width: 0; height: 0;
+  border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-bottom: 6px solid #1f2937;
+}
+```
+
+**Recipe (JS):**
+
+```js
+function setBandsMode(mode, btn) {
+  const plain = document.getElementById('bandsTablePlain');
+  const science = document.getElementById('bandsTableScience');
+  if (!plain || !science) return;
+  (mode === 'science' ? plain : science).classList.add('hidden');
+  (mode === 'science' ? science : plain).classList.remove('hidden');
+  document.querySelectorAll('.bands-mode-toggle button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+(function() {
+  const tip = document.createElement('div');
+  tip.className = 'term-tip';
+  document.body.appendChild(tip);
+  let activeTerm = null;
+
+  document.querySelectorAll('.term[title]').forEach(t => {
+    t.setAttribute('data-def', t.getAttribute('title'));
+    t.removeAttribute('title');
+  });
+
+  function showTip(term) {
+    const text = term.getAttribute('data-def');
+    if (!text) return;
+    tip.textContent = text;
+    const r = term.getBoundingClientRect();
+    tip.style.left = (r.left + window.scrollX) + 'px';
+    tip.style.top = (r.bottom + window.scrollY + 10) + 'px';
+    tip.classList.add('visible');
+    requestAnimationFrame(() => {
+      const tr = tip.getBoundingClientRect();
+      if (tr.right > window.innerWidth - 12) {
+        tip.style.left = (window.innerWidth - tr.width - 12 + window.scrollX) + 'px';
+      }
+    });
+    if (activeTerm && activeTerm !== term) activeTerm.classList.remove('active');
+    term.classList.add('active');
+    activeTerm = term;
+  }
+  function hideTip() {
+    tip.classList.remove('visible');
+    if (activeTerm) activeTerm.classList.remove('active');
+    activeTerm = null;
+  }
+
+  document.addEventListener('mouseover', e => {
+    const term = e.target.closest('.term');
+    if (term) showTip(term);
+  });
+  document.addEventListener('mouseout', e => {
+    const term = e.target.closest('.term');
+    if (!term) return;
+    const next = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.term');
+    if (next === term) return;
+    hideTip();
+  });
+  document.addEventListener('click', e => {
+    const term = e.target.closest('.term');
+    if (term) {
+      e.preventDefault();
+      if (activeTerm === term) hideTip(); else showTip(term);
+    } else if (activeTerm) {
+      hideTip();
+    }
+  });
+  window.addEventListener('scroll', () => { if (activeTerm) hideTip(); }, { passive: true });
+})();
+```
+
+**Recipe (HTML skeleton):**
+
+```html
+<div class="bands-mode-toggle">
+  <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
+  <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
+</div>
+<div class="bands-table-wrap" id="bandsTablePlain">
+  <table class="bands-table"> ... plain rows ... </table>
+</div>
+<div class="bands-table-wrap hidden" id="bandsTableScience">
+  <table class="bands-table">
+    <!-- Each jargon term: <span class="term" title="one-line definition">term</span> -->
+    ... scientific rows ...
+  </table>
+</div>
+```
+
+The class names start with `bands-` for historical reasons (the pattern was first built for an EEG-band table). The names don't carry meaning — feel free to keep them as-is across papers for consistency, or rename per paper as long as the JS hook IDs (`bandsTablePlain` / `bandsTableScience`) match.
 
 ---
 
