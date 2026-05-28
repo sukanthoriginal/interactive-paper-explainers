@@ -97,13 +97,26 @@ When done, **ask before proceeding** to any optional extras:
 
 > "Normal Mode is in. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
 
-### Step 5 — Wrap up
+### Step 5 — Wrap up: turn the page into a commenting surface
 
-When the user says they're done, optionally offer to chain:
+The commenting runtime ships with this skill (vendored from `make-pages-interactive` under MIT). When the explainer is in good shape, offer to wire it up:
 
-> "Want me to run make-pages-interactive on this folder so you can leave inline comments on the page?"
+> "Want me to enable inline commenting on this page? You'll be able to highlight text, leave notes, and I'll edit the HTML in response."
 
-If yes, follow that skill's setup flow.
+If yes, run the bundled tooling from the skill directory:
+
+```bash
+# 1. Inject the feedback <link>/<script> tags into every *.html in the paper folder
+#    and create feedback/inbox.jsonl + feedback/history.json
+python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/
+
+# 2. Start the local feedback server (serves the folder + accepts comments)
+python <skill-dir>/lib/server.py --root <papers-dir>/<paper-slug>/ --port 8765
+```
+
+Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl` — tail it with the Monitor tool to react to user comments in real time and edit the HTML in response.
+
+To take the page back to a clean state later: `python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/ --remove`.
 
 ---
 

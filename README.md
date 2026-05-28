@@ -15,7 +15,12 @@ The skill always **asks for approval before starting each mode** — so you can 
 
 This skill is a derivative of Paras Chopra's [`make-pages-interactive`](https://github.com/paraschopra/make-pages-interactive). That skill turns any folder of HTML pages into a live commenting surface — you highlight text, leave a note, and Claude edits the page in response.
 
-The two skills compose: use **this** one to generate the paper explainer HTML, then use **Paras's** one to leave inline comments and iterate on the page. None of Paras's repo is modified or vendored here; this is just the explainer-generation half, in my own version.
+This repo bundles the original commenting runtime (`lib/` and `scripts/`) **vendored verbatim under MIT** from upstream, plus a new `SKILL.md` that adds the two-mode paper-explainer workflow on top. So a single install gives you both halves:
+
+1. The new `SKILL.md` workflow generates the paper explainer HTML.
+2. The vendored `lib/` and `scripts/` make that HTML commentable.
+
+The original repository is not modified — Paras's upstream is unchanged and remains the canonical source for the commenting layer.
 
 Credit and link: <https://github.com/paraschopra/make-pages-interactive>
 

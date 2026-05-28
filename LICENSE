@@ -22,8 +22,15 @@ SOFTWARE.
 
 ---
 
-This skill is a derivative of and credits Paras Chopra's
-`make-pages-interactive` skill:
-https://github.com/paraschopra/make-pages-interactive
-The two skills compose; this skill does not vendor or modify any code from
-the upstream repository.
+Portions of this repository (`lib/feedback.js`, `lib/feedback.css`,
+`lib/server.py`, `scripts/inject.py`, `scripts/update.py`) are vendored
+verbatim from Paras Chopra's `make-pages-interactive` skill, used here
+under the terms of the upstream MIT License:
+
+  https://github.com/paraschopra/make-pages-interactive
+  Copyright (c) 2026 Paras Chopra
+
+The contribution of this repository — the `SKILL.md` workflow and the
+two-mode paper-explainer pipeline (Brain Dead → Normal, with approval
+gates between modes) — is original to interactive-paper-explainers and
+covered by the MIT License above.
