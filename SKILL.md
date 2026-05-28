@@ -1,14 +1,18 @@
 ---
 name: interactive-paper-explainers
-description: Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a two-mode page (Brain Dead Mode first, Normal Mode second) with embedded interactive widgets, animated visualizations, and quiz checks. Trigger phrases — "do this paper", "explain this paper", "make an explainer for this paper", "interactive version of this paper", followed by a PDF path or arxiv link.
+description: Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a two-mode page (braindead first, braingood second) with embedded interactive widgets, animated visualizations, and quiz checks. Trigger phrases — "do this paper", "explain this paper", "make an explainer for this paper", "interactive version of this paper", followed by a PDF path or arxiv link.
 ---
 
 # Interactive Paper Explainers
 
-Generates a single-file HTML explainer of an academic paper. Two modes, in this order:
+Generates a single-file HTML explainer of an academic paper. Two modes, in this order. **Tab labels are always lowercase, no emoji, no "Mode" suffix:**
 
-1. **Brain Dead Mode 🧠💥** — the entire paper's story in 5 minutes, no jargon, heavy use of analogies and emoji, ends in a TL;DR card.
-2. **Normal Mode** — the rigorous version: key concepts, study design, interactive visualizations of the data, results, limits, quiz.
+1. **braindead** — the entire paper's story in 5 minutes, no jargon, heavy use of analogies and emoji, ends in a TL;DR card.
+2. **braingood** — the rigorous version: key concepts, study design, interactive visualizations of the data, results, limits, quiz.
+
+An optional third tab, **brainstorm**, can be added for research-direction riffs that go beyond the paper itself.
+
+The three canonical tab labels — **`braingood`**, **`braindead`**, **`brainstorm`** — are the ONLY allowed display strings for the tab bar across every paper in this repo.
 
 The output is one `index.html` file that lives next to the paper PDF (e.g. `papers/paperN/index.html`). Self-contained — no build step, no dependencies, just open it in a browser.
 
@@ -44,25 +48,35 @@ Take internal notes; do not produce the HTML yet.
 
 ### Step 2 — Ask the user which mode to start with
 
-Default sequence is **Brain Dead Mode first, then Normal Mode**. Confirm before starting:
+Default sequence is **braindead first, then braingood**. Confirm before starting:
 
-> "I've read the paper. Default plan is Brain Dead Mode first (the 5-minute jargon-free story), then Normal Mode (the rigorous version with interactive widgets). Do you want me to start with Brain Dead Mode, or change the plan?"
+> "I've read the paper. Default plan is braindead first (the 5-minute jargon-free story), then braingood (the rigorous version with interactive widgets). Do you want me to start with braindead, or change the plan?"
 
-If they say "go" or "yes" — proceed to Brain Dead Mode.
+If they say "go" or "yes" — proceed to braindead.
 If they want to skip / reorder / only do one — adapt.
 
-### Step 3 — Build Brain Dead Mode
+### Step 3 — Build braindead
 
-Produce just the Brain Dead Mode section of the HTML (with the shell of the page — `<html>`, `<head>`, hero, tab bar with both tabs visible but only Brain Dead populated, footer). This way the file is openable and reviewable on its own.
+Produce just the braindead section of the HTML (with the shell of the page — `<html>`, `<head>`, hero, tab bar with both tabs visible but only braindead populated, footer). This way the file is openable and reviewable on its own.
 
-Brain Dead Mode structure:
+The tab bar must render exactly:
+
+```html
+<button class="tab-btn active" onclick="switchTab('normal', this)">braingood</button>
+<button class="tab-btn" onclick="switchTab('ez', this)">braindead</button>
+<button class="tab-btn" onclick="switchTab('brainstorm', this)">brainstorm</button>
+```
+
+(Internal tab IDs `normal` / `ez` / `brainstorm` are kept for historical reasons — only the visible label text uses the new names.)
+
+braindead structure:
 - A pink/purple gradient hero (`linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)`) with title and "The whole paper in 5 minutes 🧠💥" subtitle
 - 3–5 sections of `<p class="ez-big">` with bold key terms
 - One `.ez-emoji-block` per section listing 2–4 concrete takeaways with emoji bullets
 - At least one `.ez-analogy` (yellow box) per major idea
 - A single `.ez-tldr` card at the end with the paper's headline finding in plain English
 
-Style rules for Brain Dead Mode:
+Style rules for braindead:
 - No abbreviations on first use (spell out "EEG" → "electrodes on the scalp")
 - No statistics — replace "r = 0.24, 95% CI [0.08, 0.40]" with "real but small correlation"
 - One idea per paragraph
@@ -71,11 +85,11 @@ Style rules for Brain Dead Mode:
 
 When done, show the user the page (or tell them to refresh) and **ask before proceeding**:
 
-> "Brain Dead Mode is in. Refresh the page to see it. Move on to Normal Mode?"
+> "braindead is in. Refresh the page to see it. Move on to braingood?"
 
-### Step 4 — Build Normal Mode
+### Step 4 — Build braingood
 
-Only after explicit approval. Normal Mode goes in the `#tab-normal` panel and uses the rest of the design vocabulary:
+Only after explicit approval. braingood goes in the `#tab-normal` panel and uses the rest of the design vocabulary:
 
 - **Hero update**: switch the hero gradient to a serious blue/navy palette
 - **Section: The Question** — frame what the paper is asking and why it matters
@@ -93,11 +107,11 @@ Only after explicit approval. Normal Mode goes in the `#tab-normal` panel and us
 - **Section: Limits** — the authors' own caveats, one per row, in plain language
 - **Section: Quiz** — 3 multiple-choice questions with click-to-reveal feedback. Each question should reward careful reading; the explanations should teach something the question alone doesn't.
 
-**Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — Brain Dead Mode already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
+**Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — braindead already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
 
 When done, **ask before proceeding** to any optional extras:
 
-> "Normal Mode is in. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
+> "braingood is in. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
 
 ### Step 5 — Wrap up: turn the page into a commenting surface
 
@@ -128,7 +142,7 @@ To take the page back to a clean state later: `python <skill-dir>/scripts/inject
 - Path: `<papers-dir>/<paper-slug>/index.html`
 - Single file: all CSS inline in `<style>`, all JS inline in `<script>`, no external assets except the two `<link>`/`<script>` tags the `make-pages-interactive` skill injects (and those only after the user explicitly opts in to commenting)
 - Mobile-responsive (test under 600px width)
-- No emojis in the page unless they're functional UI (e.g. the 🧠💥 in the Brain Dead Mode tab label, or emoji bullets inside `.ez-emoji-block`)
+- No emojis in the page unless they're functional UI. The tab labels (`braingood` / `braindead` / `brainstorm`) are emoji-free; emoji is fine inside `.ez-emoji-block` bullets and inline within braindead prose.
 
 ---
 
@@ -156,12 +170,12 @@ Body is Georgia serif for prose, sans-serif (system default) for chrome (tabs, b
 | Component | Purpose |
 |-----------|---------|
 | `.hero` | Title + one-sentence subtitle + citation footer |
-| `.tab-bar` (sticky) | Mode switcher — Brain Dead 🧠💥 / Normal / optional Brainstorm |
+| `.tab-bar` (sticky) | Mode switcher — `braingood` / `braindead` / optional `brainstorm` (lowercase labels, no emoji) |
 | `.callout` (blue/green/orange/purple) | A boxed quote-style aside |
 | `.cards` + `.card` | Click-to-expand concept cards |
 | `.stats` + `.stat-box` | Headline-number grid |
 | `.quiz-box` | One multiple-choice question with feedback |
-| `.ez-hero`, `.ez-big`, `.ez-emoji-block`, `.ez-analogy`, `.ez-tldr` | Brain Dead Mode primitives |
+| `.ez-hero`, `.ez-big`, `.ez-emoji-block`, `.ez-analogy`, `.ez-tldr` | braindead primitives |
 | `.bands-mode-toggle` + `.bands-table` + `.term[data-def]` + `.term-tip` | Dual-mode reference table with hover/tap glossary (see below) |
 
 ---
@@ -170,7 +184,7 @@ Body is Georgia serif for prose, sans-serif (system default) for chrome (tabs, b
 
 **When to use:** the paper has a term-dense reference surface — a taxonomy of mechanisms (e.g. EEG bands), a comparison of named entities (e.g. five competing algorithms), or any table where each row carries technical vocabulary that's load-bearing but unfamiliar. The pattern gives the reader a plain-language version they can absorb fast *and* a scientific version where every jargon term has a hover/tap tooltip — so they can learn the real terminology against scaffolding they already understand.
 
-**When NOT to use:** narrative sections (Question / Method / Results / Implications) and any prose-heavy block. Brain Dead Mode already serves the no-jargon audience for narrative content. Forcing dual-versioning on prose just produces two worse copies of the same paragraph.
+**When NOT to use:** narrative sections (Question / Method / Results / Implications) and any prose-heavy block. braindead already serves the no-jargon audience for narrative content. Forcing dual-versioning on prose just produces two worse copies of the same paragraph.
 
 **Structure:**
 1. A pill-style toggle (`.bands-mode-toggle`) above the table with two buttons: "Plain language" (default, active) and "Scientific (with jargon)"
@@ -337,6 +351,6 @@ The class names start with `bands-` for historical reasons (the pattern was firs
 ## Gotchas
 
 - **Don't summarize before reading.** Always read the whole PDF before proposing the plan. Skipping pages produces explainers that miss the paper's actual contribution.
-- **Don't build all modes in one shot.** The approval gate between modes is the point — the user often wants to course-correct after seeing Brain Dead Mode before you commit to a Normal Mode structure.
+- **Don't build all modes in one shot.** The approval gate between modes is the point — the user often wants to course-correct after seeing braindead before you commit to a braingood structure.
 - **Don't invent numbers.** Every statistic on the page should be quotable back to a specific page/figure/table in the source PDF. If you can't find it, leave it out.
 - **Don't include the PDF in any downstream repo.** The HTML is the shippable artifact; the PDF stays alongside as a working file. (This applies if the user later asks you to publish — match what they ship.)

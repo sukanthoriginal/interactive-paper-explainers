@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where in Your Brain Does "Relaxed" Live?</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-dark: #1e40af;
+    --gray: #6b7280;
+    --gray-light: #f3f4f6;
+    --gray-dark: #1f2937;
+    --green: #059669;
+    --green-light: #d1fae5;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --orange: #d97706;
+    --orange-light: #fef3c7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --pink: #db2777;
+    --pink-light: #fce7f3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    color: var(--gray-dark);
+    line-height: 1.7;
+    background: #fafafa;
+  }
+  a { color: var(--blue); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0c4a6e 0%, #075985 40%, #1e3a8a 100%);
+    color: white;
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 60%, rgba(255,255,255,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+    font-family: sans-serif;
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: normal;
+    max-width: 860px;
+    margin: 0 auto 20px;
+    line-height: 1.25;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    max-width: 640px;
+    margin: 0 auto 32px;
+    font-family: sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  .hero .meta {
+    font-size: 0.85rem;
+    opacity: 0.65;
+    font-family: sans-serif;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  section {
+    padding: 60px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  section:last-child { border-bottom: none; }
+  h2 {
+    font-size: 1.6rem;
+    font-weight: normal;
+    margin-bottom: 8px;
+    color: var(--gray-dark);
+  }
+  .section-label {
+    font-family: sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  p { margin-bottom: 16px; font-size: 1.05rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* TABS */
+  .tab-bar {
+    background: white;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 14px 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { color: var(--blue); }
+  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 4px solid var(--blue);
+    background: var(--blue-light);
+    padding: 18px 22px;
+    border-radius: 0 8px 8px 0;
+    margin: 28px 0;
+    font-size: 1.05rem;
+  }
+  .callout.green { border-color: var(--green); background: var(--green-light); }
+  .callout.orange { border-color: var(--orange); background: var(--orange-light); }
+  .callout.purple { border-color: var(--purple); background: var(--purple-light); }
+
+  /* BANDS TABLE */
+  .bands-mode-toggle {
+    display: inline-flex;
+    background: var(--gray-light);
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 4px;
+    margin: 16px 0 0;
+    font-family: sans-serif;
+  }
+  .bands-mode-toggle button {
+    border: none;
+    background: transparent;
+    padding: 8px 18px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gray);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .bands-mode-toggle button.active {
+    background: white;
+    color: var(--blue-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .bands-table-wrap {
+    margin: 12px 0 28px;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+  }
+  .bands-table-wrap.hidden { display: none; }
+  .bands-table .from-line {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--blue-dark);
+    background: var(--blue-light);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+  .bands-table .from-line strong { color: var(--blue-dark); margin-right: 4px; }
+  .bands-table .term {
+    font-weight: 600;
+    color: var(--gray-dark);
+    border-bottom: 1px dotted var(--gray);
+    cursor: help;
+  }
+  .bands-table .term:hover { background: var(--orange-light); }
+  .bands-table .term.active { background: var(--orange-light); }
+
+  .term-tip {
+    position: absolute;
+    background: #1f2937;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    line-height: 1.45;
+    max-width: 320px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  .term-tip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .term-tip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 16px;
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #1f2937;
+  }
+  .bands-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+    font-size: 0.92rem;
+    min-width: 720px;
+  }
+  .bands-table thead th {
+    background: var(--gray-light);
+    color: var(--gray-dark);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 2px solid #e5e7eb;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .bands-table tbody td {
+    padding: 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .bands-table tbody tr:last-child td { border-bottom: none; }
+  .bands-table .band-name {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .bands-table .band-range {
+    font-family: ui-monospace, monospace;
+    color: var(--gray);
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 2px;
+  }
+  .bands-table .band-row-delta .band-name { color: #4338ca; }
+  .bands-table .band-row-theta .band-name { color: var(--teal); }
+  .bands-table .band-row-alpha .band-name { color: var(--green); }
+  .bands-table .band-row-beta  .band-name { color: var(--orange); }
+  .bands-table .band-row-gamma .band-name { color: var(--red); }
+  .bands-table .source-row td {
+    background: #fafafa;
+    font-size: 0.82rem;
+    color: var(--gray);
+    font-style: italic;
+  }
+  .bands-table .why-slow {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--orange-light);
+    border-left: 3px solid var(--orange);
+    border-radius: 4px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  .bands-table .why-slow > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--orange-dark, #9a3412);
+    list-style: none;
+  }
+  .bands-table .why-slow > summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.15s;
+    margin-right: 2px;
+  }
+  .bands-table .why-slow[open] > summary::before { content: "▾ "; }
+  .bands-table .why-slow > summary::-webkit-details-marker { display: none; }
+  .bands-table .why-slow p { margin: 8px 0 0; }
+  .bands-table .why-slow ul { margin: 8px 0 0; padding-left: 18px; }
+  .bands-table .why-slow li { margin: 4px 0; }
+
+  /* CARDS */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: var(--blue); }
+  .card .card-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-family: sans-serif;
+  }
+  .card .card-short {
+    font-size: 0.9rem;
+    color: var(--gray);
+    font-family: sans-serif;
+  }
+  .card .card-detail {
+    display: none;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+    font-family: sans-serif;
+    line-height: 1.6;
+  }
+  .card.open .card-detail { display: block; }
+  .card.open { border-color: var(--blue); box-shadow: 0 4px 16px rgba(37,99,235,0.1); }
+  .card .toggle-hint {
+    font-size: 0.75rem;
+    color: var(--blue);
+    font-family: sans-serif;
+    margin-top: 8px;
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .stat-box {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-box .stat-num {
+    font-size: 2.2rem;
+    font-weight: 700;
+    font-family: sans-serif;
+    color: var(--blue);
+    line-height: 1;
+  }
+  .stat-box .stat-unit {
+    font-size: 1rem;
+    color: var(--blue);
+    font-family: sans-serif;
+  }
+  .stat-box .stat-label {
+    font-size: 0.82rem;
+    color: var(--gray);
+    font-family: sans-serif;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* FREQUENCY BAND EXPLORER */
+  .band-explorer {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 28px 0;
+  }
+  .band-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .band-tab {
+    padding: 9px 16px;
+    border-radius: 20px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    transition: all 0.15s;
+  }
+  .band-tab:hover { border-color: var(--blue); }
+  .band-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+  svg.wave { width: 100%; height: 100px; display: block; background: #fafbfc; border-radius: 8px; }
+  .band-info {
+    margin-top: 14px;
+    font-family: sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .band-info .freq-label {
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-right: 8px;
+  }
+  .band-info .verdict {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+  .band-info .verdict.weak { background: var(--gray-light); color: var(--gray-dark); }
+  .band-info .verdict.maybe { background: var(--orange-light); color: #92400e; }
+  .band-info .verdict.yes { background: var(--green-light); color: #065f46; }
+
+  /* HEAD MAP */
+  .headmap-wrap {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 28px 0;
+  }
+  .headmap-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .headmap-grid { grid-template-columns: 1fr; }
+  }
+  svg.headmap { width: 100%; max-width: 340px; margin: 0 auto; display: block; }
+  .electrode {
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .electrode:hover circle { stroke-width: 3; }
+  .electrode.active circle { fill: var(--blue); stroke: var(--blue-dark); }
+  .electrode.active text { fill: white; font-weight: 700; }
+  .region-info {
+    font-family: sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .region-info .region-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--blue-dark);
+    margin-bottom: 6px;
+  }
+  .region-info .region-sub {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+  .region-info .region-finding {
+    background: var(--blue-light);
+    border-left: 3px solid var(--blue);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+  }
+  .region-info .region-finding.null {
+    background: var(--gray-light);
+    border-color: var(--gray);
+    color: var(--gray-dark);
+  }
+
+  /* PRISMA FUNNEL */
+  .prisma {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+  .prisma-step {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 8px;
+  }
+  .prisma-bar {
+    height: 38px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--blue-dark) 100%);
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+    color: white;
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: width 0.6s ease;
+    width: 0;
+    box-shadow: 0 2px 6px rgba(37,99,235,0.2);
+  }
+  .prisma-step .label {
+    font-family: sans-serif;
+    font-size: 0.82rem;
+    color: var(--gray);
+    width: 140px;
+    flex-shrink: 0;
+  }
+  .prisma-step .excluded {
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    color: var(--red);
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+
+  /* FOREST PLOT */
+  .forest {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 28px 0;
+    font-family: sans-serif;
+  }
+  .forest-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    color: var(--gray-dark);
+  }
+  .forest-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .forest-btn {
+    padding: 7px 14px;
+    border-radius: 18px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    transition: all 0.15s;
+  }
+  .forest-btn:hover { border-color: var(--blue); }
+  .forest-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+  svg.forest-plot { width: 100%; height: auto; }
+  .forest-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--gray);
+    flex-wrap: wrap;
+  }
+  .forest-legend-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* THREE ZONES */
+  .zones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin: 28px 0;
+  }
+  .zone {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 22px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .zone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .zone.frontal::before { background: var(--purple); }
+  .zone.central::before { background: var(--teal); }
+  .zone.occipital::before { background: var(--pink); }
+  .zone .zone-title {
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+  .zone.frontal .zone-title { color: var(--purple); }
+  .zone.central .zone-title { color: var(--teal); }
+  .zone.occipital .zone-title { color: var(--pink); }
+  .zone .zone-coupling {
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .zone .zone-r {
+    font-family: sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 10px 0 4px;
+  }
+  .zone.frontal .zone-r { color: var(--purple); }
+  .zone.central .zone-r { color: var(--teal); }
+  .zone.occipital .zone-r { color: var(--pink); }
+  .zone .zone-ci {
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    color: var(--gray);
+    margin-bottom: 12px;
+  }
+  .zone .zone-explain {
+    font-family: sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-dark);
+    border-top: 1px solid #f3f4f6;
+    padding-top: 12px;
+  }
+
+  /* QUIZ */
+  .quiz-box {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+  .quiz-q {
+    font-family: sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: var(--gray-light);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-light); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt.correct { border-color: var(--green); background: var(--green-light); }
+  .quiz-opt.wrong { border-color: var(--red); background: var(--red-light); }
+  .quiz-feedback {
+    display: none;
+    margin-top: 14px;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--green-light); color: #065f46; }
+  .quiz-feedback.wrong { background: var(--red-light); color: #991b1b; }
+
+  /* GLOSSARY */
+  abbr {
+    text-decoration: underline dotted var(--blue);
+    cursor: help;
+    color: var(--blue-dark);
+  }
+
+  /* INDEX VARIETY GRID */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .index-chip {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: sans-serif;
+    font-size: 0.82rem;
+  }
+  .index-chip .ix-name { font-weight: 700; color: var(--gray-dark); }
+  .index-chip .ix-cat { font-size: 0.72rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .index-chip .ix-dir { font-size: 0.78rem; margin-top: 4px; }
+  .index-chip .ix-dir.down { color: var(--red); }
+  .index-chip .ix-dir.up { color: var(--green); }
+  .index-chip .ix-dir.unclear { color: var(--gray); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    background: var(--gray-dark);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    font-family: sans-serif;
+  }
+  .bottom-nav h3 { font-size: 1rem; margin-bottom: 8px; opacity: 0.9; }
+  .bottom-nav p { font-size: 0.85rem; opacity: 0.6; max-width: 600px; margin: 0 auto 8px; }
+  .bottom-nav a { color: #93c5fd; text-decoration: none; }
+
+  /* BRAIN DEAD MODE STYLES */
+  .ez-hero {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    padding: 48px 40px 40px;
+    text-align: center;
+  }
+  .ez-hero h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 900;
+    font-family: sans-serif;
+    margin-bottom: 10px;
+  }
+  .ez-hero p { font-family: sans-serif; font-size: 1.05rem; opacity: 0.95; max-width: 560px; margin: 0 auto; }
+  .ez-section { padding: 48px 0; border-bottom: 1px solid #e5e7eb; }
+  .ez-section:last-child { border-bottom: none; }
+  .ez-big {
+    font-size: 1.15rem;
+    font-family: sans-serif;
+    line-height: 1.8;
+    margin-bottom: 18px;
+  }
+  .ez-big b { color: var(--purple); }
+  .ez-emoji-block {
+    font-size: 1.05rem;
+    font-family: sans-serif;
+    line-height: 1.9;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin: 20px 0;
+  }
+  .ez-emoji-block .row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .ez-emoji-block .row:last-child { margin-bottom: 0; }
+  .ez-emoji-block .em { font-size: 1.5rem; flex-shrink: 0; line-height: 1.4; }
+  .ez-analogy {
+    background: #fef9c3;
+    border: 2px solid #fde047;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-family: sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .ez-analogy .label {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 6px;
+  }
+  .ez-tldr {
+    background: var(--gray-dark);
+    color: white;
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 28px 0;
+    font-family: sans-serif;
+  }
+  .ez-tldr .tl { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.5; margin-bottom: 8px; }
+  .ez-tldr p { font-size: 1.05rem; line-height: 1.7; opacity: 0.95; margin-bottom: 0; }
+
+  /* BRAINSTORM */
+  .bs-hero {
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    padding: 48px 40px 40px;
+    text-align: center;
+  }
+  .bs-hero h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 900;
+    font-family: sans-serif;
+    margin-bottom: 10px;
+  }
+  .bs-hero p { font-family: sans-serif; font-size: 1.05rem; opacity: 0.95; max-width: 560px; margin: 0 auto; }
+  .bs-idea {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 24px 26px;
+    margin: 16px 0;
+    font-family: sans-serif;
+  }
+  .bs-idea h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 8px;
+  }
+  .bs-idea p { font-size: 0.95rem; line-height: 1.65; margin-bottom: 0; }
+  .bs-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    background: var(--orange-light);
+    color: #92400e;
+    padding: 3px 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+</style>
+  <link rel="stylesheet" href="/lib/feedback.css">
+</head>
+<body>
+
+<div class="hero">
+  <div class="tag">Journal of Cognitive Neuroscience &middot; 2025 &middot; Open Access</div>
+  <h1>Where in your brain does "relaxed" live?</h1>
+  <p class="subtitle">For nearly 100 years, alpha waves have been the popular signature of a calm mind. A meta-analysis of 54 studies finds the truth is location-dependent — and there may not be a single "relaxation signal" at all.</p>
+  <p class="meta">Sugimoto, Kurashiki, Xu, Takemi &amp; Amano (2025) &middot; <i>JoCN</i> 38(3) &middot; Systematic Review &amp; Meta-analysis</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('normal', this)">braingood</button>
+  <button class="tab-btn" onclick="switchTab('ez', this)">braindead</button>
+  <button class="tab-btn" onclick="switchTab('brainstorm', this)">brainstorm</button>
+</div>
+
+<!-- ============================== NORMAL MODE ============================== -->
+<div id="tab-normal" class="tab-panel active">
+<div class="container">
+
+  <!-- THE QUESTION -->
+  <section>
+    <p class="section-label">The Question</p>
+    <h2>Is there a brain wave that says "I'm relaxed"?</h2>
+    <p>In 1929, the German psychiatrist Hans Berger placed electrodes on a human scalp for the first time and noticed something striking: a smooth, rhythmic wave appeared when his subjects closed their eyes and went still. He named it <strong>alpha</strong>. Within a decade, alpha had a folk meaning — it was the brain's <em>at-rest</em> signal, the EEG equivalent of a sigh of relief.</p>
+
+    <p>That story stuck. Today, alpha (8–13 Hz) shows up in consumer meditation headbands, neurofeedback apps, "relaxation training" studies, and most popular accounts of how the brain works. But there's a quiet problem: the empirical evidence linking alpha to relaxation has always been <strong>inconclusive</strong>. Different studies measure different parts of the scalp, define "relaxation" differently — heart rate, questionnaires, skin sweat — and reach different conclusions. Nobody had pulled it all together.</p>
+
+    <div class="callout">
+      <strong>What this paper does:</strong> A formal PRISMA-guided systematic review of every EEG-and-relaxation study published since 1940. 4,194 papers screened, 54 included for qualitative synthesis, 31 entered the meta-analysis — pooling thousands of correlation coefficients to ask, finally: does any specific combination of brain region and frequency band actually track relaxation?
+    </div>
+  </section>
+
+  <!-- KEY CONCEPTS -->
+  <section>
+    <p class="section-label">Key Concepts</p>
+    <h2>Four ideas to keep in your head</h2>
+    <p style="font-family:sans-serif; font-size:0.9rem; color:var(--gray); margin-bottom: 20px;">Click any card to expand.</p>
+
+    <div class="cards">
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">〜</div>
+        <h3>EEG &amp; Frequency Bands</h3>
+        <div class="card-short">Brain waves sliced into named speed ranges</div>
+        <div class="card-detail">
+          EEG measures the electrical chatter of cortex through scalp electrodes. That signal is decomposed into bands by frequency: <strong>delta</strong> (&lt;4 Hz, deep sleep), <strong>theta</strong> (4–8 Hz, drowsy or meditative), <strong>alpha</strong> (8–13 Hz, relaxed wakefulness), <strong>beta</strong> (13–30 Hz, active thought), <strong>gamma</strong> (&gt;30 Hz, fine-grained attention). Each band reflects different neural populations doing different things. "Brain wave" is shorthand — they're not really waves, they're rhythmic oscillations of cortical excitability.
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">📍</div>
+        <h3>The 10–20 System</h3>
+        <div class="card-short">A standardised map of where to put electrodes</div>
+        <div class="card-detail">
+          EEG electrodes have names like Fp1, Fz, C3, Pz, O1. The letters say which lobe — <strong>F</strong>rontal, <strong>C</strong>entral, <strong>P</strong>arietal, <strong>O</strong>ccipital, <strong>T</strong>emporal. The numbers say which hemisphere — odd = left, even = right, z = midline. This standardisation lets researchers compare studies across labs. In this meta-analysis, the authors group all electrodes into six regional categories so they can ask: <em>does it matter where you measure?</em>
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">📋</div>
+        <h3>Reference Index of Relaxation</h3>
+        <div class="card-short">What you compare brain waves against</div>
+        <div class="card-detail">
+          Because there's no gold-standard "relaxation meter," researchers use proxies — called <strong>reference indices</strong>. They fall in three families. <strong>ECG-related</strong>: heart rate, RR-interval variability, LF/HF ratio. <strong>Other physiological</strong>: blood pressure, skin conductance, saliva cortisol. <strong>Questionnaires</strong>: self-reported relaxation scales like POMS, the Amsterdam Resting-State Questionnaire, or a visual analog scale. Different indices capture different facets of "feeling relaxed."
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">📊</div>
+        <h3>Meta-analysis &amp; Fisher's z</h3>
+        <div class="card-short">Pooling correlations across many studies</div>
+        <div class="card-detail">
+          Each study reports a correlation coefficient (<em>r</em>) between an EEG measure and a relaxation index. To pool them, the authors apply <strong>Fisher's z-transformation</strong> — a math trick that converts skewed r values into something roughly normal that can be averaged across studies. A <strong>random-effects model</strong> then estimates the "true" average effect, with a confidence interval. If the interval crosses zero, the correlation isn't statistically significant.
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANDS REFERENCE TABLE -->
+  <section>
+    <p class="section-label">Reference: The 5 Bands, From First Principles</p>
+    <h2>What each band actually <em>is</em></h2>
+    <p>The five bands aren't arbitrary names. Each one is produced by a different group of brain cells, working in a different way — that's why each one shows up during a different mental state. Two versions of the same table below: flip between them as you learn.</p>
+
+    <div class="bands-mode-toggle" role="tablist" aria-label="Table reading mode">
+      <button id="bandsModePlain" class="active" onclick="setBandsMode('plain', this)" type="button">Plain language</button>
+      <button id="bandsModeScience" onclick="setBandsMode('science', this)" type="button">Scientific (with jargon)</button>
+    </div>
+
+    <div class="bands-table-wrap" id="bandsTablePlain">
+      <table class="bands-table">
+        <thead>
+          <tr>
+            <th>Band</th>
+            <th>What's actually happening in the brain</th>
+            <th>Why it's faster (or slower) than the next band</th>
+            <th>When you see it — and why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="band-row-delta">
+            <td><span class="band-name">Delta</span><span class="band-range">0.5–4 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> cortex-wide — the cortical sheet itself sets the slow rhythm, with the thalamus (a deep brain hub) and brainstem arousal systems holding the tempo low.</span>
+              Huge groups of brain cells switch on and off together in slow waves — they fire briefly, then go quiet, then fire again. It's only possible when the arousal systems that normally keep you awake have powered down.
+            </td>
+            <td>It's the slowest band because it needs millions of cells across wide stretches of cortex to fall silent at the same time. That kind of mass coordination just takes longer.</td>
+            <td><strong>Deep dreamless sleep, and general anaesthesia.</strong> Delta is the signature of "consciousness is offline." Sleep doctors literally use it to score how deep someone's sleep is.</td>
+          </tr>
+          <tr class="band-row-theta">
+            <td><span class="band-name">Theta</span><span class="band-range">4–8 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> two distinct sources — (1) the <em>hippocampus</em>, the brain's memory hub, driven by a small pacemaker just next to it; (2) the <em>front-middle of the cortex</em>, right above your forehead, when you're concentrating hard.</span>
+              A small pacemaker region next to the hippocampus drives it to pulse rhythmically. The frontal source kicks in when you're focusing internally — holding things in mind, doing mental math, paying attention to a memory.
+            </td>
+            <td>Faster than delta because it's driven by a small dedicated pacemaker, not a global slowdown. Slower than alpha because the cells doing the pacing fire at around 5–7 times per second.</td>
+            <td><strong>Drowsiness, deep focus on something internal, and active memory work.</strong> Frontal theta goes up when you're holding things in working memory. Hippocampal theta organizes the timing that lets the brain lock in new memories.
+              <span data-cf-change="ch-theta-intensity-inline-answer">
+              <details class="why-slow">
+                <summary>Wait — isn't working memory more intensive than concentrating, perceiving, or moving?</summary>
+                <p>Different rhythms ≠ different intensities. Each band reflects the <em>kind</em> of computation, not how hard the brain is working.</p>
+                <ul>
+                  <li><strong>Theta (working memory)</strong> = <em>scheduling</em>. Each ~150 ms theta cycle is one "slot" where a held item gets refreshed. ~4–7 slots per second is all that rotation needs — so the rhythm is slow.</li>
+                  <li><strong>Beta (active concentration, motor control)</strong> = <em>suppression + steady coordination</em>. ~20 Hz lets it react to incoming distractions and hold motor commands in real time. Slower beta couldn't keep up.</li>
+                  <li><strong>Gamma (conscious perception, fine attention)</strong> = <em>binding</em>. Combining colour, shape, and motion into one perceived object happens on a millisecond scale — the physical limit of perceptual assembly.</li>
+                </ul>
+                <p>And the bands <strong>stack</strong>. Solving 17 × 23 in your head runs theta (holds the digits), beta (keeps you focused), and gamma (encodes which digit is which, nested inside each theta slot) — <em>all at once</em>. The slow band isn't "lighter work"; it's the carrier that holds the fast bands together. (See the orange callout below the table for the full picture, including <em>theta-gamma coupling</em>.)</p>
+              </details>
+              </span>
+            </td>
+          </tr>
+          <tr class="band-row-alpha">
+            <td><span class="band-name">Alpha</span><span class="band-range">8–13 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> the <em>thalamus</em> (deep central hub) pulsing the <em>back of the cortex</em> — the visual and parietal areas, near the back of your scalp. That's why alpha is strongest at electrodes over the back of the head.</span>
+              The thalamus pulses the cortex at about 10 beats per second. Each pulse briefly tells the sensory regions of the cortex to "hush." When you close your eyes, this rhythm gets stronger; when you open them, it almost vanishes.
+            </td>
+            <td>Alpha has its own dedicated pacemaker (the thalamus) that the bands on either side don't share. That's why it shuts off the moment sensory input hits — the pacemaker is interruptible.</td>
+            <td><strong>Eyes closed, relaxed, mind idling.</strong> Best read as the brain actively shushing the channels it isn't using, so the channels it <em>is</em> using can work clearly. This is the band the meta-analysis finds linked to relaxation.
+              <span data-cf-change="ch-alpha-block-mechanism-plain">
+              <details class="why-slow">
+                <summary>So when alpha "shuts off" — does the pacemaker actually stop, or is it just being ignored by another part of the brain?</summary>
+                <p><strong>The pacemaker itself stops generating the rhythm.</strong> It's not that the thalamus keeps pulsing and something else drowns it out — the rhythm <em>ceases at the source</em>.</p>
+                <p>Here's the picture. The cells in the thalamus that make alpha can sit in one of two states:</p>
+                <ul>
+                  <li><strong>Resting state (alpha on):</strong> the cells are slightly "below threshold" — quiet enough that a special set of channels (called T-type calcium channels) can reset and fire. When they fire, they do so in rhythmic bursts at ~10 times per second. That bursting <em>is</em> the alpha rhythm.</li>
+                  <li><strong>Active state (alpha off):</strong> something nudges those cells slightly more excited — pushes their voltage up a notch. The T-type channels can no longer reset, so the bursting stops. The cells now fire <em>continuously</em>, passing sensory information through smoothly instead of rhythmically gating it on and off.</li>
+                </ul>
+                <p>So "alpha block" is the thalamus flipping from <em>rhythm mode</em> to <em>relay mode</em>. The rhythm doesn't get covered up — the machinery that generates it has changed state.</p>
+                <p>What flips the switch? Three things, all of which excite those thalamic cells:</p>
+                <ul>
+                  <li><strong>Opening your eyes / a loud sound</strong> — incoming sensory signals arrive at the thalamus and start exciting the cells directly.</li>
+                  <li><strong>"Waking up" chemicals</strong> — when you become alert, your brainstem releases acetylcholine and noradrenaline. These spread into the thalamus and depolarize the relay cells, ending the rhythm.</li>
+                  <li><strong>Just deciding to pay attention</strong> — your prefrontal and parietal cortex send signals back down to the thalamus that do the same thing. This is why alpha collapses even <em>without</em> any sensory change, if you simply start focusing.</li>
+                </ul>
+                <p>The cortex then loses its synchronized 10 Hz rhythm too — but that's a downstream consequence of the thalamus changing state, not a separate event. Bottom line: alpha block = pacemaker switches mode, not pacemaker overridden.</p>
+                <p><em>The science table (toggle "Show science" at the top of this section) has the same answer with full mechanism names and citations.</em></p>
+              </details>
+              </span>
+            </td>
+          </tr>
+          <tr class="band-row-beta">
+            <td><span class="band-name">Beta</span><span class="band-range">13–30 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> local circuits in the <em>sensorimotor strip</em> (top of your head, running ear to ear) and the <em>front of the cortex</em>. Motor beta also involves the <em>basal ganglia</em>, deeper in the brain.</span>
+              Small groups of "go" cells and "stop" cells in close balance fire back and forth quickly. Every patch of cortex makes its own beta — there's no single pacemaker.
+            </td>
+            <td>Faster than alpha because the local stop-cells fire about twice as fast. More local than alpha because there's no central pacemaker — every patch of cortex makes its own beta.</td>
+            <td><strong>Active focus, motor control, "keep things the way they are."</strong> Beta goes up when you're concentrating on a task or holding a posture, and drops the instant you move or change strategy.</td>
+          </tr>
+          <tr class="band-row-gamma">
+            <td><span class="band-name">Gamma</span><span class="band-range">30–100+ Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> small patches of cortex <em>anywhere active processing is happening</em> — gamma is born wherever the work is being done. No central pacemaker, no special region.</span>
+              Very fast "stop" cells gate the firing of nearby "go" cells in tiny 25–40 millisecond windows. The result is millisecond-precise synchrony in small patches of cortex.
+            </td>
+            <td>It's the fastest band because the stop-cells driving it recover from each pulse in only ~10 ms. Always local and short-lived — gamma comes in brief bursts, not steady rhythms.</td>
+            <td><strong>Conscious perception, fine attention, "binding" features into objects.</strong> Gamma bursts knit together the brain cells that represent one object or one thought. Weak or noisy gamma is implicated in schizophrenia and Alzheimer's.
+              <span data-cf-change="ch-gamma-vs-flow">
+              <details class="why-slow">
+                <summary>Is this just flow state — or the closest thing to it?</summary>
+                <p><strong>Close, but flow isn't a "gamma state."</strong> Flow is a <em>combination</em> of band changes, not a single band. The leading neuroscientific account is Arne Dietrich's <em>transient hypofrontality</em> model — during flow, the prefrontal cortex partially powers down, which is what produces the hallmark "no inner critic, no sense of self, time disappears" feeling.</p>
+                <p>What gets measured during flow:</p>
+                <ul>
+                  <li><strong>Reduced frontal beta</strong> — less of the "monitor, plan, evaluate" signal. This is the prefrontal "quieting."</li>
+                  <li><strong>Increased frontal theta + alpha</strong> — a focused-but-quiet attention regime, not the high-strain concentration of beta.</li>
+                  <li><strong>Strong local gamma in task-relevant areas</strong> — the moment-to-moment binding feels seamless because each perceptual "click" of action and feedback is locking in cleanly. This is the part your selection is pointing at.</li>
+                </ul>
+                <p>So: <strong>gamma is necessary for the "everything-just-clicks" feel of flow, but not sufficient.</strong> You can have strong gamma without flow (any focused perceptual task), and you need the prefrontal quieting + a theta/alpha backbone to get the full flow experience. Flow ≈ <em>quiet prefrontal + theta/alpha carrier + clean local gamma</em>, all at once.</p>
+                <p>Caveat: flow's EEG signature is still actively debated — sample sizes are small, lab tasks don't fully reproduce real-world flow, and findings replicate unevenly. The hypofrontality framework is the most popular synthesis but is not settled fact.</p>
+              </details>
+              </span>
+            </td>
+          </tr>
+          <tr class="source-row">
+            <td colspan="4">
+              <strong>The science behind this table:</strong> Buzsáki &amp; Draguhn 2004 (<em>Science</em>) for the general framework of brain rhythms; Steriade et al. 1993 for delta and slow-wave sleep; Buzsáki 2002 for hippocampal theta; Klimesch 2012 for alpha as active inhibition; Engel &amp; Fries 2010 for beta as a "status-quo" signal; Buzsáki &amp; Wang 2012 for the gamma mechanism; Niedermeyer's <em>Electroencephalography</em> (7th ed., 2017) for the clinical brain-state mappings. The band cut-offs vary a bit across labs — these are the most commonly cited ranges.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bands-table-wrap hidden" id="bandsTableScience">
+      <table class="bands-table">
+        <thead>
+          <tr>
+            <th>Band</th>
+            <th>Physiological origin (first principles)</th>
+            <th>Why it differs from neighbours</th>
+            <th>Canonical brain state &amp; mechanism</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="band-row-delta">
+            <td><span class="band-name">Delta</span><span class="band-range">0.5–4 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> <span class="term" title="cortico-thalamic — the recurrent loop between cortical pyramidal cells and thalamic relay/reticular neurons that generates and propagates many EEG rhythms">cortico-thalamic loops</span>, with cortex as the primary generator under low ascending arousal input from the <span class="term" title="locus coeruleus — brainstem nucleus that releases norepinephrine to drive cortical arousal">locus coeruleus</span> and <span class="term" title="basal forebrain — cluster of acetylcholine neurons that activate the cortex during wakefulness">basal forebrain</span>.</span>
+              Slow oscillations of cortical <span class="term" title="cycles between active firing (UP) and silent (DOWN) phases">UP/DOWN states</span> — large neuronal populations alternate between <span class="term" title="depolarized = the cell's voltage rises toward zero, crossing the threshold so it fires electrical spikes. This is the active 'UP' phase.">depolarized firing</span> and <span class="term" title="hyperpolarized = the cell's voltage drops further below zero, pushing it below firing threshold so it stays silent. This is the 'DOWN' phase.">hyperpolarized silence</span>, paced by <span class="term" title="loop between the thalamus deep in the brain and the cortical surface">thalamocortical</span> and intracortical networks under low <span class="term" title="signaling by acetylcholine, the neurotransmitter that promotes wakefulness">cholinergic drive</span>.
+            </td>
+            <td>Lowest frequency because it requires near-synchronous silence across very large cortical areas; only possible when ascending arousal systems (<span class="term" title="brainstem nucleus that releases norepinephrine and drives alertness">locus coeruleus</span>, <span class="term" title="cluster of acetylcholine neurons that activate the cortex">basal forebrain</span>) are quiet.</td>
+            <td><strong>Deep <span class="term" title="non-rapid-eye-movement sleep stage 3 — the deepest, slow-wave stage">NREM sleep (N3)</span> and anaesthesia.</strong> Delta dominates when consciousness is offline; it's the EEG signature of slow-wave sleep and is used to score sleep depth.</td>
+          </tr>
+          <tr class="band-row-theta">
+            <td><span class="band-name">Theta</span><span class="band-range">4–8 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> two distinct generators — (1) <em>hippocampal theta</em>: <span class="term" title="cornu ammonis subregions 1 and 3 — the main output and recurrent-input zones of the hippocampus">CA1/CA3</span> of the hippocampus, paced by the <span class="term" title="medial septum and diagonal band of Broca — small subcortical nuclei that send rhythmic projections into the hippocampus, acting as its pacemaker">medial septum / diagonal band of Broca</span>; (2) <em>frontal-midline theta</em>: <span class="term" title="anterior cingulate cortex — front-middle structure involved in attention and effort">anterior cingulate cortex (ACC)</span> and <span class="term" title="medial prefrontal cortex — middle-front cortical surface, executive control">medial prefrontal cortex</span>, recorded best at electrode Fz.</span>
+              Both generators involve <span class="term" title="inhibitory interneurons releasing GABA, the brain's main braking neurotransmitter">GABAergic interneurons</span> rhythmically gating <span class="term" title="excitatory output neurons of the cortex and hippocampus">pyramidal cell</span> firing.
+            </td>
+            <td>Faster than delta because the rhythm is driven by inhibitory interneurons firing at ~5–7 Hz rather than by global cortical silencing; slower than alpha because it doesn't require thalamic pacemakers.</td>
+            <td><strong>Memory encoding, drowsiness, and focused internal attention.</strong> Frontal-midline theta increases with working-memory load; hippocampal theta organizes the spike timing that consolidates <span class="term" title="memories of specific events tied to time and place">episodic memory</span>.</td>
+          </tr>
+          <tr class="band-row-alpha">
+            <td><span class="band-name">Alpha</span><span class="band-range">8–13 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> the thalamus (<span class="term" title="pulvinar nucleus — large thalamic region linked to attention and visual cortex">pulvinar</span> and <span class="term" title="lateral geniculate nucleus — thalamic relay for visual input from the retina">lateral geniculate</span>) pacing reciprocal loops with occipital and parietal cortex. Strongest at <span class="term" title="electrodes over the back of the scalp in the 10-20 system — Oz sits over the occipital midline, Pz over the parietal midline">posterior electrodes (Oz, Pz)</span>.</span>
+              Bursts of synchronized <span class="term" title="inhibition delivered via GABA-releasing interneurons">GABAergic inhibition</span> cycle at ~10 Hz, briefly suppressing pyramidal cell firing.
+            </td>
+            <td>Tied to a specific thalamic pacemaker — neighbouring bands lack this dedicated oscillator. Alpha collapses when the loop is interrupted by sensory input or attention (the classic <span class="term" title="sudden drop in alpha amplitude on eyes-opening or task onset, first noted by Hans Berger">"alpha block"</span>).</td>
+            <td><strong>Relaxed wakefulness, eyes closed, idling cortex.</strong> Interpreted as active inhibition of task-irrelevant regions — a "gate" that protects ongoing processing from distraction. This is the band paper2 finds correlated with relaxation indices.
+              <span data-cf-change="ch-alpha-block-mechanism">
+              <details class="why-slow">
+                <summary>So <em>how</em> does alpha block happen — does the pacemaker stop, or does another part of the brain override it?</summary>
+                <p><strong>The pacemaker stops generating the rhythm.</strong> Alpha isn't "drowned out" or "ignored downstream" — the oscillator itself switches off at the source. Here's the mechanism:</p>
+                <p>Thalamocortical relay neurons (in pulvinar, LGN, and other sensory thalamic nuclei) have <strong>two firing modes</strong>, determined by their membrane voltage:</p>
+                <ul>
+                  <li><strong>Burst mode</strong> (eyes closed, relaxed): the relay cells sit <em>hyperpolarized</em>. This deinactivates their <span class="term" title="T-type calcium channels — voltage-gated channels that open only when the cell is hyperpolarized, generating a 'low-threshold spike' burst when depolarizing input arrives">T-type Ca²⁺ channels</span>, which fire rhythmic bursts at ~10 Hz. Each burst inhibits cortex via the <span class="term" title="thalamic reticular nucleus — a thin GABAergic shell around the thalamus that paces the inhibition driving alpha rhythms">thalamic reticular nucleus (TRN)</span>. That alternation <em>is</em> the alpha rhythm.</li>
+                  <li><strong>Tonic mode</strong> (eyes open, attending): something <em>depolarizes</em> the relay cells. T-channels become inactivated, the burst rhythm disappears, and the cells start firing continuously — faithfully relaying whatever sensory input arrives, instead of rhythmically gating cortex on/off.</li>
+                </ul>
+                <p>So "alpha block" = the relay neurons crossing the voltage threshold from burst mode to tonic mode. The 10 Hz oscillation isn't suppressed by a stronger signal; <em>the circuit that produces it is no longer in its oscillating regime.</em></p>
+                <p>What pushes them across that threshold? Two convergent inputs, both depolarizing:</p>
+                <ul>
+                  <li><strong>Bottom-up sensory:</strong> opening your eyes → retinal volley → LGN. The arriving glutamatergic drive itself starts depolarizing the relay cells.</li>
+                  <li><strong>Ascending neuromodulation:</strong> arousal switches on cholinergic projections from the <span class="term" title="basal forebrain — nuclei (including the nucleus basalis of Meynert) that broadcast acetylcholine to cortex and thalamus, controlling arousal and attention">basal forebrain</span> and noradrenergic projections from the <span class="term" title="locus coeruleus — small brainstem nucleus that broadcasts noradrenaline, regulating arousal and vigilance">locus coeruleus</span>. <span class="term" title="acetylcholine — neuromodulator that depolarizes thalamic relay cells and switches them out of burst-firing mode">ACh</span> and <span class="term" title="noradrenaline — neuromodulator from the locus coeruleus that promotes arousal and tonic firing in the thalamus">NE</span> directly depolarize relay neurons, inactivating T-channels.</li>
+                  <li><strong>Top-down attention:</strong> prefrontal and parietal cortex can do the same thing via <span class="term" title="corticothalamic feedback — top-down projections from cortex back to thalamus that adjust thalamic firing mode">corticothalamic feedback</span>. This is why <em>just deciding to pay attention</em> (no sensory change required) also collapses alpha.</li>
+                </ul>
+                <p>The cortex then "desynchronizes" — its neurons start firing at varying phases — but that's a <em>consequence</em> of the thalamus no longer arriving in rhythmic packets, not the primary event. Sources: Steriade, McCormick &amp; Sejnowski 1993 (<em>Science</em>) for the burst/tonic switch; Lőrincz et al. 2009 for the pulvinar's role in alpha; Klimesch 2012 for the attention-driven version.</p>
+              </details>
+              </span>
+            </td>
+          </tr>
+          <tr class="band-row-beta">
+            <td><span class="band-name">Beta</span><span class="band-range">13–30 Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> local <span class="term" title="Rolandic strip — the cortex along the central sulcus, comprising primary motor cortex (M1) anteriorly and primary somatosensory cortex (S1) posteriorly">sensorimotor cortex (Rolandic strip)</span> and prefrontal microcircuits. Motor beta also has a <span class="term" title="corticostriatal loops — circuits linking cortex with the striatum (caudate, putamen), the input nucleus of the basal ganglia">corticostriatal</span> / <span class="term" title="basal ganglia — deep brain nuclei (striatum, globus pallidus, subthalamic nucleus, substantia nigra) that gate movement and habit learning">basal ganglia</span> component.</span>
+              Local microcircuits — pyramidal cells and <span class="term" title="parvalbumin-expressing fast-spiking interneurons — rapid, precise inhibitory cells">fast-spiking parvalbumin interneurons</span> in a tight <span class="term" title="excitation/inhibition balance — the equilibrium of go and stop signals in a circuit">excitation/inhibition balance</span>.
+            </td>
+            <td>Higher frequency than alpha because the underlying interneuron firing is faster (~20 Hz); more local than alpha because it doesn't depend on thalamic pacing, just on cortical <span class="term" title="excitation/inhibition balance">E/I balance</span>.</td>
+            <td><strong>Active concentration, motor planning, status-quo maintenance.</strong> Beta increases when you're holding a posture, focusing on an external task, or maintaining the current <span class="term" title="the active set of rules, goals, and attention focus being held in mind">cognitive set</span>; it suppresses when movement begins.</td>
+          </tr>
+          <tr class="band-row-gamma">
+            <td><span class="band-name">Gamma</span><span class="band-range">30–100+ Hz</span></td>
+            <td>
+              <span class="from-line"><strong>From:</strong> local cortical microcircuits anywhere active processing is happening — any cortical patch where <span class="term" title="parvalbumin-expressing fast-spiking interneurons">PV+ interneurons</span> gate active pyramidal-cell firing. No central pacemaker; gamma is generated locally by the same circuit doing the computation.</span>
+              The <span class="term" title="Pyramidal-Interneuron Network Gamma — a model where pyramidal-cell drive and PV+ interneuron inhibition produce gamma rhythms">PING</span> mechanism: PV+ interneurons impose 25–40 ms windows of inhibition on pyramidal cells, producing tight synchronization on millisecond timescales.
+            </td>
+            <td>Fastest band because it tracks the <span class="term" title="time it takes a neuron's voltage to return to baseline after a perturbation — sets how fast it can fire again">membrane time constant</span> of PV+ interneurons (~10 ms); fundamentally local and transient, unlike the more global lower bands.</td>
+            <td><strong><span class="term" title="binding problem — how the brain combines separate features (color, shape, motion) into one perceived object">Feature binding</span>, conscious perception, fine-grained attention.</strong> Gamma bursts coordinate the <span class="term" title="groups of co-firing neurons that together represent a single concept, object, or memory">cell assemblies</span> that represent a single object or thought; impaired gamma is implicated in schizophrenia and Alzheimer's.</td>
+          </tr>
+          <tr class="source-row">
+            <td colspan="4">
+              <strong>Sources for the physiology column:</strong> Buzsáki &amp; Draguhn 2004 (<em>Science</em>) for the general scale-free family of cortical rhythms; Steriade et al. 1993 for delta and thalamocortical UP/DOWN states; Buzsáki 2002 for hippocampal theta; Klimesch 2012 for alpha as inhibitory gating; Engel &amp; Fries 2010 for beta as status-quo signal; Buzsáki &amp; Wang 2012 for the PING model of gamma. <strong>Sources for the brain-state column:</strong> standard clinical neurophysiology (Niedermeyer's <em>Electroencephalography</em>, 7th ed., 2017) plus the primary reviews above. The band cut-offs vary slightly across labs — these are the most commonly cited ranges. <em>Hover any dotted term to see a brief definition.</em>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout orange">
+      <strong>Common misconception: faster Hz ≠ more "intensive" cognition.</strong>
+      <p style="margin: 10px 0 0;">It's tempting to read the table top-to-bottom as a difficulty ladder — sleep at the bottom, "real thinking" at the top. That's the wrong mental model. <strong>Frequency reflects the <em>timescale</em> of the operation the brain is running, not how hard the brain is working.</strong> Each band corresponds to a different <em>kind</em> of operation, and the operation dictates the speed.</p>
+      <p style="margin: 10px 0 0;"><strong>Theta (working memory)</strong> is slow because its job is <em>scheduling</em>: each ~150 ms theta cycle creates a "slot" where one item being held in mind gets refreshed. Holding 4 items in working memory means cycling through 4 slots per theta wave — the brain literally rehearses them in turn, and 4 refreshes per second is enough to keep them all alive.</p>
+      <p style="margin: 10px 0 0;"><strong>Beta (active concentration)</strong> is faster because its job is different: <em>suppressing distraction in real time</em>. When you're focused on a task, beta is the brain's "stay on this, ignore everything else" broadcast. It has to be fast (~50 ms responsiveness) because new distractions show up continuously — competing thoughts, sounds, body sensations — and the suppression signal has to react before they hijack you. Slow beta wouldn't be able to keep up with the incoming noise.</p>
+      <p style="margin: 10px 0 0;"><strong>Gamma (conscious perception)</strong> is fastest because its job is <em>binding</em>: combining color, shape, and motion into one perceived object happens on a millisecond timescale — the limit of how fast a single perceptual moment can be assembled.</p>
+      <p style="margin: 10px 0 0;">So <strong>"holding things in memory" is not a lighter version of "concentrating."</strong> They're entirely different operations: storage vs. suppression. They have different timescales because they're solving different problems.</p>
+      <p style="margin: 10px 0 0;">And critically: <strong>these bands stack, they don't replace each other.</strong> When you're doing mental math — say, multiplying 17 × 23 in your head — your brain is running <em>theta</em> (to hold the digits and intermediate result), <em>beta</em> (to keep you focused on the task and ignore distractions), and <em>gamma</em> (nested inside each theta slot, encoding the specific digit being held) <strong>all at the same time</strong>. The phenomenon of gamma riding on top of theta is called <strong>theta-gamma coupling</strong>, and it's how the brain stores multiple items at once without them blurring together. The bands aren't competing for "which is harder" — they're cooperating on different parts of the same task.</p>
+    </div>
+
+    <div class="callout">
+      <strong>Why this matters for the meta-analysis.</strong> Because each band is produced by different machinery, the fact that <em>only alpha</em> tracks relaxation actually makes sense. Alpha's pacemaker (the thalamus) is the part of the brain that calms down when your parasympathetic nervous system takes over — the same nervous-system switch that "relaxation indices" like heart-rate variability are measuring. The other bands have nothing to do with that switch, so it's not surprising they didn't correlate.
+    </div>
+  </section>
+
+  <!-- FREQUENCY BAND EXPLORER -->
+  <section>
+    <p class="section-label">Interactive: The 5 EEG Bands</p>
+    <h2>Click a band. See what it looks like — and whether it tracks relaxation.</h2>
+    <p>The meta-analysis tested every frequency band against the relaxation indices. Most came back null. Only one had any meaningful action — and even there, the answer depends on where on the scalp you look.</p>
+
+    <div class="band-explorer">
+      <div class="band-tabs">
+        <button class="band-tab" onclick="setBand('delta', this)">Delta (&lt;4 Hz)</button>
+        <button class="band-tab" onclick="setBand('theta', this)">Theta (4–8 Hz)</button>
+        <button class="band-tab active" onclick="setBand('alpha', this)">Alpha (8–13 Hz)</button>
+        <button class="band-tab" onclick="setBand('beta', this)">Beta (13–30 Hz)</button>
+        <button class="band-tab" onclick="setBand('gamma', this)">Gamma (&gt;30 Hz)</button>
+      </div>
+      <svg class="wave" id="bandWave" viewBox="0 0 600 100" preserveAspectRatio="none">
+        <path id="bandPath" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+      </svg>
+      <div class="band-info" id="bandInfo"></div>
+    </div>
+  </section>
+
+  <!-- HEAD MAP -->
+  <section>
+    <p class="section-label">Interactive: The 10–20 EEG Map</p>
+    <h2>Where you put the electrode changes the answer</h2>
+    <p>Hover or tap a region on the head below. The colored zones group the 19 electrodes into the six categories the meta-analysis uses — and reveal what alpha power there <em>actually</em> means for relaxation.</p>
+
+    <div class="callout" data-cf-change="ch-region-band-clarifier">
+      <strong>Quick clarifier: yes — every band exists everywhere on the scalp, but with different strengths and different meanings.</strong>
+      <p style="margin: 10px 0 0;">The meta-analysis didn't measure "one alpha number per person." It measured alpha, theta, beta, gamma <em>at each of 19 electrodes</em> — so each participant produced 19 alpha values, 19 theta values, and so on. The question wasn't "is there alpha?" (there always is) but <em>"does the alpha <strong>here</strong> correlate with relaxation?"</em></p>
+      <p style="margin: 10px 0 0;">Why this matters: the same band can mean different things depending on where it's recorded, because different cortical regions are wired to different generators.</p>
+      <ul style="margin: 10px 0 0;">
+        <li><strong>Posterior alpha</strong> (over occipital/parietal cortex, electrodes Oz/Pz/O1/O2) — the classic "eyes-closed" alpha driven by the thalamic pacemaker. This is the one that tracks relaxation.</li>
+        <li><strong>Frontal alpha</strong> (over forehead, Fp1/Fp2/F3/F4) — much smaller in amplitude, and what's there reflects a different signal entirely. <em>Frontal alpha asymmetry</em> (left vs. right) is studied for emotional valence and approach/withdrawal motivation, not relaxation.</li>
+        <li><strong>Central beta</strong> (sensorimotor strip, C3/C4) — tied to motor planning. <strong>Frontal beta</strong> — tied to attention and cognitive control. Same band, different jobs.</li>
+        <li><strong>Frontal-midline theta</strong> (Fz) — working-memory load. <strong>Hippocampal theta</strong> — memory consolidation. Two completely different generators, both labelled "theta."</li>
+      </ul>
+      <p style="margin: 10px 0 0;">So when you click around the head map below, you're not seeing "different brains" — you're seeing different physiological generators that all happen to produce signals in the same frequency band. The label "alpha" is geographically promiscuous; the meaning is location-specific.</p>
+    </div>
+
+    <div class="headmap-wrap">
+      <div class="headmap-grid">
+        <svg class="headmap" viewBox="0 0 320 340" id="headSvg">
+          <!-- Head outline -->
+          <ellipse cx="160" cy="180" rx="135" ry="150" fill="#fafbfc" stroke="#cbd5e1" stroke-width="2"/>
+          <!-- Nose -->
+          <path d="M 160 30 L 148 50 L 172 50 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+          <!-- Ears -->
+          <ellipse cx="25" cy="180" rx="8" ry="20" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+          <ellipse cx="295" cy="180" rx="8" ry="20" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+
+          <!-- Region zones (subtle background highlights, controlled by JS) -->
+          <ellipse id="zone-prefrontal" cx="160" cy="70" rx="65" ry="22" fill="transparent" opacity="0.35"/>
+          <ellipse id="zone-frontal" cx="160" cy="115" rx="100" ry="28" fill="transparent" opacity="0.35"/>
+          <ellipse id="zone-central" cx="160" cy="180" rx="100" ry="28" fill="transparent" opacity="0.35"/>
+          <ellipse id="zone-parietal" cx="160" cy="240" rx="100" ry="28" fill="transparent" opacity="0.35"/>
+          <ellipse id="zone-occipital" cx="160" cy="295" rx="65" ry="22" fill="transparent" opacity="0.35"/>
+
+          <!-- Electrodes (group: region, name) -->
+          <!-- Prefrontal -->
+          <g class="electrode" data-region="prefrontal" onclick="selectRegion('prefrontal', this)">
+            <circle cx="125" cy="70" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="125" y="74" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">Fp1</text>
+          </g>
+          <g class="electrode" data-region="prefrontal" onclick="selectRegion('prefrontal', this)">
+            <circle cx="195" cy="70" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="195" y="74" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">Fp2</text>
+          </g>
+
+          <!-- Frontal -->
+          <g class="electrode" data-region="frontal" onclick="selectRegion('frontal', this)">
+            <circle cx="75" cy="115" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="75" y="119" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">F7</text>
+          </g>
+          <g class="electrode" data-region="frontal" onclick="selectRegion('frontal', this)">
+            <circle cx="115" cy="115" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="115" y="119" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">F3</text>
+          </g>
+          <g class="electrode" data-region="frontal" onclick="selectRegion('frontal', this)">
+            <circle cx="160" cy="115" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="160" y="119" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">Fz</text>
+          </g>
+          <g class="electrode" data-region="frontal" onclick="selectRegion('frontal', this)">
+            <circle cx="205" cy="115" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="205" y="119" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">F4</text>
+          </g>
+          <g class="electrode" data-region="frontal" onclick="selectRegion('frontal', this)">
+            <circle cx="245" cy="115" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="245" y="119" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">F8</text>
+          </g>
+
+          <!-- Central / Temporal -->
+          <g class="electrode" data-region="temporal" onclick="selectRegion('temporal', this)">
+            <circle cx="55" cy="180" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="55" y="184" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">T3</text>
+          </g>
+          <g class="electrode" data-region="central" onclick="selectRegion('central', this)">
+            <circle cx="110" cy="180" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="110" y="184" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">C3</text>
+          </g>
+          <g class="electrode" data-region="central" onclick="selectRegion('central', this)">
+            <circle cx="160" cy="180" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="160" y="184" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">Cz</text>
+          </g>
+          <g class="electrode" data-region="central" onclick="selectRegion('central', this)">
+            <circle cx="210" cy="180" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="210" y="184" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">C4</text>
+          </g>
+          <g class="electrode" data-region="temporal" onclick="selectRegion('temporal', this)">
+            <circle cx="265" cy="180" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="265" y="184" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">T4</text>
+          </g>
+
+          <!-- Parietal -->
+          <g class="electrode" data-region="temporal" onclick="selectRegion('temporal', this)">
+            <circle cx="75" cy="240" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="75" y="244" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">T5</text>
+          </g>
+          <g class="electrode" data-region="parietal" onclick="selectRegion('parietal', this)">
+            <circle cx="120" cy="240" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="120" y="244" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">P3</text>
+          </g>
+          <g class="electrode" data-region="parietal" onclick="selectRegion('parietal', this)">
+            <circle cx="160" cy="240" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="160" y="244" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">Pz</text>
+          </g>
+          <g class="electrode" data-region="parietal" onclick="selectRegion('parietal', this)">
+            <circle cx="200" cy="240" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="200" y="244" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">P4</text>
+          </g>
+          <g class="electrode" data-region="temporal" onclick="selectRegion('temporal', this)">
+            <circle cx="245" cy="240" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="245" y="244" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">T6</text>
+          </g>
+
+          <!-- Occipital -->
+          <g class="electrode" data-region="occipital" onclick="selectRegion('occipital', this)">
+            <circle cx="135" cy="295" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="135" y="299" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">O1</text>
+          </g>
+          <g class="electrode" data-region="occipital" onclick="selectRegion('occipital', this)">
+            <circle cx="185" cy="295" r="14" fill="white" stroke="#94a3b8" stroke-width="2"/>
+            <text x="185" y="299" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">O2</text>
+          </g>
+        </svg>
+        <div class="region-info" id="regionInfo">
+          <div class="region-title">Click a region</div>
+          <div class="region-sub">Tap any electrode on the head map →</div>
+          <div class="region-finding" style="background:#f3f4f6; border-color:#cbd5e1; color:#475569;">The meta-analysis groups all 19 electrodes into six regions. Three of those regions plus a specific reference-index type produced a real, statistically significant relaxation correlation. The others are silent.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bands-table-wrap" data-cf-change="ch-correlation-ranking-table" style="margin-top: 32px;">
+      <h3 style="margin: 0 0 10px;">Ranked: every band × region × reference-index pairing, sorted by correlation</h3>
+      <p style="font-family:sans-serif; font-size:0.88rem; color:var(--gray); margin: 0 0 14px;">Higher <em>r</em> = stronger correlation with relaxation. A pairing is "real" only when its 95% confidence interval does <em>not</em> cross zero (marked <strong>✓ significant</strong>). Three pairings clear that bar; everything else is statistically indistinguishable from noise, no matter how its <em>r</em> looks. <em>Larger absolute values of r in null rows usually reflect very small samples, not stronger effects.</em></p>
+
+      <div class="callout" data-cf-change="ch-source-attribution-note" style="margin: 0 0 18px;">
+        <p style="margin: 0;"><strong>About the "Studies" column.</strong> The parent paper — <strong>Sugimoto, Kurashiki, Xu, Takemi &amp; Amano (2026)</strong>, <em>Electroencephalographic Biomarkers of Relaxation: A Systematic Review and Meta-analysis</em>, <em>Journal of Cognitive Neuroscience</em> 38(3):598–628 — is here: <a href="https://doi.org/10.1162/JOCN.a.2392" target="_blank" rel="noopener noreferrer"><strong>https://doi.org/10.1162/JOCN.a.2392</strong></a> (open access, CC BY 4.0). It publishes pooled meta-analytic results (Figure 4, Table 3) <em>without</em> mapping individual studies to individual pairings. So the count + N you see in each row of the ranking is what the paper itself reports; per-row attribution would require manually cross-referencing Table 2.</p>
+        <p style="margin: 10px 0 0;"><strong>For each of the 54 studies in the pool, I can't verify a DOI without searching — so rather than invent links, every citation below is a click-through to Google Scholar with the citation pre-filled.</strong> One click → you see the actual paper, its real DOI, abstract, and where it was published. If a Scholar match looks wrong, that's diagnostic: it usually means the citation in Table 2 was abbreviated and the search needs the full author list. The reference list of the parent paper (linked above) has every full citation.</p>
+        <details style="margin-top: 14px;">
+          <summary><strong>Show all 54 studies in the qualitative-synthesis pool (Table 2 of the paper) — each links to a Google Scholar lookup</strong></summary>
+          <p style="margin: 10px 0 0; font-size: 0.85rem; color: var(--gray);">31 of these 54 entered the quantitative meta-analysis. The remaining 23 were excluded for high risk of bias (n=8), concerns about indirectness (n=3), unclear directions of numerical changes (n=2), unreliable correlation coefficients (n=1), or because they used EEG indices with fewer than two associated studies (n=9). Studies using MEG, microstates, beta/alpha ratios, or other single-study indices were filtered out at this stage.</p>
+          <ol style="margin: 12px 0 0; padding-left: 22px; columns: 2; column-gap: 24px; font-size: 0.88rem; line-height: 1.65;">
+            <li><a href="https://scholar.google.com/scholar?q=Balle+2013+EEG+relaxation+interregional+power+asymmetry+beta" target="_blank" rel="noopener noreferrer">Balle et al., 2013</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Beauducel+2024+EEG+relaxation+state+anxiety+questionnaire" target="_blank" rel="noopener noreferrer">Beauducel et al., 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Biswas+Ray+2019+alpha+EEG+neurofeedback+VAS+relaxation" target="_blank" rel="noopener noreferrer">Biswas &amp; Ray, 2019</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Chang+Ibaraki+Nanase+Imamura+2023+sauna+EEG+theta" target="_blank" rel="noopener noreferrer">Chang, Ibaraki, Nanase, &amp; Imamura, 2023</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Doufesh+Ibrahim+Ismail+Wan+Ahmad+2014+EEG+salat+prayer+alpha" target="_blank" rel="noopener noreferrer">Doufesh, Ibrahim, Ismail, &amp; Wan Ahmad, 2014</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Duda+Clarke+Barry+2024+EEG+global+power+mindfulness+meditation+skin+conductance" target="_blank" rel="noopener noreferrer">Duda, Clarke, &amp; Barry, 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Elsadek+Liu+Lian+2019+EEG+green+facade+visual+stimulation+relaxation" target="_blank" rel="noopener noreferrer">Elsadek, Liu, &amp; Lian, 2019</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Elsadek+Deshun+Liu+2024+EEG+green+spaces+videos+relaxation" target="_blank" rel="noopener noreferrer">Elsadek, Deshun, &amp; Liu, 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Foster+Drago+Ferguson+Harrison+2008+EEG+beta+interregional+power+asymmetry+relaxing" target="_blank" rel="noopener noreferrer">Foster, Drago, Ferguson, &amp; Harrison, 2008</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Foster+Harrison+2006+EEG+alpha+interregional+amplitude+asymmetry+relaxation" target="_blank" rel="noopener noreferrer">Foster &amp; Harrison, 2006</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Furui+2020+EEG+oscillation+relaxation" target="_blank" rel="noopener noreferrer">Furui, 2020</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Grosselin+2021+EEG+alpha+neurofeedback+relaxation" target="_blank" rel="noopener noreferrer">Grosselin et al., 2021</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Hamada+2006+EEG+alpha+mental+arithmetic+relaxation" target="_blank" rel="noopener noreferrer">Hamada et al., 2006</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Honjoh+Takahashi+1997+EEG+alpha+individual+frequency+relaxation" target="_blank" rel="noopener noreferrer">Honjoh &amp; Takahashi, 1997</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Imagawa+2023+EEG+sauna+bathing+relaxation+POMS" target="_blank" rel="noopener noreferrer">Imagawa et al., 2023</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Ishiyama+2006+EEG+local+power+drawing+pleasant+unpleasant" target="_blank" rel="noopener noreferrer">Ishiyama et al., 2006</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Kabuto+1993+EEG+vigilance+autonomic+relaxation" target="_blank" rel="noopener noreferrer">Kabuto et al., 1993</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Kim+2019+EEG+HRV+relaxation+autonomic" target="_blank" rel="noopener noreferrer">Kim et al., 2019</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Kitagawa+2005+EEG+hearing+pleasant+music+relaxation" target="_blank" rel="noopener noreferrer">Kitagawa et al., 2005</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Koivisto+2024+EEG+HRV+heart+rate+relaxation" target="_blank" rel="noopener noreferrer">Koivisto et al., 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Kozhevnikov+2022+EEG+meditation+Tibetan+Buddhist+relaxation" target="_blank" rel="noopener noreferrer">Kozhevnikov, Strasberg, &amp; Salinas, 2022</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Kubota+2001+EEG+frontal+midline+theta+Zen+meditation" target="_blank" rel="noopener noreferrer">Kubota et al., 2001</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Lee+Kulubya+Goldin+Goodarzi+Girgis+2015+EEG+meditation+systematic+review" target="_blank" rel="noopener noreferrer">Lee, Kulubya, Goldin, Goodarzi, &amp; Girgis, 2015</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Leger+2014+EEG+global+power+oscillatory+frequency+relaxation" target="_blank" rel="noopener noreferrer">Leger et al., 2014</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Li+Zhang+Jiang+Zhao+2023+EEG+brain+state+change+stress+mindfulness" target="_blank" rel="noopener noreferrer">Li, Zhang, Jiang, Li, &amp; Zhao, 2023</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Liu+Murata+Wang+Saka+2005+EEG+alpha+local+power+relaxation" target="_blank" rel="noopener noreferrer">Liu, Murata, Wang, &amp; Saka, 2005</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Lutzenberger+1976+EEG+alpha+biofeedback+relaxation" target="_blank" rel="noopener noreferrer">Lutzenberger et al., 1976</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Minguillon+Perez+Lopez-Gordo+Pelayo+Sanchez-Carrion+2018+EEG+stress" target="_blank" rel="noopener noreferrer">Minguillon, Perez, Lopez-Gordo, Pelayo, &amp; Sanchez-Carrion, 2018</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Minguillon+2016+EEG+stress+frontal+alpha+asymmetry" target="_blank" rel="noopener noreferrer">Minguillon et al., 2016</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Murata+2004+EEG+relaxation+respiration" target="_blank" rel="noopener noreferrer">Murata et al., 2004</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Orui+2023+EEG+forest+therapy+relaxation+brain" target="_blank" rel="noopener noreferrer">Orui et al., 2023</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Orui+2024+EEG+relaxation+autonomic" target="_blank" rel="noopener noreferrer">Orui et al., 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Pipints+2017+EEG+microstate+relaxation" target="_blank" rel="noopener noreferrer">Pipints et al., 2017</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Puente+1981+EEG+relaxation+meditation+alpha+enhancement" target="_blank" rel="noopener noreferrer">Puente, 1981</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Rodeback+2020+EEG+yoga+nidra+relaxation" target="_blank" rel="noopener noreferrer">Rodeback et al., 2020</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Sakamoto+Shimizu+Iwamoto+Sato+Nakatani+2012+EEG+drinking+barley+tea+relaxation" target="_blank" rel="noopener noreferrer">Sakamoto, Shimizu, Iwamoto, Sato, &amp; Nakatani, 2012</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Sasaki+1998+EEG+relaxation+ECG" target="_blank" rel="noopener noreferrer">Sasaki, 1998</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Shiraiwa+Yamada+Nakada+Tsuchi+2020+EEG+cardiac+sympathetic+vagal+relaxation" target="_blank" rel="noopener noreferrer">Shiraiwa, Yamada, Nakada, &amp; Tsuchi, 2020</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Singh+Gupta+Behera+Bhushan+2025+EEG+HRV+relaxation+placebo+chanting" target="_blank" rel="noopener noreferrer">Singh, Gupta, Behera, &amp; Bhushan, 2025</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Sinha+2020+EEG+local+power+relaxation+POMS+alpha+occipital" target="_blank" rel="noopener noreferrer">Sinha et al., 2020</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Takahashi+2005+EEG+Sahaja+yoga+meditation+relaxation" target="_blank" rel="noopener noreferrer">Takahashi et al., 2005</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Tang+2009+EEG+integrative+body-mind+training+relaxation" target="_blank" rel="noopener noreferrer">Tang et al., 2009</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Tarailis+Sudziute+Griskova-Bulanova+2024+EEG+oscillatory+frequency+relaxation" target="_blank" rel="noopener noreferrer">Tarailis, Sūdžiūtė, &amp; Griškova-Bulanova, 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Teo+Johnstone+Thomas+2023+EEG+global+field+synchronization+stress" target="_blank" rel="noopener noreferrer">Teo, Johnstone, &amp; Thomas, 2023</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Teo+Johnstone+Thomas+2024+EEG+local+power+frontal+stress+anxiety" target="_blank" rel="noopener noreferrer">Teo, Johnstone, &amp; Thomas, 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Thaiwong+Fukumoto+2024+EEG+brain+power+ratio+relaxation" target="_blank" rel="noopener noreferrer">Thaiwong &amp; Fukumoto, 2024</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Travis+2018+EEG+current+source+density+transcendental+meditation+relaxation" target="_blank" rel="noopener noreferrer">Travis et al., 2018</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Triggiani+2016+EEG+relaxation+resting+state" target="_blank" rel="noopener noreferrer">Triggiani et al., 2016</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Uchida+2020+EEG+acupuncture+relaxation+HRV" target="_blank" rel="noopener noreferrer">Uchida et al., 2020</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Vaquero-Blasco+2021+EEG+neural+imaging+stress+task+relaxation" target="_blank" rel="noopener noreferrer">Vaquero-Blasco et al., 2021</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Volodina+2021+EEG+local+power+relaxation+respiratory+patterns" target="_blank" rel="noopener noreferrer">Volodina et al., 2021</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Wang+2007+EEG+local+power+relaxation" target="_blank" rel="noopener noreferrer">Wang et al., 2007</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Yoto+2013+EEG+drinking+tea+relaxation+L-theanine" target="_blank" rel="noopener noreferrer">Yoto et al., 2013</a></li>
+            <li><a href="https://scholar.google.com/scholar?q=Zheng+2024+EEG+relaxation+autonomic+nervous+system" target="_blank" rel="noopener noreferrer">Zheng et al., 2024</a></li>
+          </ol>
+          <p style="margin: 14px 0 0; font-size: 0.85rem; color: var(--gray);">Total: 2,569 participants across the 54 studies. Year range: 1976–2025. Risk-of-bias and indirectness assessments for every study are visualized in Figure 3 of the paper. <strong>Important caveat:</strong> Scholar searches with short author lists ("Foo et al., YYYY") may return ambiguous matches when an author has multiple papers in a year. If a result looks wrong, open the parent paper's reference list (last section of the DOI link above) for the unabbreviated citation.</p>
+        </details>
+      </div>
+/div>
+
+      <table class="bands-table">
+        <thead>
+          <tr>
+            <th style="width: 42px;">Rank</th>
+            <th>Pairing (band × region × reference-index)</th>
+            <th style="width: 70px;">r</th>
+            <th>95% CI</th>
+            <th>Sample</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#ecfdf5;">
+            <td><strong>1</strong></td>
+            <td><strong>Alpha × Occipital × Questionnaire ("felt" relaxation)</strong></td>
+            <td><strong>0.32</strong></td>
+            <td>[0.05, 0.60]</td>
+            <td>4 studies, N=134</td>
+            <td><strong style="color:#059669;">✓ significant</strong> — strongest pairing</td>
+          </tr>
+          <tr style="background:#ecfdf5;">
+            <td><strong>2</strong></td>
+            <td><strong>Alpha × Central × ECG (HRV / heart rate)</strong></td>
+            <td><strong>0.24</strong></td>
+            <td>[0.08, 0.40]</td>
+            <td>5 studies, N=128</td>
+            <td><strong style="color:#059669;">✓ significant</strong> — tracks autonomic relaxation</td>
+          </tr>
+          <tr style="background:#ecfdf5;">
+            <td><strong>3</strong></td>
+            <td><strong>Alpha × Central (any reference-index pooled)</strong></td>
+            <td><strong>0.23</strong></td>
+            <td>[0.08, 0.38]</td>
+            <td>7 studies, N=153</td>
+            <td><strong style="color:#059669;">✓ significant</strong></td>
+          </tr>
+          <tr style="background:#ecfdf5;">
+            <td><strong>4</strong></td>
+            <td><strong>Alpha × Frontal (any reference-index pooled)</strong></td>
+            <td><strong>0.17</strong></td>
+            <td>[0.02, 0.32]</td>
+            <td>7 studies, N=145</td>
+            <td><strong style="color:#059669;">✓ significant</strong> — weakest of the three real pairings</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Theta (all)</td>
+            <td>0.20</td>
+            <td>[−0.10, 0.50]</td>
+            <td>10 studies, N=240</td>
+            <td style="color:#94a3b8;">n.s. — CI crosses zero</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Alpha × Occipital (any reference-index pooled)</td>
+            <td>0.18</td>
+            <td>[−0.23, 0.60]</td>
+            <td>8 studies, N=218</td>
+            <td style="color:#94a3b8;">n.s. — only emerges when sliced by Q-naire</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Alpha × Frontal × ECG</td>
+            <td>0.17</td>
+            <td>[−0.11, 0.45]</td>
+            <td>6 studies, N=131</td>
+            <td style="color:#94a3b8;">n.s.</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Alpha × Occipital × ECG</td>
+            <td>0.16</td>
+            <td>[−0.38, 0.70]</td>
+            <td>6 studies, N=154</td>
+            <td style="color:#94a3b8;">n.s. — wide CI</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Alpha (all — naive "alpha = relaxed")</td>
+            <td>0.13</td>
+            <td>[−0.02, 0.28]</td>
+            <td>25 studies, N=700</td>
+            <td style="color:#94a3b8;">n.s. — the headline null</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>Alpha × Frontal × Questionnaire</td>
+            <td>0.08</td>
+            <td>[−0.26, 0.43]</td>
+            <td>3 studies, N=117</td>
+            <td style="color:#94a3b8;">n.s.</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>Alpha × Prefrontal (any reference-index)</td>
+            <td>0.08</td>
+            <td>[−0.18, 0.34]</td>
+            <td>5 studies, N=142</td>
+            <td style="color:#94a3b8;">n.s.</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>Alpha × Parietal (any reference-index)</td>
+            <td>0.07</td>
+            <td>[−1.09, 1.23]</td>
+            <td>4 studies, N=99</td>
+            <td style="color:#94a3b8;">n.s. — sample too small for inference</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>Delta (all)</td>
+            <td>0.06</td>
+            <td>[−0.18, 0.30]</td>
+            <td>5 studies, N=143</td>
+            <td style="color:#94a3b8;">n.s.</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>Beta (all)</td>
+            <td>−0.01</td>
+            <td>[−0.10, 0.07]</td>
+            <td>12 studies, N=353</td>
+            <td style="color:#94a3b8;">n.s. — essentially zero</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>Alpha × any region × Skin conductance</td>
+            <td>−0.09</td>
+            <td>[−0.34, 0.17]</td>
+            <td>2 studies, N=88</td>
+            <td style="color:#94a3b8;">n.s.</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>Alpha × Central × Questionnaire</td>
+            <td>−0.27</td>
+            <td>[−7.09, 6.56]</td>
+            <td>2 studies, N=25</td>
+            <td style="color:#94a3b8;">n.s. — CI uninformatively wide</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td>Relative gamma (all)</td>
+            <td>−1.09</td>
+            <td>[−2.82, 0.63]</td>
+            <td>3 studies, N=24</td>
+            <td style="color:#94a3b8;">n.s. — too few studies to interpret</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-family:sans-serif; font-size:0.85rem; color:var(--gray); margin-top: 14px;"><strong>How to read this:</strong> the three green rows at the top are the only pairings where the meta-analysis can say "this is a real relationship." Everything else is consistent with no effect — including the famous "alpha = relaxed" story when treated naively (rank 9). Note also that ECG-based and questionnaire-based relaxation pick out <em>different</em> regions: HRV-style measures correlate with central alpha; self-reported feeling correlates with occipital alpha. These are not interchangeable. Source: Tables 2–4 of the paper; same numbers drive the forest plot below.</p>
+
+      <div class="callout orange" data-cf-change="ch-stats-interpretation" style="margin-top: 22px;">
+        <strong>What "r" and "95% CI" actually mean here — in plain terms.</strong>
+
+        <p style="margin: 10px 0 0;"><strong>r is the correlation coefficient.</strong> It runs from −1 to +1 and answers: "across people, when EEG measure X goes up, does the relaxation index Y go up too?"</p>
+        <ul style="margin: 8px 0 0;">
+          <li><strong>r = +1:</strong> perfect lockstep — high X always means high Y.</li>
+          <li><strong>r = 0:</strong> no linear relationship — knowing X tells you nothing about Y.</li>
+          <li><strong>r = −1:</strong> perfect anti-correlation — high X always means low Y.</li>
+        </ul>
+        <p style="margin: 10px 0 0;"><strong>In this paper's context</strong> the signs are pre-aligned — the authors flipped indices that <em>decrease</em> with relaxation (LF/HF ratio, heart rate, blood pressure) so that, for every measure, a higher number = more relaxed. So a positive <em>r</em> means "as alpha power goes up, the participant looks/feels more relaxed." A negative <em>r</em> would mean alpha goes up as they become <em>less</em> relaxed.</p>
+
+        <p style="margin: 10px 0 0;"><strong>How big is r = 0.32?</strong> By Cohen's conventional benchmarks: |r| ≈ 0.1 = small, |r| ≈ 0.3 = medium, |r| ≈ 0.5 = large. So the top finding (occipital alpha × questionnaire, r = 0.32) is a <em>medium</em> effect — real, but not enormous. Concretely, r = 0.32 means alpha power explains ~10% of the variance in self-reported relaxation (r² = 0.10). The other 90% is everything else: mood, caffeine, sleep, individual differences, electrode placement noise. So "occipital alpha tracks felt relaxation" is true and replicable — but it's not a tight one-to-one readout.</p>
+
+        <p style="margin: 10px 0 0;"><strong>The 95% CI is the uncertainty around <em>r</em>.</strong> It's the range of <em>true</em> r values that are consistent with the data the meta-analysis pooled. "r = 0.32 [0.05, 0.60]" means: given all the studies combined, the actual underlying correlation is plausibly anywhere from 0.05 (barely there) to 0.60 (quite strong) — we just can't pin it down better than that with the data available.</p>
+        <ul style="margin: 8px 0 0;">
+          <li><strong>If the CI does NOT cross zero</strong> (e.g. [0.05, 0.60]) → we can rule out "no correlation" at the 95% confidence level. <em>This is what "statistically significant" means in this table.</em></li>
+          <li><strong>If the CI DOES cross zero</strong> (e.g. [−0.02, 0.28]) → the data are compatible with the true correlation being literally zero, so we can't claim a real relationship — even if the point estimate looks positive. <em>This is the entire reason the naive "alpha = relaxed" story (rank 9) falls apart.</em></li>
+          <li><strong>How wide the CI is</strong> tells you how much data you had. [0.08, 0.40] (5 studies, N=128) is moderately precise. [−7.09, 6.56] (2 studies, N=25) is so wide it's uninformative — those rows are essentially "we have no idea."</li>
+        </ul>
+
+        <p style="margin: 10px 0 0;"><strong>The pooling trick:</strong> the raw <em>r</em>'s across studies are converted to <em>Fisher z-transformed</em> values (z = arctanh(r)) before averaging. This is because r values bunch up near ±1 in an awkward way that breaks ordinary averaging; the z-transform stretches them out so they can be averaged with proper error estimates, then converted back. A <em>random-effects</em> model is used (rather than fixed-effects), which assumes each study is estimating its own slightly different true r — a more conservative assumption that produces wider, more honest CIs when studies disagree with each other (Q statistic captures that disagreement).</p>
+
+        <p style="margin: 10px 0 0;"><strong>One important caveat — correlation isn't causation.</strong> Even the three significant rows only say "these vary together across participants/studies." They don't prove that increasing alpha <em>makes</em> you more relaxed, or that being relaxed <em>produces</em> alpha. Both could be downstream of a third thing (eyes-closed posture, the parasympathetic nervous system switching on, mind-wandering state). The paper's "future directions" section explicitly calls for tACS / neurofeedback experiments to test the causal direction — which is what would settle whether targeting alpha is actually a useful intervention or just an incidental marker.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW THEY DID IT -->
+  <section>
+    <p class="section-label">The Method</p>
+    <h2>From 4,194 papers to 31, in five sieves</h2>
+    <p>The authors followed the PRISMA 2020 protocol — the formal standard for systematic reviews — and pre-registered most decisions before reading any results. Two independent reviewers screened titles, abstracts, and full texts. Disagreements went to a third reviewer. Bias was scored on six dimensions (selection, performance, detection, attrition, reporting, other) and indirectness on four more.</p>
+
+    <div class="prisma">
+      <div class="prisma-step">
+        <div class="label">Database hits</div>
+        <div class="prisma-bar" data-w="100" style="background:linear-gradient(90deg,#94a3b8,#64748b);">4,194 records</div>
+      </div>
+      <div class="prisma-step">
+        <div class="label">After title/abstract</div>
+        <div class="prisma-bar" data-w="11.5">483 papers <span class="excluded">− 3,711 excluded</span></div>
+      </div>
+      <div class="prisma-step">
+        <div class="label">Qualitative synthesis</div>
+        <div class="prisma-bar" data-w="1.29">54 studies <span class="excluded">− 429 (no <em>r</em>, no relax index, wrong age…)</span></div>
+      </div>
+      <div class="prisma-step">
+        <div class="label">Meta-analysis</div>
+        <div class="prisma-bar" data-w="0.74" style="background:linear-gradient(90deg,#10b981,#059669);">31 studies</div>
+      </div>
+      <p style="font-family:sans-serif; font-size:0.82rem; color:var(--gray); margin-top: 16px;">Bar widths are proportional to the number of papers. Across the 54 surviving studies: <strong>2,569 total participants</strong>.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-num">54</div>
+        <div class="stat-label">Studies in qualitative review (1940–2025)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">2,569</div>
+        <div class="stat-label">Participants pooled</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">31</div>
+        <div class="stat-label">In the meta-analysis</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">38</div>
+        <div class="stat-label">Different reference indices catalogued</div>
+      </div>
+    </div>
+
+    <p>The variety of "reference indices" researchers have used to ground-truth relaxation is itself a finding. Here's a slice:</p>
+
+    <div class="index-grid">
+      <div class="index-chip">
+        <div class="ix-cat">ECG</div>
+        <div class="ix-name">LF/HF ratio</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">ECG</div>
+        <div class="ix-name">Heart rate</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">ECG</div>
+        <div class="ix-name">Normalized HF</div>
+        <div class="ix-dir up">↑ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">ECG</div>
+        <div class="ix-name">SDNN</div>
+        <div class="ix-dir unclear">unclear</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">EDA</div>
+        <div class="ix-name">Skin conductance</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">Saliva</div>
+        <div class="ix-name">Cortisol</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">Saliva</div>
+        <div class="ix-name">α-Amylase</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">Self-report</div>
+        <div class="ix-name">VAS relaxation</div>
+        <div class="ix-dir up">↑ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">Self-report</div>
+        <div class="ix-name">POMS tension</div>
+        <div class="ix-dir down">↓ with relaxation</div>
+      </div>
+      <div class="index-chip">
+        <div class="ix-cat">Self-report</div>
+        <div class="ix-name">ARSQ comfort</div>
+        <div class="ix-dir up">↑ with relaxation</div>
+      </div>
+    </div>
+
+    <p style="font-family:sans-serif; font-size:0.85rem; color:var(--gray);">↑ goes up with more relaxation. ↓ goes down. "Unclear" indices were excluded from the meta-analysis to avoid sign-flips contaminating the pooled correlation.</p>
+  </section>
+
+  <!-- FOREST PLOT -->
+  <section>
+    <p class="section-label">Interactive: The Forest Plot</p>
+    <h2>The headline result — and why it disagrees with the popular story</h2>
+    <p>Each row is a sub-analysis. The square is the pooled correlation across studies for that combination of EEG band, channel region, and reference index type. The whiskers are the 95% confidence interval. <strong>If the whiskers cross zero, there's no real effect.</strong></p>
+
+    <div class="forest">
+      <div class="forest-controls">
+        <button class="forest-btn active" onclick="setForest('overall', this)">By frequency band</button>
+        <button class="forest-btn" onclick="setForest('alpha-region', this)">Alpha — by region</button>
+        <button class="forest-btn" onclick="setForest('alpha-region-ref', this)">Alpha — region × reference</button>
+      </div>
+      <div class="forest-title" id="forestTitle"></div>
+      <svg class="forest-plot" id="forestSvg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="forest-legend">
+        <span><span class="forest-legend-dot" style="background:var(--green);"></span>Significant (CI excludes 0)</span>
+        <span><span class="forest-legend-dot" style="background:#94a3b8;"></span>Not significant</span>
+      </div>
+    </div>
+
+    <div class="callout orange">
+      <strong>What jumps out:</strong> When you lump all alpha studies together, the average correlation with relaxation is <em>not</em> reliably positive (r = 0.13, 95% CI [−0.02, 0.28]). The naive "alpha = relaxed" story is, at best, weak. The story only resolves when you slice by <em>where</em> the electrode is and <em>which</em> reference index you compare against.
+    </div>
+  </section>
+
+  <!-- THREE ZONES -->
+  <section>
+    <p class="section-label">The Three Zones</p>
+    <h2>Three specific brain-and-measure combinations actually work</h2>
+    <p>After dicing the data along channel region and reference-index family, exactly <strong>three</strong> combinations emerged as reliably positive — and none of them overlap. The same brain region pairs with different ground-truth measures depending on where it sits. This is what makes relaxation look multifaceted rather than unitary.</p>
+
+    <div class="zones">
+      <div class="zone frontal">
+        <div class="zone-title">Frontal alpha</div>
+        <div class="zone-coupling">↔ All reference indices</div>
+        <div class="zone-r">r = 0.17</div>
+        <div class="zone-ci">95% CI [0.02, 0.32] · 7 studies, N=145</div>
+        <div class="zone-explain">Frontal cortex is implicated in <strong>top-down attention control</strong>. Relaxation may partly recruit that control system to dampen task-relevant processing — so frontal alpha rises across <em>any</em> way you operationalise being relaxed.</div>
+      </div>
+
+      <div class="zone central">
+        <div class="zone-title">Central alpha</div>
+        <div class="zone-coupling">↔ ECG-related (heart) measures</div>
+        <div class="zone-r">r = 0.24</div>
+        <div class="zone-ci">95% CI [0.08, 0.40] · 5 studies, N=128</div>
+        <div class="zone-explain">The central scalp sits over sensorimotor cortex, home to the <strong>Rolandic rhythm</strong>. When you stop planning movement, central alpha rises — and the parasympathetic nervous system shifts simultaneously, which is exactly what ECG measures pick up.</div>
+      </div>
+
+      <div class="zone occipital">
+        <div class="zone-title">Occipital alpha</div>
+        <div class="zone-coupling">↔ Questionnaires (felt relaxation)</div>
+        <div class="zone-r">r = 0.32</div>
+        <div class="zone-ci">95% CI [0.05, 0.60] · 4 studies, N=134</div>
+        <div class="zone-explain">Occipital cortex is visual cortex. Eyes-closed rest is the textbook trigger of strong occipital alpha. Subjective feeling of "I am relaxed" tracks it well — but objective heart-rate measures don't, suggesting visual cortex idling is felt but not necessarily reflected in autonomic tone.</div>
+      </div>
+    </div>
+
+    <div class="callout green">
+      <strong>The reframe:</strong> Relaxation isn't a single neural state. It's at least three loosely-coupled processes — attentional, motor, and visual — each leaving its own alpha signature, each best tracked by a different ground-truth measure. The "alpha = relaxed" folk theory was right that alpha matters, wrong that it's one thing.
+    </div>
+  </section>
+
+  <!-- WHY THIS MATTERS -->
+  <section>
+    <p class="section-label">Implications</p>
+    <h2>Why this should change how you build a relaxation gadget</h2>
+    <p>The market for consumer EEG devices — Muse, Flowtime, Neurosity, the alphabet soup of meditation headbands — runs on the assumption that you can put one or two sensors anywhere on the head and read out a "calm" score. This meta-analysis says: only if you pick the right pair of (sensor location, reference measure) does that score correspond to anything real.</p>
+
+    <div class="cards">
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">🎧</div>
+        <h3>If you build a consumer headband…</h3>
+        <div class="card-short">Match the sensor to the claim</div>
+        <div class="card-detail">
+          A device that claims to measure <em>felt</em> relaxation (the experience) should target occipital alpha. A device that claims to track <em>physiological</em> calm (heart rate, ANS) should target central alpha and pair it with PPG. A device that wants a single "relax score" needs frontal alpha — the most general but weakest of the three signals.
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">🧘</div>
+        <h3>If you run a neurofeedback study…</h3>
+        <div class="card-short">Specify which kind of relaxation you're after</div>
+        <div class="card-detail">
+          Conflating subjective and physiological relaxation has produced inconsistent results for decades. The paper recommends pre-registering both the EEG channel and the reference index, and choosing a pair that the meta-analysis flagged as coupled. Otherwise you're effectively running three independent experiments at once.
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-icon">⚠️</div>
+        <h3>If you read a "brain wave" headline…</h3>
+        <div class="card-short">Ask: where on the scalp, and against what?</div>
+        <div class="card-detail">
+          "Meditation boosts alpha" headlines almost never specify region or reference. This meta-analysis suggests the same generic claim can be true and false depending on those two parameters. The interesting question is never "is alpha higher?" but "<em>where</em> is alpha higher, and how does it relate to a measurable outcome?"
+        </div>
+        <div class="toggle-hint">Tap to expand →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIMITS -->
+  <section>
+    <p class="section-label">Limits of the evidence</p>
+    <h2>What this paper doesn't settle</h2>
+    <p style="margin-bottom: 20px;">The authors are unusually honest about the boundaries of their result. A few things still missing from the literature:</p>
+
+    <ul style="list-style: none; padding: 0;">
+      <li style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:14px 18px; margin-bottom:10px; font-family: sans-serif; font-size: 0.95rem;">
+        <strong style="color: var(--blue-dark);">Causality is open.</strong> Correlation between alpha and relaxation doesn't tell us whether alpha <em>causes</em> the relaxed state or merely reflects it. Targeted stimulation studies (TMS, tACS) are needed.
+      </li>
+      <li style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:14px 18px; margin-bottom:10px; font-family: sans-serif; font-size: 0.95rem;">
+        <strong style="color: var(--blue-dark);">No standard for "relaxation."</strong> Every reference index measures something slightly different. The whole field is essentially making bets on which proxy is closest to the ground truth — and there's no agreement.
+      </li>
+      <li style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:14px 18px; margin-bottom:10px; font-family: sans-serif; font-size: 0.95rem;">
+        <strong style="color: var(--blue-dark);">Frequency band ratios were excluded.</strong> Things like α/β power ratio — used in many studies — had too few replications to meta-analyse. Splitting alpha into low vs. high sub-bands also remains unexplored at scale.
+      </li>
+      <li style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:14px 18px; margin-bottom:10px; font-family: sans-serif; font-size: 0.95rem;">
+        <strong style="color: var(--blue-dark);">Publication bias.</strong> Egger's test flagged significant bias in the theta and beta bands. The alpha band funnel plot looked clean, but the field's tendency to publish positive findings can't be ruled out entirely.
+      </li>
+      <li style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:14px 18px; font-family: sans-serif; font-size: 0.95rem;">
+        <strong style="color: var(--blue-dark);">Few preregistered studies.</strong> 37 of 54 studies could not be assessed for selective reporting because they weren't preregistered. Risk of bias was rated "unclear" by default.
+      </li>
+    </ul>
+  </section>
+
+  <!-- QUIZ -->
+  <section>
+    <p class="section-label">Check Your Understanding</p>
+    <h2>Quick quiz</h2>
+
+    <div class="quiz-box" id="q1">
+      <div class="quiz-q">1. The meta-analysis pooled across 25 alpha-band studies and found r = 0.13 [−0.02, 0.28]. Why did the authors not stop there and declare "alpha tracks relaxation"?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz('q1', this, false)">Because r = 0.13 is too small to matter in practice.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q1', this, true)">Because the 95% CI crosses zero — the average correlation isn't statistically distinguishable from no correlation.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q1', this, false)">Because they didn't use Fisher's z transformation.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q1', this, false)">Because the studies had too few participants to detect alpha.</button>
+      </div>
+      <div class="quiz-feedback" id="q1-fb"></div>
+    </div>
+
+    <div class="quiz-box" id="q2">
+      <div class="quiz-q">2. Which of the three significant zones would you target if you were building a <em>physiological</em> relaxation tracker that pairs EEG with a heart-rate sensor?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz('q2', this, false)">Occipital alpha (O1, O2) — it had the strongest correlation.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q2', this, true)">Central alpha (C3, Cz, C4) — that's the only region coupled to ECG measures.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q2', this, false)">Frontal alpha (F3, Fz, F4) — frontal is closest to attention.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q2', this, false)">Parietal alpha — it's halfway between everything.</button>
+      </div>
+      <div class="quiz-feedback" id="q2-fb"></div>
+    </div>
+
+    <div class="quiz-box" id="q3">
+      <div class="quiz-q">3. The authors found <em>no</em> reliable correlation between relaxation and theta, beta, delta, or gamma band power. Of the explanations below, which is the one the paper most directly supports?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz('q3', this, false)">Those bands probably don't exist in resting EEG.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q3', this, false)">Those bands track stress, the opposite of relaxation.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q3', this, true)">There weren't enough studies of those bands at common channel/reference combinations to detect an effect — they're under-investigated, not necessarily uninvolved.</button>
+        <button class="quiz-opt" onclick="answerQuiz('q3', this, false)">Theta and beta are dominated by muscle artifacts, so they're uninterpretable.</button>
+      </div>
+      <div class="quiz-feedback" id="q3-fb"></div>
+    </div>
+  </section>
+
+</div>
+</div>
+<!-- ============================== END NORMAL MODE ============================== -->
+
+
+<!-- ============================== BRAIN DEAD MODE ============================== -->
+<div id="tab-ez" class="tab-panel">
+  <div class="ez-hero">
+    <h2>The whole paper in 5 minutes 🧠💥</h2>
+    <p>No jargon. No equations. Just the story.</p>
+  </div>
+
+  <div class="container">
+
+    <div class="ez-section">
+      <p class="ez-big"><b>Step 1.</b> Stick electrodes on someone's head. They pick up tiny electrical waves the brain makes.</p>
+      <p class="ez-big"><b>Step 2.</b> The waves come in different speeds. The medium-slow ones — about 10 wiggles per second — are called <b>alpha waves</b>.</p>
+      <p class="ez-big"><b>Step 3.</b> For 100 years, people have said: lots of alpha = you are chilling out.</p>
+
+      <div class="ez-analogy">
+        <div class="label">Analogy</div>
+        Imagine someone walking into a room and announcing "the lights are flickering — therefore the bulb is broken." Maybe! But maybe the wiring is loose. Or the switch. Or the building's power. You can't tell from the flicker alone <em>what part of the system</em> is misbehaving. That's been the problem with alpha and relaxation: a vague global claim that doesn't say where, or compared to what.
+      </div>
+    </div>
+
+    <div class="ez-section">
+      <p class="ez-big">So <b>five scientists</b> rolled up their sleeves and read <b>every study ever published</b> on alpha-and-relaxation. Well, almost — 4,194 candidates, 54 that survived their quality filters, 31 that had numbers good enough to combine.</p>
+
+      <div class="ez-emoji-block">
+        <div class="row"><span class="em">📚</span><span>They gathered every study where someone wore EEG and someone also measured relaxation somehow.</span></div>
+        <div class="row"><span class="em">🧮</span><span>They merged the numbers across studies with a statistical machine called a <b>meta-analysis</b>.</span></div>
+        <div class="row"><span class="em">🗺️</span><span>Then they sliced the result by <em>where on the head</em> the electrodes were, and by <em>what relaxation actually means</em> in each study.</span></div>
+      </div>
+    </div>
+
+    <div class="ez-section">
+      <p class="ez-big">Here's what they found.</p>
+      <p class="ez-big">If you just take all the alpha studies and average them, the correlation between alpha and relaxation is… <b>kind of meh</b>. Maybe positive, but the error bars touch zero. The popular "alpha = chill" story is mostly vibes.</p>
+
+      <p class="ez-big">BUT — when they sliced the data by location, three specific spots <b>lit up</b>:</p>
+
+      <div class="ez-emoji-block">
+        <div class="row"><span class="em">🎯</span><span><b>Front of the head + any measure</b> → mild correlation. Front of the brain runs attention; relaxing means dialing attention down.</span></div>
+        <div class="row"><span class="em">❤️</span><span><b>Middle of the head + heart-rate measures</b> → solid correlation. The middle of the brain runs movement; quieting movement quiets the heart too.</span></div>
+        <div class="row"><span class="em">👁️</span><span><b>Back of the head + "how relaxed do you feel?" surveys</b> → strongest correlation. The back of the brain handles vision; eyes-closed = vision idling = feels calm.</span></div>
+      </div>
+
+      <div class="ez-analogy">
+        <div class="label">The big reframe</div>
+        Relaxation is not one thing. It's <b>at least three different things wearing the same word</b>: your attention calming down, your body calming down, and your felt sense of being at ease. Each one has its own brain signature in its own place. Trying to measure "relaxation" with a single sensor is like trying to measure "hunger" with a single number — possible, but you'll miss most of the picture.
+      </div>
+    </div>
+
+    <div class="ez-section">
+      <div class="ez-tldr">
+        <div class="tl">TL;DR</div>
+        <p>For a century, people thought "alpha brain waves = relaxed." A new meta-analysis of 54 studies says: it's true, but only in three very specific combinations. The front of the brain tracks general relaxation. The middle tracks the body. The back tracks the feeling. There is no one "calm" signal — relaxation is three things, not one.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ============================== END BRAIN DEAD MODE ============================== -->
+
+
+<!-- ============================== BRAINSTORM MODE ============================== -->
+<div id="tab-brainstorm" class="tab-panel">
+  <div class="bs-hero">
+    <h2>💡 What this opens up</h2>
+    <p>If relaxation is three signals, not one — here's what we could build next.</p>
+  </div>
+
+  <div class="container">
+
+    <div class="ez-section">
+      <div class="bs-idea">
+        <div class="bs-tag">Product</div>
+        <h3>A three-channel "calm score" headband</h3>
+        <p>One frontal, one central, one occipital electrode — and a PPG (heart-rate) sensor. Surface three independent scores: <em>cognitive calm</em>, <em>physiological calm</em>, <em>felt calm</em>. Users see when the three diverge — e.g., body is calm but mind is racing — and the device tells them which to address. Existing single-sensor headbands collapse the three into one number, hiding exactly the signal the user needs.</p>
+      </div>
+
+      <div class="bs-idea">
+        <div class="bs-tag">Research</div>
+        <h3>Test the causal direction with tACS</h3>
+        <p>The meta-analysis can only show correlation. Use transcranial alternating current stimulation to externally entrain alpha at each of the three regions separately. Does driving frontal alpha at 10 Hz reduce reported stress? Does driving central alpha at 10 Hz lower heart rate? If the regions truly map to distinct facets of relaxation, the causal arrows should differ in direction and magnitude.</p>
+      </div>
+
+      <div class="bs-idea">
+        <div class="bs-tag">Method</div>
+        <h3>Split alpha into low (8–10 Hz) and high (10–13 Hz)</h3>
+        <p>The authors flag that alpha probably isn't one band but two. Low alpha tracks general arousal; high alpha tracks attention. A follow-up meta-analysis that retains the sub-band split could explain part of the noisy signal in the current pooled estimate — and reveal whether the three regional couplings further differentiate by sub-band.</p>
+      </div>
+
+      <div class="bs-idea">
+        <div class="bs-tag">Clinical</div>
+        <h3>Targeted neurofeedback for insomnia, anxiety, PTSD</h3>
+        <p>Existing alpha neurofeedback protocols train "alpha up" without specifying a region. If insomnia is mostly a vision-cortex-can't-shut-down problem, occipital protocols should help most. If anxiety is a top-down-control problem, frontal should help most. The current literature is too coarse to test this — but the three-zone result gives a clear way to design the next generation of trials.</p>
+      </div>
+
+      <div class="bs-idea">
+        <div class="bs-tag">Pop-sci</div>
+        <h3>Retire the phrase "alpha brain waves" in marketing copy</h3>
+        <p>It promises one thing and means three. Replacing it with "frontal calm," "central calm," and "felt calm" would actually be more accurate and more interesting. The meta-analysis is a chance to update the script — but only if people writing about brain-waves bother to read systematic reviews instead of news releases.</p>
+      </div>
+
+      <div class="bs-idea">
+        <div class="bs-tag">Open question</div>
+        <h3>Why doesn't the occipital signal correlate with heart rate?</h3>
+        <p>The most surprising negative in the paper: occipital alpha tracks subjective relaxation but not ECG. Why would visual-cortex idling feel like calm without affecting autonomic tone? Possibilities: (a) closing one's eyes is the act that drives both occipital alpha and the subjective rating, but doesn't reliably shift heart rate; (b) the felt sense of calm precedes any physiological change by minutes; (c) the questionnaire measures something the body doesn't really track. All are testable.</p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<!-- ============================== END BRAINSTORM MODE ============================== -->
+
+
+<div class="bottom-nav">
+  <h3>Sugimoto et al. (2025)</h3>
+  <p>"Electroencephalographic Biomarkers of Relaxation: A Systematic Review and Meta-analysis"</p>
+  <p><i>Journal of Cognitive Neuroscience</i> 38(3), pp. 598–628 · <a href="https://doi.org/10.1162/JOCN.a.2392" target="_blank">doi.org/10.1162/JOCN.a.2392</a></p>
+  <p style="margin-top: 14px; opacity: 0.4;">Interactive explainer · CC BY 4.0 · An entry in the <i>paras-interactive-html</i> series</p>
+</div>
+
+<script>
+// ===== TABS =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ===== CARDS =====
+function toggleCard(card) {
+  card.classList.toggle('open');
+  const hint = card.querySelector('.toggle-hint');
+  if (hint) hint.textContent = card.classList.contains('open') ? 'Tap to close ↑' : 'Tap to expand →';
+}
+
+function setBandsMode(mode, btn) {
+  const plain = document.getElementById('bandsTablePlain');
+  const science = document.getElementById('bandsTableScience');
+  if (!plain || !science) return;
+  if (mode === 'science') {
+    plain.classList.add('hidden');
+    science.classList.remove('hidden');
+  } else {
+    science.classList.add('hidden');
+    plain.classList.remove('hidden');
+  }
+  document.querySelectorAll('.bands-mode-toggle button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ===== TERM TOOLTIP (custom — fast hover + mobile tap) =====
+(function() {
+  const tip = document.createElement('div');
+  tip.className = 'term-tip';
+  document.body.appendChild(tip);
+  let activeTerm = null;
+
+  document.querySelectorAll('.term[title]').forEach(t => {
+    t.setAttribute('data-def', t.getAttribute('title'));
+    t.removeAttribute('title');
+  });
+
+  function showTip(term) {
+    const text = term.getAttribute('data-def');
+    if (!text) return;
+    tip.textContent = text;
+    const r = term.getBoundingClientRect();
+    let left = r.left + window.scrollX;
+    let top = r.bottom + window.scrollY + 10;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+    tip.classList.add('visible');
+    requestAnimationFrame(() => {
+      const tr = tip.getBoundingClientRect();
+      if (tr.right > window.innerWidth - 12) {
+        tip.style.left = (window.innerWidth - tr.width - 12 + window.scrollX) + 'px';
+      }
+    });
+    if (activeTerm && activeTerm !== term) activeTerm.classList.remove('active');
+    term.classList.add('active');
+    activeTerm = term;
+  }
+  function hideTip() {
+    tip.classList.remove('visible');
+    if (activeTerm) activeTerm.classList.remove('active');
+    activeTerm = null;
+  }
+
+  document.addEventListener('mouseover', e => {
+    const term = e.target.closest('.term');
+    if (term) showTip(term);
+  });
+  document.addEventListener('mouseout', e => {
+    const term = e.target.closest('.term');
+    if (!term) return;
+    const next = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.term');
+    if (next === term) return;
+    hideTip();
+  });
+  document.addEventListener('click', e => {
+    const term = e.target.closest('.term');
+    if (term) {
+      e.preventDefault();
+      if (activeTerm === term) hideTip(); else showTip(term);
+    } else if (activeTerm) {
+      hideTip();
+    }
+  });
+  window.addEventListener('scroll', () => { if (activeTerm) hideTip(); }, { passive: true });
+})();
+
+// ===== BAND EXPLORER =====
+const BAND_DATA = {
+  delta: {
+    freq: 2, label: '~2 Hz · Delta', color: '#7c3aed',
+    desc: 'Slow, large waves seen in deep dreamless sleep. In awake adults they barely show up at all.',
+    verdict: { tone: 'weak', text: 'Meta-analysis: r ≈ 0.06, n.s. — no relationship to relaxation. Probably not relevant for awake-state work.' }
+  },
+  theta: {
+    freq: 5, label: '~5 Hz · Theta', color: '#0d9488',
+    desc: 'Drowsy, meditative, or "between awake and asleep." Famously elevated in deep meditators.',
+    verdict: { tone: 'maybe', text: 'Meta-analysis: r ≈ 0.20, n.s. — directionally positive but the CI crosses zero. Strong heterogeneity across studies (Q = 107, p < .01). Promising but inconclusive.' }
+  },
+  alpha: {
+    freq: 10, label: '~10 Hz · Alpha', color: '#2563eb',
+    desc: 'The famous "relaxed wakefulness" rhythm. Most prominent over the back of the head when the eyes are closed.',
+    verdict: { tone: 'yes', text: 'Meta-analysis: r ≈ 0.13 overall (n.s.), but significant in three specific channel-region × reference-index combinations. The only band that survives slicing.' }
+  },
+  beta: {
+    freq: 22, label: '~22 Hz · Beta', color: '#dc2626',
+    desc: 'Fast, low-amplitude oscillations associated with active concentration, problem-solving, or anxious vigilance.',
+    verdict: { tone: 'weak', text: 'Meta-analysis: r ≈ −0.01, n.s. — essentially zero correlation. Beta was a classic candidate for an "anxiety" signal but the pooled evidence doesn\'t support it.' }
+  },
+  gamma: {
+    freq: 40, label: '~40 Hz · Gamma', color: '#db2777',
+    desc: 'Very fast oscillations linked to fine-grained perception, binding, and conscious awareness.',
+    verdict: { tone: 'weak', text: 'Only 3 studies usable. Pooled r ≈ −1.09 (suspect — wide CI, tiny N). Verdict: too little data to say anything reliable.' }
+  }
+};
+
+function setBand(name, btn) {
+  document.querySelectorAll('.band-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const b = BAND_DATA[name];
+  drawBandWave(b.freq, b.color);
+  const info = document.getElementById('bandInfo');
+  info.innerHTML = `
+    <div><span class="freq-label">${b.label}</span>${b.desc}</div>
+    <div class="verdict ${b.verdict.tone}"><b>Meta-analysis verdict:</b> ${b.verdict.text}</div>
+  `;
+}
+
+function drawBandWave(freq, color) {
+  const path = document.getElementById('bandPath');
+  path.setAttribute('stroke', color);
+  const W = 600, H = 100, cy = H / 2;
+  const A = freq <= 5 ? 36 : freq <= 13 ? 28 : freq <= 30 ? 18 : 12;
+  // map freq to wave cycles per width — slow bands get few cycles, fast many
+  const cycles = freq <= 5 ? freq * 0.6 : freq <= 13 ? freq * 0.45 : freq <= 30 ? freq * 0.25 : freq * 0.15;
+  let d = `M 0 ${cy}`;
+  for (let x = 1; x <= W; x++) {
+    const y = cy - A * Math.sin((x / W) * cycles * 2 * Math.PI);
+    d += ` L ${x} ${y.toFixed(2)}`;
+  }
+  path.setAttribute('d', d);
+}
+
+// ===== HEAD MAP =====
+const REGION_DATA = {
+  prefrontal: {
+    title: 'Prefrontal (Fp1, Fp2)',
+    sub: '2 electrodes · executive control · top of forehead',
+    finding: { isNull: true, text: 'Prefrontal alpha showed no significant correlation with any relaxation index (r = 0.08, n.s.). Less convincing than the broader "frontal" group.' },
+    zoneColor: '#7c3aed20'
+  },
+  frontal: {
+    title: 'Frontal (F3, Fz, F4, F7, F8)',
+    sub: '5 electrodes · attention &amp; control',
+    finding: { isNull: false, text: '✓ Frontal alpha correlates with all reference indices pooled together. r = 0.17 [0.02, 0.32]. Interpreted as alpha tracking top-down attention modulation.' },
+    zoneColor: '#7c3aed40'
+  },
+  central: {
+    title: 'Central (C3, Cz, C4)',
+    sub: '3 electrodes · sensorimotor cortex · Rolandic rhythm',
+    finding: { isNull: false, text: '✓ Central alpha correlates specifically with ECG-related measures (heart rate, HRV). r = 0.24 [0.08, 0.40]. Likely reflects motor-cortex idling co-occurring with parasympathetic shifts.' },
+    zoneColor: '#0d948840'
+  },
+  parietal: {
+    title: 'Parietal (P3, Pz, P4)',
+    sub: '3 electrodes · spatial attention &amp; integration',
+    finding: { isNull: true, text: 'Parietal alpha did not show a significant relaxation correlation in this meta-analysis. Surprising given its role in attention — possibly under-investigated.' },
+    zoneColor: '#cbd5e120'
+  },
+  occipital: {
+    title: 'Occipital (O1, O2)',
+    sub: '2 electrodes · visual cortex · classical alpha source',
+    finding: { isNull: false, text: '✓ Occipital alpha correlates specifically with questionnaire-based ("felt") relaxation. r = 0.32 [0.05, 0.60] — the strongest of the three significant pairings.' },
+    zoneColor: '#db277740'
+  },
+  temporal: {
+    title: 'Temporal (T3, T4, T5, T6)',
+    sub: '4 electrodes · sides of head · rarely used in this literature',
+    finding: { isNull: true, text: 'Temporal electrodes were too rarely included for the meta-analysis to detect any effect. Excluded as an edge case.' },
+    zoneColor: '#cbd5e120'
+  }
+};
+
+function selectRegion(name, el) {
+  // clear all electrode 'active' state
+  document.querySelectorAll('.electrode').forEach(e => e.classList.remove('active'));
+  // activate all electrodes in this region
+  document.querySelectorAll(`.electrode[data-region="${name}"]`).forEach(e => e.classList.add('active'));
+  // update zone fills
+  ['prefrontal','frontal','central','parietal','occipital'].forEach(r => {
+    document.getElementById('zone-' + r).setAttribute('fill', r === name ? REGION_DATA[r].zoneColor : 'transparent');
+  });
+
+  const data = REGION_DATA[name];
+  const info = document.getElementById('regionInfo');
+  info.innerHTML = `
+    <div class="region-title">${data.title}</div>
+    <div class="region-sub">${data.sub}</div>
+    <div class="region-finding ${data.finding.isNull ? 'null' : ''}">${data.finding.text}</div>
+  `;
+}
+
+// ===== FOREST PLOT =====
+const FOREST_DATA = {
+  overall: {
+    title: 'Pooled correlation (r) between EEG band power and relaxation across all studies',
+    xMin: -1.5, xMax: 1.5,
+    rows: [
+      { label: 'Delta',         r: 0.06, lo: -0.18, hi: 0.30, n: '5 studies, N=143' },
+      { label: 'Theta',         r: 0.20, lo: -0.10, hi: 0.50, n: '10 studies, N=240' },
+      { label: 'Alpha (all)',   r: 0.13, lo: -0.02, hi: 0.28, n: '25 studies, N=700' },
+      { label: 'Beta',          r: -0.01, lo: -0.10, hi: 0.07, n: '12 studies, N=353' },
+      { label: 'Rel. gamma',    r: -1.09, lo: -2.82, hi: 0.63, n: '3 studies, N=24' }
+    ]
+  },
+  'alpha-region': {
+    title: 'Alpha power × scalp region (vs. any reference index)',
+    xMin: -1.0, xMax: 1.0,
+    rows: [
+      { label: 'Prefrontal',    r: 0.08, lo: -0.18, hi: 0.34, n: '5 studies, N=142' },
+      { label: 'Frontal',       r: 0.17, lo: 0.02,  hi: 0.32, n: '7 studies, N=145', sig: true },
+      { label: 'Central',       r: 0.23, lo: 0.08,  hi: 0.38, n: '7 studies, N=153', sig: true },
+      { label: 'Parietal',      r: 0.07, lo: -1.09, hi: 1.23, n: '4 studies, N=99' },
+      { label: 'Occipital',     r: 0.18, lo: -0.23, hi: 0.60, n: '8 studies, N=218' }
+    ]
+  },
+  'alpha-region-ref': {
+    title: 'Alpha × region × reference-index type — the headline result',
+    xMin: -1.0, xMax: 1.0,
+    rows: [
+      { label: 'Frontal × ECG',         r: 0.17, lo: -0.11, hi: 0.45, n: '6 studies, N=131' },
+      { label: 'Central × ECG',         r: 0.24, lo: 0.08,  hi: 0.40, n: '5 studies, N=128', sig: true },
+      { label: 'Occipital × ECG',       r: 0.16, lo: -0.38, hi: 0.70, n: '6 studies, N=154' },
+      { label: 'Frontal × Q-naire',     r: 0.08, lo: -0.26, hi: 0.43, n: '3 studies, N=117' },
+      { label: 'Central × Q-naire',     r: -0.27, lo: -7.09, hi: 6.56, n: '2 studies, N=25' },
+      { label: 'Occipital × Q-naire',   r: 0.32, lo: 0.05,  hi: 0.60, n: '4 studies, N=134', sig: true },
+      { label: 'All × Skin conduct.',   r: -0.09, lo: -0.34, hi: 0.17, n: '2 studies, N=88' }
+    ]
+  }
+};
+
+function setForest(key, btn) {
+  document.querySelectorAll('.forest-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawForest(FOREST_DATA[key]);
+}
+
+function drawForest(data) {
+  const title = document.getElementById('forestTitle');
+  title.textContent = data.title;
+
+  const svg = document.getElementById('forestSvg');
+  // Sizing
+  const rowH = 38;
+  const padTop = 20, padBottom = 50, padLeft = 170, padRight = 30;
+  const innerW = 600 - padLeft - padRight;
+  const innerH = data.rows.length * rowH;
+  const totalH = padTop + innerH + padBottom;
+  svg.setAttribute('viewBox', `0 0 600 ${totalH}`);
+
+  const xMin = data.xMin, xMax = data.xMax;
+  const xScale = v => padLeft + ((v - xMin) / (xMax - xMin)) * innerW;
+
+  let out = '';
+
+  // X axis grid
+  const ticks = [];
+  const step = (xMax - xMin) <= 2 ? 0.5 : 0.5;
+  for (let v = xMin; v <= xMax + 0.001; v += step) {
+    ticks.push(Math.round(v * 10) / 10);
+  }
+  ticks.forEach(t => {
+    const x = xScale(t);
+    out += `<line x1="${x}" y1="${padTop}" x2="${x}" y2="${padTop + innerH}" stroke="${t === 0 ? '#94a3b8' : '#f1f5f9'}" stroke-width="${t === 0 ? 1.5 : 1}" stroke-dasharray="${t === 0 ? '4,3' : ''}"/>`;
+    out += `<text x="${x}" y="${padTop + innerH + 18}" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#64748b">${t}</text>`;
+  });
+
+  // X axis title
+  out += `<text x="${padLeft + innerW / 2}" y="${padTop + innerH + 40}" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#475569">Fisher z-transformed correlation coefficient (r)</text>`;
+
+  // Rows
+  data.rows.forEach((row, i) => {
+    const y = padTop + i * rowH + rowH / 2;
+    const color = row.sig ? '#059669' : '#94a3b8';
+
+    // label
+    out += `<text x="${padLeft - 12}" y="${y - 4}" text-anchor="end" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="${row.sig ? '700' : '500'}">${row.label}</text>`;
+    out += `<text x="${padLeft - 12}" y="${y + 10}" text-anchor="end" font-family="sans-serif" font-size="9" fill="#94a3b8">${row.n}</text>`;
+
+    // whisker
+    const xLo = Math.max(padLeft, xScale(row.lo));
+    const xHi = Math.min(padLeft + innerW, xScale(row.hi));
+    out += `<line x1="${xLo}" y1="${y}" x2="${xHi}" y2="${y}" stroke="${color}" stroke-width="2"/>`;
+    out += `<line x1="${xLo}" y1="${y - 4}" x2="${xLo}" y2="${y + 4}" stroke="${color}" stroke-width="2"/>`;
+    out += `<line x1="${xHi}" y1="${y - 4}" x2="${xHi}" y2="${y + 4}" stroke="${color}" stroke-width="2"/>`;
+
+    // square point
+    const xR = xScale(Math.max(xMin, Math.min(xMax, row.r)));
+    out += `<rect x="${xR - 6}" y="${y - 6}" width="12" height="12" fill="${color}" stroke="#fff" stroke-width="1.5"/>`;
+
+    // r value on the right
+    out += `<text x="${padLeft + innerW + 6}" y="${y + 4}" font-family="sans-serif" font-size="11" fill="${row.sig ? '#059669' : '#64748b'}" font-weight="${row.sig ? '700' : '500'}">r=${row.r.toFixed(2)}</text>`;
+  });
+
+  svg.innerHTML = out;
+}
+
+// ===== PRISMA BAR ANIMATION =====
+function animatePrismaBars() {
+  const bars = document.querySelectorAll('.prisma-bar');
+  bars.forEach((bar, i) => {
+    const w = bar.dataset.w;
+    setTimeout(() => { bar.style.width = w + '%'; }, 200 + i * 200);
+  });
+}
+// Trigger when scrolled into view
+const prismaObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animatePrismaBars();
+      prismaObserver.disconnect();
+    }
+  });
+}, { threshold: 0.2 });
+const prismaEl = document.querySelector('.prisma');
+if (prismaEl) prismaObserver.observe(prismaEl);
+
+// ===== QUIZ =====
+const quizFeedback = {
+  q1: {
+    correct: "Correct. The CI [−0.02, 0.28] straddles zero — meaning the data are consistent with no real correlation. That's why the authors had to slice by region and reference-index to get a signal.",
+    wrong: "Not quite. The size of r matters less here than its confidence interval. r = 0.13 might be meaningful — but with a CI that crosses zero, we can't rule out that the true correlation is exactly nothing."
+  },
+  q2: {
+    correct: "Exactly. Central alpha (r = 0.24 [0.08, 0.40]) is the only region that reliably tracks ECG-related relaxation measures. Pairing C3/Cz/C4 with a PPG sensor would be the principled choice.",
+    wrong: "Not the best pick. Occipital alpha was actually strongest, but only for questionnaire-based measures, not heart rate. Central alpha is the one tied to ECG."
+  },
+  q3: {
+    correct: "Right. The paper is explicit that null results in theta/beta/delta/gamma reflect insufficient data in the right combinations — not evidence that those bands don't matter for relaxation. The field needs more studies, not stronger conclusions.",
+    wrong: "Not quite. The paper doesn't claim those bands are biologically irrelevant. It claims there's not enough evidence yet — too few studies pooling the right combinations. The signal might be there, just not detectable yet."
+  }
+};
+function answerQuiz(qid, btn, isCorrect) {
+  const box = document.getElementById(qid);
+  const opts = box.querySelectorAll('.quiz-opt');
+  const fb = document.getElementById(qid + '-fb');
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = (isCorrect ? '✓ ' : '✗ ') + (isCorrect ? quizFeedback[qid].correct : quizFeedback[qid].wrong);
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+}
+
+// ===== INIT =====
+setBand('alpha', document.querySelector('.band-tab.active'));
+selectRegion('occipital', null); // start with the strongest finding
+setForest('overall', document.querySelector('.forest-btn.active'));
+</script>
+
+<script src="/lib/feedback.js" defer></script>
+</body>
+</html>
