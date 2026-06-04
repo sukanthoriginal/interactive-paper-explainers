@@ -1,22 +1,30 @@
 ---
 name: interactive-paper-explainers
-description: Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a two-mode page (braindead first, braingood second) with embedded interactive widgets, animated visualizations, and quiz checks. Trigger phrases — "do this paper", "explain this paper", "make an explainer for this paper", "interactive version of this paper", followed by a PDF path or arxiv link.
+description: Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a default three-tab page: braindead first, braingood second, comment/feedback third. Trigger phrases — "do this paper", "explain this paper", "make an explainer for this paper", "interactive version of this paper", followed by a PDF path or arxiv link.
 ---
 
 # Interactive Paper Explainers
 
-Generates a single-file HTML explainer of an academic paper. Two modes, in this order. **Tab labels are always lowercase, no emoji, no "Mode" suffix:**
+Generates a single-file HTML explainer of an academic paper. The default page always has three tabs, in this order. **Tab labels are always lowercase, no emoji, no "Mode" suffix:**
 
 1. **braindead** — the entire paper's story in 5 minutes, no jargon, heavy use of analogies and emoji, ends in a TL;DR card.
 2. **braingood** — the rigorous version: key concepts, study design, interactive visualizations of the data, results, limits, quiz.
+3. **comment/feedback** — a built-in review tab that explains how to highlight text, select elements, submit feedback batches, and open the floating feedback panel.
 
-An optional third tab, **brainstorm**, can be added for research-direction riffs that go beyond the paper itself.
+An optional fourth tab, **brainstorm**, can be added for research-direction riffs that go beyond the paper itself, but never replace or reorder the first three tabs.
 
-The three canonical tab labels — **`braingood`**, **`braindead`**, **`brainstorm`** — are the ONLY allowed display strings for the tab bar across every paper in this repo.
+The three canonical default tab labels — **`braindead`**, **`braingood`**, **`comment/feedback`** — are required across every paper in this repo, in that order. If an optional brainstorming tab is added, its display label is **`brainstorm`** and it comes after `comment/feedback`.
 
-The output is one `index.html` file that lives next to the paper PDF (e.g. `papers/paperN/index.html`). Self-contained — no build step, no dependencies, just open it in a browser.
+Hard default rule:
+- Every generated explainer MUST include all three default tabs: `braindead`, `braingood`, and `comment/feedback`.
+- The page MUST open with `braindead` active by default.
+- The `comment/feedback` tab MUST be present even before the feedback runtime is injected; use a short placeholder until Step 5 wires the real feedback panel.
+- `brainstorm` is never the third default tab. It is optional fourth-tab content only.
+- After `braingood` is built, run the bundled feedback injection/server workflow by default unless the user explicitly asks for no feedback runtime.
 
-> **Forked from / inspired by** Paras Chopra's [`make-pages-interactive`](https://github.com/paraschopra/make-pages-interactive) — that skill turns any folder of HTML into a commenting surface. This skill produces the HTML to *feed* it. The two compose: build an explainer with this skill, then run `make-pages-interactive` on the folder to leave inline comments and iterate.
+The output is one `index.html` file that lives next to the paper PDF (e.g. `papers/paperN/index.html`). The explainer content is self-contained and can be opened directly. The default `comment/feedback` workflow uses the bundled local feedback server so comments can be saved to disk.
+
+> **Forked from / inspired by** Paras Chopra's [`make-pages-interactive`](https://github.com/paraschopra/make-pages-interactive) — that skill turns any folder of HTML into a commenting surface. This skill produces the HTML to *feed* it. The two compose by default: build an explainer with this skill, then wire the bundled feedback runtime so readers can leave inline comments and iterate.
 
 ---
 
@@ -31,9 +39,9 @@ User points at a paper (PDF on disk, arxiv link, or a paper-shaped DOI) and says
 
 ---
 
-## The workflow — **always ask approval before each mode**
+## The workflow — **always ask approval before each explanation mode**
 
-This is the rule: **never build a mode without first confirming with the user that they want it built right now.** The modes are independent and the user may want to ship one before starting the next, or skip one entirely.
+This is the rule: **never build an explanation mode without first confirming with the user that they want it built right now.** The explanation modes are independent and the user may want to ship one before starting the next, or skip one entirely. The `comment/feedback` tab is page chrome, not an explanation mode; include it in the shell by default.
 
 ### Step 1 — Read the paper end to end
 
@@ -46,28 +54,28 @@ Use the Read tool with `pages: "1-N"` ranges to walk through the whole PDF. Don'
 
 Take internal notes; do not produce the HTML yet.
 
-### Step 2 — Ask the user which mode to start with
+### Step 2 — Ask the user which explanation mode to start with
 
-Default sequence is **braindead first, then braingood**. Confirm before starting:
+Default sequence is **braindead first, then braingood, with comment/feedback present as the third tab throughout**. Confirm before starting:
 
-> "I've read the paper. Default plan is braindead first (the 5-minute jargon-free story), then braingood (the rigorous version with interactive widgets). Do you want me to start with braindead, or change the plan?"
+> "I've read the paper. Default plan is braindead first (the 5-minute jargon-free story), then braingood (the rigorous version with interactive widgets), with comment/feedback as the third tab. Do you want me to start with braindead, or change the plan?"
 
 If they say "go" or "yes" — proceed to braindead.
 If they want to skip / reorder / only do one — adapt.
 
 ### Step 3 — Build braindead
 
-Produce just the braindead section of the HTML (with the shell of the page — `<html>`, `<head>`, hero, tab bar with both tabs visible but only braindead populated, footer). This way the file is openable and reviewable on its own.
+Produce just the braindead section of the HTML (with the shell of the page — `<html>`, `<head>`, hero, tab bar with all three default tabs visible, footer). `braindead` is active and populated. `braingood` may be a short "not built yet" placeholder. `comment/feedback` should be present as a short placeholder explaining that feedback will be enabled after the page is wired. This way the file is openable and reviewable on its own.
 
 The tab bar must render exactly:
 
 ```html
-<button class="tab-btn active" onclick="switchTab('normal', this)">braingood</button>
-<button class="tab-btn" onclick="switchTab('ez', this)">braindead</button>
-<button class="tab-btn" onclick="switchTab('brainstorm', this)">brainstorm</button>
+<button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+<button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+<button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
 ```
 
-(Internal tab IDs `normal` / `ez` / `brainstorm` are kept for historical reasons — only the visible label text uses the new names.)
+(Internal tab IDs `ez` / `normal` / `feedback` are used for the default tabs. If an optional brainstorming tab is added later, use internal ID `brainstorm` and visible label `brainstorm` after `comment/feedback`.)
 
 braindead structure:
 - A pink/purple gradient hero (`linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)`) with title and "The whole paper in 5 minutes 🧠💥" subtitle
@@ -109,17 +117,15 @@ Only after explicit approval. braingood goes in the `#tab-normal` panel and uses
 
 **Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — braindead already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
 
-When done, **ask before proceeding** to any optional extras:
+When done, wire the comment/feedback runtime by default, then **ask before proceeding** to any optional extras:
 
-> "braingood is in. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
+> "braingood is in and comment/feedback is wired. Page is complete. Anything else — a brainstorm tab, additional widgets, or are we done?"
 
-### Step 5 — Wrap up: turn the page into a commenting surface
+### Step 5 — Wire comment/feedback by default
 
-The commenting runtime ships with this skill (vendored from `make-pages-interactive` under MIT). When the explainer is in good shape, offer to wire it up:
+The commenting runtime ships with this skill (vendored from `make-pages-interactive` under MIT). After `braingood` is built, wire it up by default unless the user explicitly asks for a clean standalone HTML file with no feedback runtime.
 
-> "Want me to enable inline commenting on this page? You'll be able to highlight text, leave notes, and I'll edit the HTML in response."
-
-If yes, run the bundled tooling from the skill directory:
+Run the bundled tooling from the skill directory:
 
 ```bash
 # 1. Inject the feedback <link>/<script> tags into every *.html in the paper folder
@@ -127,10 +133,32 @@ If yes, run the bundled tooling from the skill directory:
 python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/
 
 # 2. Start the local feedback server (serves the folder + accepts comments)
-python <skill-dir>/lib/server.py --root <papers-dir>/<paper-slug>/ --port 8765
+python <skill-dir>/lib/server.py <papers-dir>/<paper-slug>/ --port 8765 --idle-timeout 0
 ```
 
 Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl` — tail it with the Monitor tool to react to user comments in real time and edit the HTML in response.
+
+The `comment/feedback` tab must include:
+- A one-paragraph explanation of how feedback works.
+- Three short cards: open the panel, attach a note, submit batch.
+- The local inbox path: `<paper-slug>/feedback/inbox.jsonl`.
+- A button that calls `openFeedbackPanel()` and clicks the feedback launcher if it exists.
+
+Include this helper in the page JS:
+
+```js
+function openFeedbackPanel() {
+  const toggle = document.getElementById("cf-toggle");
+  if (toggle) {
+    toggle.click();
+    return;
+  }
+  window.setTimeout(() => {
+    const retryToggle = document.getElementById("cf-toggle");
+    if (retryToggle) retryToggle.click();
+  }, 250);
+}
+```
 
 To take the page back to a clean state later: `python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/ --remove`.
 
@@ -140,9 +168,9 @@ To take the page back to a clean state later: `python <skill-dir>/scripts/inject
 
 - One paper → one HTML file
 - Path: `<papers-dir>/<paper-slug>/index.html`
-- Single file: all CSS inline in `<style>`, all JS inline in `<script>`, no external assets except the two `<link>`/`<script>` tags the `make-pages-interactive` skill injects (and those only after the user explicitly opts in to commenting)
+- Single file: all explainer CSS inline in `<style>`, all explainer JS inline in `<script>`. The feedback runtime adds the two default `/lib/feedback.css` and `/lib/feedback.js` tags when `scripts/inject.py` is run.
 - Mobile-responsive (test under 600px width)
-- No emojis in the page unless they're functional UI. The tab labels (`braingood` / `braindead` / `brainstorm`) are emoji-free; emoji is fine inside `.ez-emoji-block` bullets and inline within braindead prose.
+- No emojis in the page unless they're functional UI. The default tab labels (`braindead` / `braingood` / `comment/feedback`) are emoji-free; emoji is fine inside `.ez-emoji-block` bullets and inline within braindead prose.
 
 ---
 
@@ -170,7 +198,7 @@ Body is Georgia serif for prose, sans-serif (system default) for chrome (tabs, b
 | Component | Purpose |
 |-----------|---------|
 | `.hero` | Title + one-sentence subtitle + citation footer |
-| `.tab-bar` (sticky) | Mode switcher — `braingood` / `braindead` / optional `brainstorm` (lowercase labels, no emoji) |
+| `.tab-bar` (sticky) | Mode switcher — `braindead` / `braingood` / `comment/feedback` / optional `brainstorm` (lowercase labels, no emoji) |
 | `.callout` (blue/green/orange/purple) | A boxed quote-style aside |
 | `.cards` + `.card` | Click-to-expand concept cards |
 | `.stats` + `.stat-box` | Headline-number grid |
@@ -351,6 +379,6 @@ The class names start with `bands-` for historical reasons (the pattern was firs
 ## Gotchas
 
 - **Don't summarize before reading.** Always read the whole PDF before proposing the plan. Skipping pages produces explainers that miss the paper's actual contribution.
-- **Don't build all modes in one shot.** The approval gate between modes is the point — the user often wants to course-correct after seeing braindead before you commit to a braingood structure.
+- **Don't build both explanation modes in one shot.** The approval gate between `braindead` and `braingood` is the point — the user often wants to course-correct after seeing `braindead` before you commit to a `braingood` structure. Still include the `comment/feedback` tab in the page shell by default.
 - **Don't invent numbers.** Every statistic on the page should be quotable back to a specific page/figure/table in the source PDF. If you can't find it, leave it out.
 - **Don't include the PDF in any downstream repo.** The HTML is the shippable artifact; the PDF stays alongside as a working file. (This applies if the user later asks you to publish — match what they ship.)
