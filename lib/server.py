@@ -102,6 +102,10 @@ Paths:
 Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
     cmd = [
         _codex_auto_config["codex_bin"],
+        "-c",
+        'model_reasoning_effort="low"',
+        "-c",
+        'model_reasoning_summary="none"',
         "--sandbox",
         "workspace-write",
         "--cd",
