@@ -138,12 +138,13 @@ python <skill-dir>/lib/server.py <papers-dir>/<paper-slug>/ --port 8765 --idle-t
 
 Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl`.
 
-Codex-native monitoring is part of the default workflow when running in Codex:
-- Use the Codex app automation tool to create or update a heartbeat attached to the current thread.
-- The heartbeat should run every 30 seconds.
-- Name it `<paper-slug> feedback inbox monitor`.
-- Its task is to check `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json`, find comments whose ids are not present in any `history[].changes[].in_response_to[]`, make the smallest helpful edit to `<paper-slug>/index.html`, add a `data-cf-change="ch-..."` anchor to the changed element, and append a matching history batch with `id`, `title`, `anchor`, and `in_response_to`.
-- If no unprocessed comments exist, it must not edit files or append history.
+Codex-native feedback handling is part of the default workflow when running in Codex, but it must be token-efficient:
+- Default behavior is on-demand processing, not permanent polling. When the user says they submitted feedback, inspect `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json` once, then process only unhandled comments.
+- Treat a comment as handled if its id appears in any `history[].changes[].in_response_to[]`.
+- For each unprocessed comment, make the smallest helpful edit to `<paper-slug>/index.html`, add a `data-cf-change="ch-..."` anchor to the changed element, and append a matching history batch with `id`, `title`, `anchor`, and `in_response_to`.
+- If no unprocessed comments exist, do not edit files, do not append history, and do not set up or keep a heartbeat.
+- Only create a 30-second Codex heartbeat monitor when the user explicitly asks for live monitoring during an active review session.
+- A live heartbeat must delete itself or be deleted once the review session is idle, the user is done, or repeated checks find no unprocessed feedback. Do not leave an idle monitor running indefinitely.
 - When it processes comments, it should briefly report which comment ids were handled.
 
 If Codex-native automations are unavailable, tell the user that the page can still collect feedback, but a Codex session must manually inspect the inbox and write matching history entries for the browser to leave the "Claude is processing..." state.
