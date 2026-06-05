@@ -136,7 +136,17 @@ python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/
 python <skill-dir>/lib/server.py <papers-dir>/<paper-slug>/ --port 8765 --idle-timeout 0
 ```
 
-Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl` — tail it with the Monitor tool to react to user comments in real time and edit the HTML in response.
+Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl`.
+
+Codex-native monitoring is part of the default workflow when running in Codex:
+- Use the Codex app automation tool to create or update a heartbeat attached to the current thread.
+- The heartbeat should run every 30 seconds.
+- Name it `<paper-slug> feedback inbox monitor`.
+- Its task is to check `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json`, find comments whose ids are not present in any `history[].changes[].in_response_to[]`, make the smallest helpful edit to `<paper-slug>/index.html`, add a `data-cf-change="ch-..."` anchor to the changed element, and append a matching history batch with `id`, `title`, `anchor`, and `in_response_to`.
+- If no unprocessed comments exist, it must not edit files or append history.
+- When it processes comments, it should briefly report which comment ids were handled.
+
+If Codex-native automations are unavailable, tell the user that the page can still collect feedback, but a Codex session must manually inspect the inbox and write matching history entries for the browser to leave the "Claude is processing..." state.
 
 The `comment/feedback` tab must include:
 - A one-paragraph explanation of how feedback works.
