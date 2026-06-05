@@ -102,14 +102,12 @@ Paths:
 Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
     cmd = [
         _codex_auto_config["codex_bin"],
-        "exec",
         "--sandbox",
         "workspace-write",
-        "--ask-for-approval",
-        "never",
-        "--skip-git-repo-check",
         "--cd",
         str(artifact_dir),
+        "exec",
+        "--skip-git-repo-check",
         prompt,
     ]
     with open(log_path, "a", encoding="utf-8") as log:
@@ -128,6 +126,34 @@ Treat a comment as already processed if any existing history[].changes[].in_resp
         except Exception as exc:
             log.write(f"[codex-auto] failed: {exc}\n")
         log.flush()
+
+
+def _has_unprocessed_feedback(feedback_dir: Path) -> bool:
+    inbox = feedback_dir / "inbox.jsonl"
+    history = feedback_dir / "history.json"
+    if not inbox.exists():
+        return False
+    try:
+        batches = [
+            json.loads(line)
+            for line in inbox.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        history_batches = json.loads(history.read_text(encoding="utf-8")) if history.exists() else []
+    except Exception:
+        return True
+
+    handled = {
+        comment_id
+        for batch in history_batches
+        for change in batch.get("changes", [])
+        for comment_id in change.get("in_response_to", [])
+    }
+    for batch in batches:
+        for comment in batch.get("comments", []):
+            if comment.get("id") not in handled:
+                return True
+    return False
 
 
 def _with_charset(content_type: str) -> str:
@@ -179,6 +205,7 @@ class FeedbackHandler(http.server.SimpleHTTPRequestHandler):
                 "feedback_dir": str(self.feedback_dir),
                 "lib_dir": str(LIB_DIR),
                 "port": self.server.server_address[1],
+                "codex_auto_process": _codex_auto_config["enabled"],
             }
             self._json(200, info)
             return
@@ -345,6 +372,9 @@ def main():
             print(f"[server] auto-shutdown: parent-death only (idle timeout disabled)")
         if args.codex_auto_process:
             print("[server] codex auto-process: enabled on feedback submit (no idle polling)")
+            if _has_unprocessed_feedback(feedback_dir):
+                print("[server] codex auto-process: pending feedback found; starting processor")
+                _trigger_codex_auto_process()
         print(f"[server] Ctrl-C to stop")
         try:
             srv.serve_forever()
