@@ -118,6 +118,19 @@ Only after explicit approval. braingood goes in the `#tab-normal` panel and uses
 
 **Visualization-first rule:** if the user says "visualize", "show the loop", "diagram this", "make this visual", or gives a table whose columns are step/data/feature/visual shorthand, do not render it as a normal table. Build an actual figure: a flow, map, timeline, architecture diagram, state machine, Sankey-like handoff, small-multiple chart, or interactive stepper. Tables are only for lookup/reference surfaces, not for explaining movement, causality, data transformation, or iteration.
 
+Native visualization workflow for every paper:
+1. Identify the paper's main visual grammar before writing braingood:
+   - closed loop / feedback system -> circular loop diagram with a central target or objective
+   - one-way method pipeline -> left-to-right pipeline with visible input, hidden representation, and output
+   - model architecture -> layered system diagram with inputs, modules, losses/objectives, and outputs
+   - experiment protocol -> timeline or swimlane showing participant/system/data events
+   - comparison/results -> chart, forest plot, slope graph, or small multiples
+   - anatomy/sensor/spatial claim -> map with highlighted regions and a linked explanation panel
+2. Sketch the main visual as the section's primary object. Prose and tables support the figure; they do not replace it.
+3. If the mechanism is a loop, use `scripts/visualizer.py closed-loop spec.json` for the starter. If it is one-way, use `scripts/visualizer.py process-flow spec.json`.
+4. Customize the generated fragment with paper-specific labels, mini-graphics, and data shapes.
+5. Delete any redundant table that merely restates the figure.
+
 Before writing braingood HTML, create a short internal visualization plan:
 - What should the reader see first?
 - What moves from step to step?
@@ -129,7 +142,14 @@ If the figure is a pipeline/loop, each stage must show at least two layers:
 - **surface layer:** the human-visible thing (image, trial, rating, stimulus, model output)
 - **data layer:** the hidden representation (matrix, embedding, feature vector, score, gradient, candidate set)
 
-Use `scripts/visualizer.py` for first drafts of process-flow figures, then customize the generated HTML/CSS for the paper. Do not leave the default output untouched if the paper needs domain-specific visuals.
+Use `scripts/visualizer.py` for first drafts of process-flow and closed-loop figures, then customize the generated HTML/CSS for the paper. Do not leave the default output untouched if the paper needs domain-specific visuals.
+
+Visual QA gate before shipping braingood:
+- Reject "cards above a table" as a visualization. That is still a table.
+- Reject emoji-only or icon-only visuals. They can decorate, but they cannot carry the explanation.
+- Reject any method/results figure where the reader cannot see the actual data object changing shape.
+- Reject visuals that need the table below them to make sense.
+- Check desktop and mobile layout when a browser is available; otherwise do a structural check that no process table remains and the figure has labeled data objects, connectors, and a takeaway.
 
 **Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — braindead already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
 
@@ -257,9 +277,10 @@ Use this pattern whenever the source material has steps like "show image -> meas
 
 **Good:** a figure where the "show image" card contains a tiny image tile, "measure response" contains a wave/channel strip, "extract features" contains vector chips, "score fit" contains a gauge or distance bar, and "choose next batch" contains multiple candidate tiles flowing back to the first card.
 
-Use the local helper for a starter fragment:
+Use the local helper for a starter fragment. For feedback/control-loop papers, prefer `closed-loop` over `process-flow`:
 
 ```bash
+python <skill-dir>/scripts/visualizer.py closed-loop spec.json > /tmp/loop-fragment.html
 python <skill-dir>/scripts/visualizer.py process-flow spec.json > /tmp/flow-fragment.html
 ```
 
@@ -269,19 +290,26 @@ python <skill-dir>/scripts/visualizer.py process-flow spec.json > /tmp/flow-frag
 {
   "title": "Closed-loop image-to-EEG optimization",
   "caption": "Each image produces a measurable response; the best-scoring responses seed the next image batch.",
+  "center": {
+    "label": "target response",
+    "title": "semantic, spectral, or emotion feature",
+    "text": "The loop compares each current response with this target pattern."
+  },
   "closing": "The loop never reads a literal thought. It repeatedly compares measured features to a target.",
   "steps": [
     {
       "label": "Show image",
       "mini": "image",
       "data": "candidate pixels or generator embedding",
-      "meaning": "the image is the input stimulus, not the target"
+      "meaning": "the image is the input stimulus, not the target",
+      "chips": ["pixels", "category", "embedding"]
     },
     {
       "label": "Measure response",
       "mini": "wave",
       "data": "EEG channels x time samples",
-      "meaning": "scalp sensors record the image-evoked response"
+      "meaning": "scalp sensors record the image-evoked response",
+      "chips": ["channels", "time", "voltage"]
     }
   ]
 }
