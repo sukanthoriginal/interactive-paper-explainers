@@ -133,17 +133,18 @@ Run the bundled tooling from the skill directory:
 python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/
 
 # 2. Start the local feedback server (serves the folder + accepts comments)
-python <skill-dir>/lib/server.py <papers-dir>/<paper-slug>/ --port 8765 --idle-timeout 0
+#    and run Codex only when a new feedback batch is submitted
+python <skill-dir>/lib/server.py <papers-dir>/<paper-slug>/ --port 8765 --idle-timeout 0 --codex-auto-process
 ```
 
 Then open `http://localhost:8765/` in a browser. The server writes new comments to `<paper-slug>/feedback/inbox.jsonl`.
 
 Codex-native feedback handling is part of the default workflow when running in Codex:
-- After the feedback runtime/server is wired, create or update a thread heartbeat checker for the active review session. The checker should run every 30 seconds, inspect `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json`, and process only unhandled comments. This is the default; the user should not need to complain in chat to make feedback get applied.
+- Default to event-triggered processing, not time-based polling. Start the server with `--codex-auto-process` so each new `/feedback` submission launches one `codex exec` run to inspect `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json`, then process only unhandled comments. This is the default; the user should not need to complain in chat to make feedback get applied, and Codex should not wake up when there is no new feedback.
 - Treat a comment as handled if its id appears in any `history[].changes[].in_response_to[]`.
 - For each unprocessed comment, make the smallest helpful edit to `<paper-slug>/index.html`, add a `data-cf-change="ch-..."` anchor to the changed element, and append a matching history batch with `id`, `title`, `anchor`, and `in_response_to`.
-- If no unprocessed comments exist, do not edit files and do not append history. Keep the checker active during the review session, but keep idle reports extremely short.
-- A live heartbeat must be deleted once the user is done reviewing, or after repeated idle checks show the session is no longer active. Do not leave an idle monitor running indefinitely.
+- If no unprocessed comments exist, do not edit files and do not append history.
+- Use a Codex heartbeat only as a fallback when `--codex-auto-process` is unavailable or explicitly requested. Heartbeats are time-based and can create idle no-op turns, so delete them once the review session is done or after repeated idle checks.
 - When it processes comments, it should briefly report which comment ids were handled.
 
 If Codex-native automations are unavailable, tell the user that the page can still collect feedback, but a Codex session must manually inspect the inbox and write matching history entries for the browser to leave the "Claude is processing..." state.

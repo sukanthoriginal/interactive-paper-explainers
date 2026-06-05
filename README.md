@@ -53,10 +53,10 @@ Claude will:
 3. Build **braindead** and stop. Show you the page.
 4. Ask before continuing.
 5. Build **braingood** with paper-specific interactive widgets.
-6. Wire **comment/feedback** by injecting the bundled feedback runtime, starting the local feedback server, and creating a 30-second Codex heartbeat checker for the active review session.
+6. Wire **comment/feedback** by injecting the bundled feedback runtime and starting the local feedback server with event-triggered Codex processing.
 7. Stop again, ask if anything else.
 
-The output is a single `index.html` next to the PDF. The explainer content opens standalone in a browser; the default `comment/feedback` flow uses the bundled local server so comments can be saved to disk, plus a Codex-native heartbeat checker so submitted comments can be applied back into the page during review. The checker should be removed when the review session is done or repeatedly idle.
+The output is a single `index.html` next to the PDF. The explainer content opens standalone in a browser; the default `comment/feedback` flow uses the bundled local server so comments can be saved to disk, plus an event-triggered `codex exec` processor so submitted comments can be applied back into the page during review without idle polling.
 
 ---
 

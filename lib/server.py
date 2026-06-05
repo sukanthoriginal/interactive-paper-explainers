@@ -18,6 +18,7 @@ import json
 import mimetypes
 import os
 import socketserver
+import subprocess
 import sys
 import threading
 import time
@@ -39,6 +40,14 @@ LIB_DIR = Path(__file__).resolve().parent
 INITIAL_PPID = os.getppid()
 _activity_lock = threading.Lock()
 _last_activity = time.monotonic()
+_codex_auto_config = {
+    "enabled": False,
+    "codex_bin": "codex",
+    "artifact_dir": None,
+}
+_codex_auto_lock = threading.Lock()
+_codex_auto_running = False
+_codex_auto_run_again = False
 
 
 def _touch_activity():
@@ -50,6 +59,75 @@ def _touch_activity():
 def _idle_seconds():
     with _activity_lock:
         return time.monotonic() - _last_activity
+
+
+def _trigger_codex_auto_process():
+    """Start one Codex feedback-processing run, coalescing bursts of submits."""
+    global _codex_auto_running, _codex_auto_run_again
+    if not _codex_auto_config["enabled"]:
+        return
+    with _codex_auto_lock:
+        if _codex_auto_running:
+            _codex_auto_run_again = True
+            return
+        _codex_auto_running = True
+    threading.Thread(target=_codex_auto_process_loop, daemon=True).start()
+
+
+def _codex_auto_process_loop():
+    global _codex_auto_running, _codex_auto_run_again
+    while True:
+        _run_codex_auto_process_once()
+        with _codex_auto_lock:
+            if _codex_auto_run_again:
+                _codex_auto_run_again = False
+                continue
+            _codex_auto_running = False
+            return
+
+
+def _run_codex_auto_process_once():
+    artifact_dir = _codex_auto_config["artifact_dir"]
+    if artifact_dir is None:
+        return
+    feedback_dir = artifact_dir / "feedback"
+    log_path = feedback_dir / "codex-auto.log"
+    prompt = f"""Process submitted feedback for this interactive paper explainer.
+
+Paths:
+- Explainer HTML: {artifact_dir / "index.html"}
+- Feedback inbox: {feedback_dir / "inbox.jsonl"}
+- Feedback history: {feedback_dir / "history.json"}
+
+Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
+    cmd = [
+        _codex_auto_config["codex_bin"],
+        "exec",
+        "--sandbox",
+        "workspace-write",
+        "--ask-for-approval",
+        "never",
+        "--skip-git-repo-check",
+        "--cd",
+        str(artifact_dir),
+        prompt,
+    ]
+    with open(log_path, "a", encoding="utf-8") as log:
+        log.write(f"\n[codex-auto] {time.strftime('%Y-%m-%dT%H:%M:%S')} starting\n")
+        log.flush()
+        try:
+            result = subprocess.run(
+                cmd,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                text=True,
+                timeout=900,
+                check=False,
+            )
+            log.write(f"[codex-auto] exit={result.returncode}\n")
+        except Exception as exc:
+            log.write(f"[codex-auto] failed: {exc}\n")
+        log.flush()
 
 
 def _with_charset(content_type: str) -> str:
@@ -147,6 +225,7 @@ class FeedbackHandler(http.server.SimpleHTTPRequestHandler):
                 f.write(json.dumps(data) + "\n")
             sys.stdout.write(f"[feedback] batch with {len(data.get('comments', []))} comment(s) -> {inbox}\n")
             sys.stdout.flush()
+            _trigger_codex_auto_process()
             self._json(200, {"ok": True})
             return
 
@@ -205,6 +284,10 @@ def main():
     ap.add_argument("--port", type=int, default=5050)
     ap.add_argument("--idle-timeout", type=int, default=600,
                     help="exit if no client requests for this many seconds (0 = disable). Default 600 (10 min).")
+    ap.add_argument("--codex-auto-process", action="store_true",
+                    help="run `codex exec` only when new feedback is submitted; avoids idle heartbeat polling.")
+    ap.add_argument("--codex-bin", default="codex",
+                    help="Codex executable to use with --codex-auto-process. Default: codex.")
     args = ap.parse_args()
 
     artifact_dir = Path(args.artifact_dir).resolve()
@@ -223,6 +306,9 @@ def main():
 
     FeedbackHandler.feedback_dir = feedback_dir
     FeedbackHandler.artifact_dir = artifact_dir
+    _codex_auto_config["enabled"] = args.codex_auto_process
+    _codex_auto_config["codex_bin"] = args.codex_bin
+    _codex_auto_config["artifact_dir"] = artifact_dir
 
     os.chdir(artifact_dir)
 
@@ -257,6 +343,8 @@ def main():
             print(f"[server] auto-shutdown: parent-death OR {args.idle_timeout}s idle (no requests). --idle-timeout 0 to disable")
         else:
             print(f"[server] auto-shutdown: parent-death only (idle timeout disabled)")
+        if args.codex_auto_process:
+            print("[server] codex auto-process: enabled on feedback submit (no idle polling)")
         print(f"[server] Ctrl-C to stop")
         try:
             srv.serve_forever()
