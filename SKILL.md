@@ -51,6 +51,7 @@ Use the Read tool with `pages: "1-N"` ranges to walk through the whole PDF. Don'
 - Key numbers (sample size, effect sizes, p-values, CIs)
 - Figures and tables — what each one shows
 - Limits the authors acknowledge
+- Visual opportunities — any process loop, architecture, experimental protocol, data transformation, model pipeline, scoring function, or result comparison that should become a diagram instead of prose/table text
 
 Take internal notes; do not produce the HTML yet.
 
@@ -114,6 +115,21 @@ Only after explicit approval. braingood goes in the `#tab-normal` panel and uses
 - **Section: Implications** — `.cards` for "if you build X / if you run Y / if you read Z" framings
 - **Section: Limits** — the authors' own caveats, one per row, in plain language
 - **Section: Quiz** — 3 multiple-choice questions with click-to-reveal feedback. Each question should reward careful reading; the explanations should teach something the question alone doesn't.
+
+**Visualization-first rule:** if the user says "visualize", "show the loop", "diagram this", "make this visual", or gives a table whose columns are step/data/feature/visual shorthand, do not render it as a normal table. Build an actual figure: a flow, map, timeline, architecture diagram, state machine, Sankey-like handoff, small-multiple chart, or interactive stepper. Tables are only for lookup/reference surfaces, not for explaining movement, causality, data transformation, or iteration.
+
+Before writing braingood HTML, create a short internal visualization plan:
+- What should the reader see first?
+- What moves from step to step?
+- What is the data shape at each step?
+- Which part can be clicked, hovered, toggled, or stepped through?
+- What exact paper claim does the figure support?
+
+If the figure is a pipeline/loop, each stage must show at least two layers:
+- **surface layer:** the human-visible thing (image, trial, rating, stimulus, model output)
+- **data layer:** the hidden representation (matrix, embedding, feature vector, score, gradient, candidate set)
+
+Use `scripts/visualizer.py` for first drafts of process-flow figures, then customize the generated HTML/CSS for the paper. Do not leave the default output untouched if the paper needs domain-specific visuals.
 
 **Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — braindead already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
 
@@ -214,8 +230,77 @@ Body is Georgia serif for prose, sans-serif (system default) for chrome (tabs, b
 | `.cards` + `.card` | Click-to-expand concept cards |
 | `.stats` + `.stat-box` | Headline-number grid |
 | `.quiz-box` | One multiple-choice question with feedback |
+| `.viz-flow` + `.viz-stage` + `.viz-mini-*` | Process/loop visualization with surface + data layers (see below) |
 | `.ez-hero`, `.ez-big`, `.ez-emoji-block`, `.ez-analogy`, `.ez-tldr` | braindead primitives |
 | `.bands-mode-toggle` + `.bands-table` + `.term[data-def]` + `.term-tip` | Dual-mode reference table with hover/tap glossary (see below) |
+
+---
+
+## Visualization patterns
+
+### Process-flow figures beat process tables
+
+Use this pattern whenever the source material has steps like "show image -> measure response -> extract features -> score fit -> choose next batch." A table with a "visual shorthand" column is not enough. The figure should let the reader visually track what changes hands between stages.
+
+**Required structure:**
+1. A short heading and one-sentence caption above the figure
+2. A horizontal desktop flow that wraps into a vertical mobile flow
+3. One card per stage, with:
+   - stage label
+   - miniature visual (`.viz-mini-image`, `.viz-mini-wave`, `.viz-mini-vector`, `.viz-mini-score`, `.viz-mini-batch`, or a custom paper-specific mini)
+   - `Data:` line naming the input/output shape
+   - `Meaning:` line naming what the step accomplishes
+4. Arrows or connector labels between stages
+5. A closing callout explaining the loop's core claim in one sentence
+
+**Bad:** a four-column table: step / data used / feature idea / emoji shorthand.
+
+**Good:** a figure where the "show image" card contains a tiny image tile, "measure response" contains a wave/channel strip, "extract features" contains vector chips, "score fit" contains a gauge or distance bar, and "choose next batch" contains multiple candidate tiles flowing back to the first card.
+
+Use the local helper for a starter fragment:
+
+```bash
+python <skill-dir>/scripts/visualizer.py process-flow spec.json > /tmp/flow-fragment.html
+```
+
+`spec.json` shape:
+
+```json
+{
+  "title": "Closed-loop image-to-EEG optimization",
+  "caption": "Each image produces a measurable response; the best-scoring responses seed the next image batch.",
+  "closing": "The loop never reads a literal thought. It repeatedly compares measured features to a target.",
+  "steps": [
+    {
+      "label": "Show image",
+      "mini": "image",
+      "data": "candidate pixels or generator embedding",
+      "meaning": "the image is the input stimulus, not the target"
+    },
+    {
+      "label": "Measure response",
+      "mini": "wave",
+      "data": "EEG channels x time samples",
+      "meaning": "scalp sensors record the image-evoked response"
+    }
+  ]
+}
+```
+
+**Authoring rules:**
+- No emoji-only visuals. Emojis may appear in braindead prose, but braingood figures need shapes, connectors, labels, and data representation.
+- Do not use external CDNs in the final page. If using an online tool while drafting (Mermaid Live, diagrams.net, Observable, Excalidraw), export the result as inline SVG/HTML/CSS and keep the page self-contained.
+- Prefer inline SVG/CSS for diagrams. Use canvas only for dynamic simulations where SVG would be awkward.
+- Every axis, score, vector, or matrix in a figure needs a label. Decorative blobs do not count as visualization.
+- If a figure has more than five stages, add a stepper, tabs, or progressive reveal so it does not become a dense poster.
+- On mobile, the visual must remain readable without horizontal scrolling except for true reference tables.
+
+**Quality checklist before shipping a visual:**
+- Can a reader explain the mechanism without reading the surrounding paragraph?
+- Does each stage show both the visible object and the hidden data representation?
+- Are the arrows meaningful, not decorative?
+- Did you visualize the paper's actual claim rather than a generic science icon?
+- Did you replace any process table that was only pretending to be a diagram?
 
 ---
 

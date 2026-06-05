@@ -60,6 +60,20 @@ The output is a single `index.html` next to the PDF. The explainer content opens
 
 ---
 
+## Visualization standard
+
+The skill should not turn explicit visualization requests into plain tables with emoji. Process loops, model pipelines, experimental protocols, scoring functions, and data transformations should become actual figures: flow diagrams, state machines, timelines, architecture sketches, mini charts, or interactive steppers.
+
+For process-flow first drafts, use the bundled helper:
+
+```bash
+python scripts/visualizer.py process-flow spec.json > flow-fragment.html
+```
+
+Then customize the generated HTML/CSS for the paper. The final explainer remains self-contained; online tools like Mermaid Live, diagrams.net, Observable, or Excalidraw can be used while drafting, but final visuals should be exported or rewritten as inline SVG/HTML/CSS rather than loaded from an external CDN.
+
+---
+
 ## Why two explanation modes?
 
 Academic papers carry two audiences inside one PDF:
