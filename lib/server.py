@@ -366,7 +366,7 @@ def main():
 
     with srv:
         print(f"[server] serving {artifact_dir}")
-        print(f"[server] open http://localhost:{args.port}/sample.html")
+        print(f"[server] open http://localhost:{args.port}/")
         print(f"[server] inbox:   {inbox}")
         print(f"[server] history: {history}")
         print(f"[server] info:    http://localhost:{args.port}/info")

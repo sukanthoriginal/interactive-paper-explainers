@@ -867,13 +867,14 @@
 </div>
 
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('normal', this)">braingood</button>
-  <button class="tab-btn" onclick="switchTab('ez', this)">braindead</button>
+  <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+  <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+  <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
   <button class="tab-btn" onclick="switchTab('brainstorm', this)">brainstorm</button>
 </div>
 
 <!-- ============================== NORMAL MODE ============================== -->
-<div id="tab-normal" class="tab-panel active">
+<div id="tab-normal" class="tab-panel">
 <div class="container">
 
   <!-- THE QUESTION -->
@@ -1838,7 +1839,7 @@
 
 
 <!-- ============================== BRAIN DEAD MODE ============================== -->
-<div id="tab-ez" class="tab-panel">
+<div id="tab-ez" class="tab-panel active">
   <div class="ez-hero">
     <h2>The whole paper in 5 minutes 🧠💥</h2>
     <p>No jargon. No equations. Just the story.</p>
@@ -1895,6 +1896,21 @@
   </div>
 </div>
 <!-- ============================== END BRAIN DEAD MODE ============================== -->
+
+<!-- ============================== COMMENT / FEEDBACK MODE ============================== -->
+<div id="tab-feedback" class="tab-panel">
+  <div class="container">
+    <section>
+      <p class="section-label">comment/feedback</p>
+      <h2>Review this explainer in the page</h2>
+      <p>Highlight text or use the floating feedback panel to submit comments. The local feedback server writes batches to <code>feedback/inbox.jsonl</code>, and Codex can apply submitted comments back into this page with anchored <code>data-cf-change</code> markers.</p>
+      <div class="callout">
+        <strong>Default review loop:</strong> submit a comment, let the event-triggered Codex processor update the page, then reopen this tab to inspect the change history.
+      </div>
+    </section>
+  </div>
+</div>
+<!-- ============================== END COMMENT / FEEDBACK MODE ============================== -->
 
 
 <!-- ============================== BRAINSTORM MODE ============================== -->
