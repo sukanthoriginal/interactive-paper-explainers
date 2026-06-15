@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReviewerToo: Should AI Join The Program Committee?</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #5b6472;
+      --line: rgba(17, 24, 39, 0.12);
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --blue: #1d4ed8;
+      --teal: #0f766e;
+      --rose: #db2777;
+      --amber: #d97706;
+      --green: #15803d;
+      --red: #b91c1c;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f6fa;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 410px;
+      display: flex;
+      align-items: flex-end;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      color: #fff;
+      transition: background 220ms ease;
+    }
+
+    body[data-active-tab="normal"] .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 54%, #0f766e 100%);
+    }
+
+    body[data-active-tab="feedback"] .hero {
+      background: linear-gradient(135deg, #1f2937 0%, #374151 48%, #0f766e 100%);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.09) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.2));
+    }
+
+    .hero-inner {
+      position: relative;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0 54px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.96);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 930px;
+      margin: 0;
+      font-size: 3.1rem;
+      line-height: 1.02;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      max-width: 740px;
+      margin: 18px 0 0;
+      color: rgba(255,255,255,0.9);
+      font-size: 1.28rem;
+      font-weight: 700;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.13);
+      color: rgba(255,255,255,0.94);
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .tab-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+
+    .tabs {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      padding: 10px 0;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 10px 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: #334155;
+      cursor: pointer;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .tab-btn:hover {
+      background: #eef2f7;
+    }
+
+    .tab-btn.active {
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .band {
+      width: 100%;
+      padding: 52px 0;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .band.alt {
+      background: #f7fafc;
+    }
+
+    .inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 2rem;
+      line-height: 1.12;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    .lede {
+      max-width: 820px;
+      color: #334155;
+      font-size: 1.08rem;
+      font-weight: 560;
+    }
+
+    .ez-section {
+      max-width: 940px;
+      margin: 0 auto 38px;
+    }
+
+    .ez-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .ez-big {
+      margin-bottom: 16px;
+      font-size: 1.45rem;
+      line-height: 1.42;
+      font-weight: 720;
+      color: #151b27;
+    }
+
+    .ez-emoji-block {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .ez-emoji-block div {
+      padding: 14px 16px;
+      border: 1px solid rgba(139, 92, 246, 0.16);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(139, 92, 246, 0.08);
+      font-size: 1.05rem;
+      font-weight: 650;
+    }
+
+    .ez-analogy {
+      margin-top: 16px;
+      padding: 18px 20px;
+      border: 1px solid rgba(217, 119, 6, 0.24);
+      border-left: 6px solid #f59e0b;
+      border-radius: 8px;
+      background: #fffbeb;
+      color: #52330a;
+      font-size: 1.06rem;
+      font-weight: 680;
+    }
+
+    .ez-tldr {
+      max-width: 940px;
+      margin: 18px auto 0;
+      padding: 24px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #111827, #7c2d12);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .ez-tldr h2 {
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .ez-tldr p {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.18rem;
+      font-weight: 680;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-top: 26px;
+    }
+
+    .argument-list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .argument-list li,
+    .limit-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      min-height: 30px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .metric-wall {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 148px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .metric strong {
+      display: block;
+      color: #0f172a;
+      font-size: 2.15rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .card,
+    .concept-card,
+    .feedback-card,
+    .implication-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .concept-card {
+      min-height: 188px;
+      padding: 18px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .concept-card .concept-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #0f172a;
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+
+    .concept-card .concept-title span:last-child {
+      flex: 0 0 auto;
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 900;
+    }
+
+    .concept-card p {
+      color: #475569;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .concept-detail {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: #1f2937;
+      font-size: 0.95rem;
+    }
+
+    .concept-card.open {
+      border-color: rgba(29, 78, 216, 0.34);
+      box-shadow: 0 16px 34px rgba(29, 78, 216, 0.14);
+    }
+
+    .concept-card.open .concept-detail {
+      display: block;
+    }
+
+    .workflow-shell {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .workflow-figure {
+      position: relative;
+      min-height: 520px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      overflow: hidden;
+    }
+
+    .pipeline-svg {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      display: block;
+    }
+
+    .pipe-node rect,
+    .pipe-node path,
+    .pipe-node circle {
+      transition: opacity 180ms ease, stroke 180ms ease, fill 180ms ease, transform 180ms ease;
+    }
+
+    .pipe-node text {
+      font-family: inherit;
+      font-weight: 850;
+      fill: #0f172a;
+    }
+
+    .pipe-node .small {
+      font-size: 12px;
+      font-weight: 700;
+      fill: #475569;
+    }
+
+    .pipe-node.active rect {
+      stroke: #f97316;
+      stroke-width: 4;
+      filter: drop-shadow(0 12px 20px rgba(249, 115, 22, 0.22));
+    }
+
+    .pipe-node.dim {
+      opacity: 0.42;
+    }
+
+    .stage-panel {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .stage-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0 18px;
+    }
+
+    .stage-btn,
+    .view-btn,
+    .quiz-option {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+      font-weight: 820;
+    }
+
+    .stage-btn.active,
+    .view-btn.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+
+    .layer-pair {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .layer {
+      padding: 13px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+
+    .layer b {
+      display: block;
+      margin-bottom: 4px;
+      color: #0f172a;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+    }
+
+    .chart-shell {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 18px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .view-controls {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-chart {
+      min-height: 430px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 70px;
+      gap: 12px;
+      align-items: center;
+      margin: 0 0 13px;
+    }
+
+    .bar-label {
+      color: #0f172a;
+      font-size: 0.92rem;
+      font-weight: 840;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 28px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--w);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--bar), color-mix(in srgb, var(--bar) 58%, white));
+    }
+
+    .bar-value {
+      text-align: right;
+      color: #111827;
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    .chart-note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: #475569;
+      font-size: 0.94rem;
+      font-weight: 630;
+    }
+
+    .rebuttal-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .rebuttal-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .rebuttal-card.warning {
+      border-color: rgba(185, 28, 28, 0.24);
+      background: #fff7f7;
+    }
+
+    .delta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .delta-item {
+      min-height: 96px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .delta-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .delta-item.good strong {
+      color: var(--green);
+    }
+
+    .delta-item.bad strong {
+      color: var(--red);
+    }
+
+    .limits {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .implications {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .implication-card {
+      padding: 20px;
+    }
+
+    .implication-card h3 {
+      color: #0f172a;
+    }
+
+    .implication-card p {
+      color: #475569;
+      font-weight: 610;
+    }
+
+    .quiz {
+      display: grid;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .quiz-box {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .quiz-option {
+      min-height: 44px;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .quiz-option.correct {
+      border-color: rgba(21, 128, 61, 0.45);
+      background: #ecfdf5;
+      color: #14532d;
+    }
+
+    .quiz-option.wrong {
+      border-color: rgba(185, 28, 28, 0.34);
+      background: #fef2f2;
+      color: #7f1d1d;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 660;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .feedback-card {
+      padding: 20px;
+    }
+
+    .feedback-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      margin-top: 18px;
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
+    }
+
+    .inbox-path {
+      display: inline-flex;
+      max-width: 100%;
+      margin-top: 16px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 920px) {
+      h1 {
+        font-size: 2.25rem;
+      }
+
+      .question-grid,
+      .workflow-shell,
+      .chart-shell,
+      .rebuttal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards,
+      .implications,
+      .feedback-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-wall {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        min-height: 390px;
+      }
+
+      .hero-inner,
+      .inner {
+        width: min(100% - 28px, 1180px);
+      }
+
+      h1 {
+        font-size: 1.9rem;
+      }
+
+      h2 {
+        font-size: 1.55rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.05rem;
+      }
+
+      .band {
+        padding: 38px 0;
+      }
+
+      .ez-big {
+        font-size: 1.16rem;
+      }
+
+      .argument-list li,
+      .limit-row,
+      .bar-row {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-wall,
+      .delta {
+        grid-template-columns: 1fr;
+      }
+
+      .stage-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-value {
+        text-align: left;
+      }
+
+      .workflow-figure {
+        min-height: 380px;
+        padding: 10px;
+      }
+
+      .pipeline-svg {
+        min-height: 330px;
+      }
+    }
+  
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body data-active-tab="ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<div class="page">
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow" id="heroEyebrow">arXiv:2510.08867</p>
+        <h1>ReviewerToo: Should AI Join The Program Committee?</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta" aria-label="Paper facts">
+          <span>ICLR 2025 peer-review data</span>
+          <span>1,963 sampled submissions</span>
+          <span>gpt-oss-120b agents</span>
+          <span>Hybrid review, not autopilot</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tab-wrap" aria-label="Explainer tabs">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+        <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+        <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+      </div>
+    </nav>
+
+    <main>
+      <section id="tab-ez" class="panel active" aria-labelledby="braindead-title">
+        <div class="band alt">
+          <div class="inner">
+            <div class="ez-section">
+              <h2 id="braindead-title">The story</h2>
+              <p class="ez-big">
+                <strong>Peer review is overloaded.</strong> Top machine learning conferences get huge waves of papers, and the old system depends on tired humans making hard calls under time pressure.
+              </p>
+              <div class="ez-emoji-block">
+                <div>📚 Too many papers arrive at once.</div>
+                <div>😵 Reviewers disagree, rush, or focus on different things.</div>
+                <div>⚖️ The final decision still needs judgment, not just paperwork.</div>
+              </div>
+              <div class="ez-analogy">
+                Imagine a giant cooking contest where every judge tastes a different bite, uses a slightly different scorecard, and has to finish before midnight. ReviewerToo asks: can a careful robot prep cook help the judges without choosing the winner alone?
+              </div>
+            </div>
+
+            <div class="ez-section">
+              <p class="ez-big">
+                <strong>ReviewerToo is a pretend program committee made of AI agents.</strong> One agent reads nearby research, several agents write reviews from different personalities, an author agent writes a rebuttal, and a meta-reviewer agent tries to combine everything into one final recommendation.
+              </p>
+              <div class="ez-emoji-block">
+                <div>🔎 One agent gathers the surrounding literature.</div>
+                <div>🧑‍⚖️ Different reviewer agents act strict, generous, experimental, theoretical, or clarity-focused.</div>
+                <div>🧾 A meta-reviewer agent weighs the pile and tries to make the final call.</div>
+              </div>
+              <div class="ez-analogy">
+                It is like asking five friends to review the same movie: one cares about plot holes, one cares about acting, one cares about camera work, and one just wants it to be fun. The point is not that any one friend is right. The point is that the group exposes blind spots.
+              </div>
+            </div>
+
+            <div class="ez-section">
+              <p class="ez-big">
+                <strong>The paper found that the AI committee got surprisingly close on simple accept-versus-reject calls.</strong> It still struggled with finer labels like "top-tier accept" versus "ordinary accept", but the combined meta-reviewer was much stronger than most single AI reviewers.
+              </p>
+              <div class="ez-emoji-block">
+                <div>✅ The combined AI reviewer was useful for broad triage.</div>
+                <div>🤏 Fine-grained prestige tiers were much harder.</div>
+                <div>🧩 Combining reviewers helped more than trusting one personality.</div>
+              </div>
+              <div class="ez-analogy">
+                The AI is better at sorting laundry into "clean enough" and "needs washing" than deciding whether a shirt belongs in a designer boutique. Broad buckets: decent. Subtle taste calls: still human territory.
+              </div>
+            </div>
+
+            <div class="ez-section">
+              <p class="ez-big">
+                <strong>The most important warning is that AI can become too agreeable after a rebuttal.</strong> When the simulated authors defended the paper, some AI reviewers became more likely to accept, even when the ground truth said reject.
+              </p>
+              <div class="ez-emoji-block">
+                <div>🙃 Rebuttals can charm the model.</div>
+                <div>🚨 More accepting does not always mean more accurate.</div>
+                <div>🧑‍🔬 Human area chairs still need to supervise the final judgment.</div>
+              </div>
+              <div class="ez-analogy">
+                Think of a student explaining why their late homework deserves full credit. A kind teacher may soften. A good system has to listen, but also remember the rubric.
+              </div>
+            </div>
+
+            <div class="ez-tldr">
+              <h2>TL;DR</h2>
+              <p>
+                ReviewerToo says AI can raise the floor of peer review by giving structured, consistent, multi-perspective feedback, but it should sit beside human reviewers - not replace the program committee.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-normal" class="panel" aria-labelledby="braingood-title">
+        <div class="band">
+          <div class="inner">
+            <h2 id="braingood-title">The Question</h2>
+            <p class="lede">
+              The paper asks whether large language model agents can participate responsibly in peer review: not as a one-shot review generator, but as a structured system with roles, evidence, rebuttal, aggregation, and evaluation against real conference outcomes.
+            </p>
+            <div class="question-grid">
+              <ul class="argument-list">
+                <li>
+                  <span class="label">pressure</span>
+                  <p>Large conferences receive many thousands of submissions, while human reviewer attention is scarce and uneven.</p>
+                </li>
+                <li>
+                  <span class="label">risk</span>
+                  <p>One-off AI deployments can be anecdotal, hard to reproduce, and too easy to mistake for real judgment.</p>
+                </li>
+                <li>
+                  <span class="label">proposal</span>
+                  <p>ReviewerToo turns peer review into a controlled multi-agent experiment that can be measured, audited, and adapted.</p>
+                </li>
+              </ul>
+              <div class="metric-wall">
+                <div class="metric">
+                  <strong>11,672</strong>
+                  <span>ICLR 2025 submissions in the source pool.</span>
+                </div>
+                <div class="metric">
+                  <strong>1,963</strong>
+                  <span>Submissions sampled into the ICLR-2k benchmark.</span>
+                </div>
+                <div class="metric">
+                  <strong>5</strong>
+                  <span>Decision labels: oral, spotlight, poster, reject, desk reject.</span>
+                </div>
+                <div class="metric">
+                  <strong>81.8%</strong>
+                  <span>Binary accuracy for the Meta (all) agent.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band alt">
+          <div class="inner">
+            <h2>Key Concepts</h2>
+            <p class="lede">The paper is easier to read if these four ideas stay separate.</p>
+            <div class="cards">
+              <button class="concept-card open" onclick="toggleConcept(this)">
+                <div class="concept-title">Reviewer personas <span>+</span></div>
+                <p>Different model prompts represent different reviewing philosophies.</p>
+                <div class="concept-detail">Critical, permissive, empiricist, theorist, pedagogical, reproducibility, and other personas stress different parts of the rubric. Their disagreement is a feature to study, not noise to hide.</div>
+              </button>
+              <button class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-title">Grounding <span>+</span></div>
+                <p>Agents must connect claims to the manuscript or retrieved literature.</p>
+                <div class="concept-detail">ReviewerToo includes conference guidelines and a LitLLM literature review so review claims can be checked against explicit sources instead of floating as generic feedback.</div>
+              </button>
+              <button class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-title">Metareview <span>+</span></div>
+                <p>The strongest AI result comes from synthesis, not a single reviewer.</p>
+                <div class="concept-detail">The metareviewer receives reviews, rebuttal, optional responses, and fact checks. It summarizes stances, tracks disagreement, weighs evidence, and produces the final recommendation.</div>
+              </button>
+              <button class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-title">Dual evaluation <span>+</span></div>
+                <p>The study measures both decisions and review usefulness.</p>
+                <div class="concept-detail">Decision alignment is evaluated with five-way and binary classification metrics. Review text quality is evaluated through pairwise LLM-as-judge comparisons and ELO ratings.</div>
+              </button>
+              <button class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-title">Sycophancy risk <span>+</span></div>
+                <p>Rebuttals can make agents more accepting than they should be.</p>
+                <div class="concept-detail">The authors report performance drops after rebuttal rounds and interpret the shift as possible model deference to author responses.</div>
+              </button>
+              <button class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-title">Hybrid design <span>+</span></div>
+                <p>The paper argues for assistance, not fully automated decisions.</p>
+                <div class="concept-detail">The recommended role is to raise consistency, coverage, and feedback quality while leaving nuanced final calls to human experts.</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="inner">
+            <h2>Method</h2>
+            <p class="lede">ReviewerToo turns one submitted manuscript into a sequence of evidence objects, reviewer stances, rebuttal claims, and a calibrated final suggestion.</p>
+            <div class="workflow-shell">
+              <div class="workflow-figure" aria-label="ReviewerToo workflow">
+                <svg class="pipeline-svg" viewBox="0 0 900 560" role="img" aria-labelledby="pipeline-title pipeline-desc">
+                  <title id="pipeline-title">ReviewerToo multi-agent pipeline</title>
+                  <desc id="pipeline-desc">A paper flows through literature review, reviewer agents, author rebuttal, metareviewer synthesis, and final suggestion.</desc>
+                  <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"></path>
+                    </marker>
+                    <linearGradient id="paperGrad" x1="0" x2="1">
+                      <stop offset="0" stop-color="#e0f2fe"></stop>
+                      <stop offset="1" stop-color="#ccfbf1"></stop>
+                    </linearGradient>
+                    <linearGradient id="agentGrad" x1="0" x2="1">
+                      <stop offset="0" stop-color="#eef2ff"></stop>
+                      <stop offset="1" stop-color="#fdf2f8"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path d="M170 120 C250 120 270 120 330 120" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"></path>
+                  <path d="M510 120 C570 120 570 235 630 235" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"></path>
+                  <path d="M450 182 C450 235 390 255 332 255" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"></path>
+                  <path d="M330 315 C395 380 500 385 630 315" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"></path>
+                  <path d="M750 275 C790 275 800 275 830 275" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"></path>
+                  <path d="M690 340 C690 395 565 418 452 412 C362 408 292 372 250 323" stroke="#f97316" stroke-width="4" stroke-dasharray="9 9" fill="none" marker-end="url(#arrow)"></path>
+
+                  <g class="pipe-node" data-node="paper">
+                    <rect x="34" y="58" width="145" height="124" rx="12" fill="url(#paperGrad)" stroke="#0f766e" stroke-width="2"></rect>
+                    <text x="60" y="98" font-size="20">Paper</text>
+                    <text class="small" x="60" y="126">PDF -> Markdown</text>
+                    <text class="small" x="60" y="148">scores hidden</text>
+                  </g>
+                  <g class="pipe-node" data-node="lit">
+                    <rect x="330" y="58" width="190" height="124" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2"></rect>
+                    <text x="360" y="96" font-size="20">LitLLM</text>
+                    <text class="small" x="360" y="124">queries, ranks papers</text>
+                    <text class="small" x="360" y="146">summary evidence</text>
+                  </g>
+                  <g class="pipe-node" data-node="reviewers">
+                    <rect x="190" y="220" width="160" height="130" rx="12" fill="url(#agentGrad)" stroke="#4f46e5" stroke-width="2"></rect>
+                    <text x="220" y="258" font-size="20">Reviewers</text>
+                    <text class="small" x="220" y="286">personas + rubric</text>
+                    <text class="small" x="220" y="308">strengths, weaknesses</text>
+                    <circle cx="222" cy="330" r="7" fill="#db2777"></circle>
+                    <circle cx="246" cy="330" r="7" fill="#1d4ed8"></circle>
+                    <circle cx="270" cy="330" r="7" fill="#0f766e"></circle>
+                  </g>
+                  <g class="pipe-node" data-node="author">
+                    <rect x="640" y="190" width="150" height="128" rx="12" fill="#dcfce7" stroke="#15803d" stroke-width="2"></rect>
+                    <text x="670" y="230" font-size="20">Author</text>
+                    <text class="small" x="670" y="258">rebuttal claims</text>
+                    <text class="small" x="670" y="280">proposed fixes</text>
+                  </g>
+                  <g class="pipe-node" data-node="meta">
+                    <rect x="335" y="380" width="220" height="128" rx="12" fill="#e0e7ff" stroke="#1d4ed8" stroke-width="2"></rect>
+                    <text x="370" y="420" font-size="20">Metareviewer</text>
+                    <text class="small" x="370" y="448">synthesis + fact check</text>
+                    <text class="small" x="370" y="470">final recommendation</text>
+                  </g>
+                  <g class="pipe-node" data-node="final">
+                    <rect x="820" y="228" width="58" height="94" rx="12" fill="#fee2e2" stroke="#b91c1c" stroke-width="2"></rect>
+                    <text x="834" y="268" font-size="18">Call</text>
+                    <text class="small" x="834" y="292">5-way</text>
+                  </g>
+                </svg>
+              </div>
+              <aside class="stage-panel">
+                <h3 id="stageTitle">Paper ingestion</h3>
+                <p id="stageText">The submitted paper is converted into a machine-readable manuscript while the real conference decision remains the held-out ground truth.</p>
+                <div class="stage-buttons" aria-label="Workflow stages">
+                  <button class="stage-btn active" data-stage="paper" onclick="selectStage('paper')">paper</button>
+                  <button class="stage-btn" data-stage="lit" onclick="selectStage('lit')">literature</button>
+                  <button class="stage-btn" data-stage="reviewers" onclick="selectStage('reviewers')">reviewers</button>
+                  <button class="stage-btn" data-stage="author" onclick="selectStage('author')">author</button>
+                  <button class="stage-btn" data-stage="meta" onclick="selectStage('meta')">meta</button>
+                  <button class="stage-btn" data-stage="final" onclick="selectStage('final')">final</button>
+                </div>
+                <div class="layer-pair">
+                  <div class="layer">
+                    <b>Surface layer</b>
+                    <span id="stageSurface">A full paper submission with title, abstract, method, experiments, figures, and claims.</span>
+                  </div>
+                  <div class="layer">
+                    <b>Data layer</b>
+                    <span id="stageData">Markdown text plus rubric fields, hidden labels, and later model-generated review artifacts.</span>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+
+        <div class="band alt">
+          <div class="inner">
+            <h2>Results</h2>
+            <p class="lede">The strongest headline is not that one AI reviewer wins. It is that aggregation closes much of the gap on the broad accept/reject task while preserving structured feedback.</p>
+            <div class="chart-shell">
+              <div class="view-controls" aria-label="Result views">
+                <button class="view-btn active" data-view="binary" onclick="renderComparison('binary')">2-way accuracy</button>
+                <button class="view-btn" data-view="five" onclick="renderComparison('five')">5-way F1</button>
+                <button class="view-btn" data-view="elo" onclick="renderComparison('elo')">review ELO</button>
+                <button class="view-btn" data-view="personas" onclick="renderComparison('personas')">persona bias</button>
+              </div>
+              <div class="bar-chart">
+                <div id="chartTitle" class="label">2-way accuracy</div>
+                <div id="barChart" aria-live="polite"></div>
+                <p id="chartNote" class="chart-note"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="inner">
+            <h2>What Changed After Rebuttal?</h2>
+            <p class="lede">The rebuttal round is the paper's sharpest cautionary tale. It adds realistic workflow structure, but the models may over-credit author defenses.</p>
+            <div class="rebuttal-grid">
+              <div class="rebuttal-card">
+                <h3>Before rebuttal: evidence-first reviewer</h3>
+                <p>The empiricist reviewer with conference instructions and LitLLM had the strongest single-agent ELO in the ablation table.</p>
+                <div class="delta">
+                  <div class="delta-item good">
+                    <strong>70.7</strong>
+                    <span>Binary F1 before rebuttal.</span>
+                  </div>
+                  <div class="delta-item good">
+                    <strong>1558</strong>
+                    <span>Review-quality ELO before rebuttal.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="rebuttal-card warning">
+                <h3>After rebuttal: more accepting, less aligned</h3>
+                <p>When rebuttal was included, false positives rose and the same configuration fell on both F1 and ELO.</p>
+                <div class="delta">
+                  <div class="delta-item bad">
+                    <strong>60.4</strong>
+                    <span>Binary F1 after rebuttal.</span>
+                  </div>
+                  <div class="delta-item bad">
+                    <strong>1332</strong>
+                    <span>Review-quality ELO after rebuttal.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band alt">
+          <div class="inner">
+            <h2>Implications</h2>
+            <p class="lede">The paper's recommendations are design constraints for a hybrid review system.</p>
+            <div class="implications">
+              <article class="implication-card">
+                <h3>For program chairs</h3>
+                <p>Use AI as a consistency and coverage layer: literature checks, rubric completeness, missing-baseline flags, and structured summaries.</p>
+              </article>
+              <article class="implication-card">
+                <h3>For reviewers</h3>
+                <p>Treat model reviews as a second pass that can surface blind spots, not as a source of final authority.</p>
+              </article>
+              <article class="implication-card">
+                <h3>For tool builders</h3>
+                <p>Optimize for review quality, calibration, and traceable evidence, not just for matching accept/reject labels.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="inner">
+            <h2>Limits</h2>
+            <p class="lede">ReviewerToo is useful because it exposes limits as much as successes.</p>
+            <div class="limits">
+              <div class="limit-row">
+                <span class="label">calibration</span>
+                <p>Five-way decisions remain hard, especially distinctions among oral, spotlight, and poster acceptances.</p>
+              </div>
+              <div class="limit-row">
+                <span class="label">judge</span>
+                <p>Review quality depends on an LLM-as-judge ELO protocol; this is informative but not the same as broad human validation.</p>
+              </div>
+              <div class="limit-row">
+                <span class="label">rebuttal</span>
+                <p>Author responses can push agents toward acceptance, so rebuttal handling needs guardrails and calibration checks.</p>
+              </div>
+              <div class="limit-row">
+                <span class="label">scope</span>
+                <p>The data comes from public OpenReview ICLR 2025 submissions; behavior may differ in other fields, venues, or private-review settings.</p>
+              </div>
+              <div class="limit-row">
+                <span class="label">ethics</span>
+                <p>The authors explicitly frame the system as research and controlled integration, not unsupervised automated decision-making.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band alt">
+          <div class="inner">
+            <h2>Quiz</h2>
+            <p class="lede">Three checks that reward the actual paper, not the vibe.</p>
+            <div class="quiz">
+              <div class="quiz-box" data-answer="b">
+                <h3>1. What was the best-performing ReviewerToo decision configuration in the main table?</h3>
+                <div class="quiz-options">
+                  <button class="quiz-option" data-choice="a" onclick="answerQuiz(this)">A single permissive reviewer</button>
+                  <button class="quiz-option" data-choice="b" onclick="answerQuiz(this)">The Meta (all) aggregation agent</button>
+                  <button class="quiz-option" data-choice="c" onclick="answerQuiz(this)">XGBoost with TF-IDF features</button>
+                </div>
+                <div class="quiz-feedback">Meta (all) is the important one: it reached 81.8% binary accuracy and the highest ELO in the main table.</div>
+              </div>
+              <div class="quiz-box" data-answer="c">
+                <h3>2. Why does the paper use multiple personas?</h3>
+                <div class="quiz-options">
+                  <button class="quiz-option" data-choice="a" onclick="answerQuiz(this)">To make every reviewer agree</button>
+                  <button class="quiz-option" data-choice="b" onclick="answerQuiz(this)">To hide the prompt from the evaluation</button>
+                  <button class="quiz-option" data-choice="c" onclick="answerQuiz(this)">To model different reviewer philosophies and study disagreement</button>
+                </div>
+                <div class="quiz-feedback">The personas make bias and disagreement visible. The system then tests whether aggregation can stabilize those differences.</div>
+              </div>
+              <div class="quiz-box" data-answer="a">
+                <h3>3. What is the major rebuttal-round warning?</h3>
+                <div class="quiz-options">
+                  <button class="quiz-option" data-choice="a" onclick="answerQuiz(this)">Agents may defer too much to author rebuttals</button>
+                  <button class="quiz-option" data-choice="b" onclick="answerQuiz(this)">Agents refuse to read rebuttals</button>
+                  <button class="quiz-option" data-choice="c" onclick="answerQuiz(this)">Rebuttals remove the need for meta-review</button>
+                </div>
+                <div class="quiz-feedback">The authors connect post-rebuttal performance drops to possible sycophancy: the model listens, but may listen too generously.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-feedback" class="panel" aria-labelledby="feedback-title">
+        <div class="band">
+          <div class="inner">
+            <h2 id="feedback-title">comment/feedback</h2>
+            <p class="lede">
+              This public GitHub Pages copy is read-only. The live feedback workflow runs in the local server version, where submitted batches are saved locally so Codex can process comments and update this page before the next publish.
+            </p>
+            <div class="feedback-grid">
+              <article class="feedback-card">
+                <h3>Open the panel</h3>
+                <p>Use the feedback launcher or the button below to open the floating review panel.</p>
+              </article>
+              <article class="feedback-card">
+                <h3>Attach a note</h3>
+                <p>Highlight wording, select a section, or leave a general comment about the explainer.</p>
+              </article>
+              <article class="feedback-card">
+                <h3>Submit batch</h3>
+                <p>The server appends your review to the local inbox for processing.</p>
+              </article>
+            </div>
+            <button class="feedback-button" disabled>feedback panel is local-only</button>
+            <div class="inbox-path">2510.08867/feedback/inbox.jsonl</div>
+            <p style="margin-top: 18px; color: #475569; max-width: 820px;">
+              GitHub Pages hosts the changed explainer as static HTML. It does not run the Python feedback server or accept feedback POST requests.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const heroText = {
+      ez: {
+        eyebrow: "arXiv:2510.08867",
+        subtitle: "The whole paper in 5 minutes 🧠💥"
+      },
+      normal: {
+        eyebrow: "ReviewerToo, rigor pass",
+        subtitle: "A multi-agent peer-review framework tested on ICLR 2025 submissions"
+      },
+      feedback: {
+        eyebrow: "local review loop",
+        subtitle: "Collect comments, process changes, then publish the static copy"
+      }
+    };
+
+    function switchTab(tabId, btn) {
+      document.body.dataset.activeTab = tabId;
+      document.querySelectorAll(".tab-btn").forEach((button) => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.querySelectorAll(".panel").forEach((panel) => panel.classList.remove("active"));
+      const panel = document.getElementById("tab-" + tabId);
+      if (panel) panel.classList.add("active");
+      const hero = heroText[tabId] || heroText.ez;
+      document.getElementById("heroEyebrow").textContent = hero.eyebrow;
+      document.getElementById("heroSubtitle").textContent = hero.subtitle;
+      if (tabId === "normal") {
+        renderComparison(currentView);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleConcept(card) {
+      card.classList.toggle("open");
+      const marker = card.querySelector(".concept-title span:last-child");
+      if (marker) marker.textContent = card.classList.contains("open") ? "-" : "+";
+    }
+
+    const stages = {
+      paper: {
+        title: "Paper ingestion",
+        text: "The submitted paper is converted into a machine-readable manuscript while the real conference decision remains the held-out ground truth.",
+        surface: "A full paper submission with title, abstract, method, experiments, figures, and claims.",
+        data: "Markdown text plus rubric fields, hidden labels, and later model-generated review artifacts."
+      },
+      lit: {
+        title: "Literature review agent",
+        text: "LitLLM generates search queries, ranks retrieved papers, and creates a compact literature summary for grounding.",
+        surface: "A reader-visible related-work brief that says which prior papers matter.",
+        data: "Search queries, Semantic Scholar hits, debate-ranked candidates, and selected top-k summaries."
+      },
+      reviewers: {
+        title: "Reviewer agents",
+        text: "Personas write structured reviews using conference guidance, manuscript spans, and literature evidence.",
+        surface: "Reports with summary, strengths, weaknesses, novelty, soundness, experiments, clarity, impact, and recommendation.",
+        data: "Persona prompt, ICLR rubric, evidence references, categorical decision, and review text for each agent."
+      },
+      author: {
+        title: "Author rebuttal agent",
+        text: "The author agent answers severe criticisms and proposes concrete clarifications or revisions.",
+        surface: "A consolidated rebuttal, like the response authors would submit during conference discussion.",
+        data: "Reviewer claims, cited counterpoints, proposed revisions, and per-configuration rebuttal artifacts."
+      },
+      meta: {
+        title: "Metareviewer agent",
+        text: "The metareviewer aggregates reviewer stances, checks facts, tracks rebuttal shifts, and weighs consensus.",
+        surface: "An area-chair-style synthesis with unresolved concerns and final recommendation.",
+        data: "Review set, rebuttal, optional responses, fact significance scores, agreement patterns, and final label."
+      },
+      final: {
+        title: "Final suggestion",
+        text: "The output is scored against real ICLR outcomes in both five-way and binary accept/reject settings.",
+        surface: "A decision category: oral, spotlight, poster, reject, or desk reject.",
+        data: "Prediction compared with ground truth, macro metrics, accuracy, false positive rate, false negative rate, and ELO."
+      }
+    };
+
+    function selectStage(stageId) {
+      const stage = stages[stageId] || stages.paper;
+      document.getElementById("stageTitle").textContent = stage.title;
+      document.getElementById("stageText").textContent = stage.text;
+      document.getElementById("stageSurface").textContent = stage.surface;
+      document.getElementById("stageData").textContent = stage.data;
+      document.querySelectorAll(".stage-btn").forEach((button) => {
+        button.classList.toggle("active", button.dataset.stage === stageId);
+      });
+      document.querySelectorAll(".pipe-node").forEach((node) => {
+        const active = node.dataset.node === stageId;
+        node.classList.toggle("active", active);
+        node.classList.toggle("dim", !active);
+      });
+    }
+
+    const comparisons = {
+      binary: {
+        title: "2-way accuracy",
+        max: 100,
+        suffix: "%",
+        note: "Binary accept/reject is where ReviewerToo looks most useful: Meta (all) is close to the average human reviewer, though the top human reference remains much stronger.",
+        rows: [
+          ["Human top-1%", 92.4, "#15803d"],
+          ["Human avg", 83.9, "#0f766e"],
+          ["Meta (all)", 81.8, "#1d4ed8"],
+          ["Majority (all)", 75.1, "#2563eb"],
+          ["Meta top-3", 74.8, "#7c3aed"],
+          ["Default", 70.6, "#db2777"],
+          ["Empiricist", 67.6, "#f97316"]
+        ]
+      },
+      five: {
+        title: "5-way F1",
+        max: 35,
+        suffix: "",
+        note: "Fine-grained conference tiers are still tough. Even the best systems struggle to distinguish oral, spotlight, poster, reject, and desk reject.",
+        rows: [
+          ["Human top-1%", 29.7, "#15803d"],
+          ["Meta (all)", 28.1, "#1d4ed8"],
+          ["Majority (all)", 27.9, "#2563eb"],
+          ["Meta top-3", 27.1, "#7c3aed"],
+          ["Theorist", 22.6, "#f97316"],
+          ["Empiricist", 20.6, "#db2777"],
+          ["Human avg", 13.7, "#64748b"]
+        ]
+      },
+      elo: {
+        title: "review ELO",
+        max: 1700,
+        suffix: "",
+        note: "The LLM-as-judge ELO protocol rates review text quality. Meta (all) leads, while the top human reviewers remain strong exemplars.",
+        rows: [
+          ["Meta (all)", 1657, "#1d4ed8"],
+          ["Empiricist", 1558, "#f97316"],
+          ["Theorist", 1463, "#7c3aed"],
+          ["Human top-1%", 1316, "#15803d"],
+          ["Pedagogical", 1256, "#db2777"],
+          ["Default", 1136, "#0f766e"],
+          ["Human avg", 540, "#64748b"]
+        ]
+      },
+      personas: {
+        title: "persona bias",
+        max: 100,
+        suffix: "%",
+        note: "The critical and permissive personas are deliberately extreme. Their low binary accuracy is evidence that persona design changes behavior in measurable ways.",
+        rows: [
+          ["Permissive", 46.8, "#b91c1c"],
+          ["Critical", 53.6, "#b91c1c"],
+          ["Default", 70.6, "#0f766e"],
+          ["Theorist", 71.9, "#1d4ed8"],
+          ["Pedagogical", 70.3, "#7c3aed"],
+          ["Empiricist", 67.6, "#f97316"],
+          ["Meta (all)", 81.8, "#15803d"]
+        ]
+      }
+    };
+    let currentView = "binary";
+
+    function renderComparison(view) {
+      currentView = view || "binary";
+      const config = comparisons[currentView] || comparisons.binary;
+      document.querySelectorAll(".view-btn").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === currentView);
+      });
+      document.getElementById("chartTitle").textContent = config.title;
+      document.getElementById("chartNote").textContent = config.note;
+      const chart = document.getElementById("barChart");
+      if (!chart) return;
+      chart.innerHTML = config.rows.map(([label, value, color]) => {
+        const width = Math.max(3, Math.min(100, (value / config.max) * 100));
+        const shown = Number.isInteger(value) ? value : value.toFixed(1);
+        return `
+          <div class="bar-row">
+            <div class="bar-label">${label}</div>
+            <div class="bar-track"><div class="bar-fill" style="--w:${width}%; --bar:${color};"></div></div>
+            <div class="bar-value">${shown}${config.suffix}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function answerQuiz(button) {
+      const box = button.closest(".quiz-box");
+      if (!box) return;
+      const answer = box.dataset.answer;
+      box.querySelectorAll(".quiz-option").forEach((option) => {
+        option.classList.remove("correct", "wrong");
+        if (option.dataset.choice === answer) option.classList.add("correct");
+      });
+      if (button.dataset.choice !== answer) {
+        button.classList.add("wrong");
+      }
+      const feedback = box.querySelector(".quiz-feedback");
+      if (feedback) feedback.classList.add("show");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    selectStage("paper");
+    renderComparison("binary");
+  </script>
+</body>
+</html>
