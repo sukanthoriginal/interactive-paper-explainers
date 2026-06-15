@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindPilot Paper Explainer</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --blue-dark: #1e40af;
+      --gray: #6b7280;
+      --gray-light: #f3f4f6;
+      --gray-dark: #1f2937;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --orange: #d97706;
+      --orange-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --teal: #0d9488;
+      --teal-light: #ccfbf1;
+      --pink: #db2777;
+      --pink-light: #fce7f3;
+      --line: #e5e7eb;
+      --paper: #ffffff;
+      --body: #fafafa;
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    .hero {
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      padding: 64px 24px 42px;
+      transition: background 0.25s ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 58%, #0d9488 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #1f2937 0%, #7c2d12 100%);
+    }
+
+    .hero-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.42);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      max-width: 780px;
+      font-size: 2.75rem;
+      line-height: 1.1;
+      font-weight: 500;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 22px;
+      max-width: 760px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.08rem;
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      opacity: 0.9;
+    }
+
+    .hero-meta span {
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero-visual {
+      min-height: 250px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(8px);
+    }
+
+    .brain-loop-mini {
+      height: 214px;
+      position: relative;
+    }
+
+    .loop-ring {
+      position: absolute;
+      inset: 24px;
+      border: 2px dashed rgba(255,255,255,0.68);
+      border-radius: 50%;
+    }
+
+    .loop-core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.94);
+      color: #1f2937;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 800;
+      font-size: 0.86rem;
+      line-height: 1.2;
+      box-shadow: var(--shadow);
+    }
+
+    .loop-node {
+      position: absolute;
+      width: 76px;
+      height: 54px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+      display: grid;
+      place-items: center;
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .loop-node.image { left: 0; top: 10px; }
+    .loop-node.signal { right: 0; top: 10px; }
+    .loop-node.score { right: 10px; bottom: 10px; }
+    .loop-node.next { left: 10px; bottom: 10px; }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--gray-dark);
+      border-radius: 999px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 0.94rem;
+      font-weight: 700;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn.active {
+      color: white;
+      border-color: var(--blue-dark);
+      background: var(--blue-dark);
+    }
+
+    body.mode-ez .tab-btn.active {
+      background: var(--pink);
+      border-color: var(--pink);
+    }
+
+    body.mode-feedback .tab-btn.active {
+      background: #92400e;
+      border-color: #92400e;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    section {
+      padding: 52px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2,
+    h3 {
+      margin: 0 0 14px;
+      line-height: 1.22;
+      font-weight: 520;
+      color: #111827;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+    }
+
+    p {
+      margin: 0 0 16px;
+      font-size: 1.04rem;
+    }
+
+    .section-label {
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .ez-hero {
+      margin-top: 38px;
+      padding: 28px;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .ez-hero h2 {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .ez-hero p {
+      max-width: 760px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin-bottom: 0;
+      opacity: 0.94;
+    }
+
+    .ez-big {
+      font-size: 1.28rem;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .ez-emoji-block {
+      margin: 20px 0;
+      padding: 18px 20px;
+      border: 1px solid var(--pink-light);
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .ez-emoji-block ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .ez-emoji-block li {
+      font-size: 1rem;
+      line-height: 1.48;
+    }
+
+    .ez-analogy {
+      margin: 22px 0;
+      padding: 18px 20px;
+      border-left: 5px solid var(--orange);
+      border-radius: 0 8px 8px 0;
+      background: var(--orange-light);
+      font-size: 1.08rem;
+    }
+
+    .ez-tldr {
+      margin: 32px 0 0;
+      padding: 24px;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .ez-tldr h3 {
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .callout {
+      margin: 24px 0;
+      padding: 18px 20px;
+      border-left: 5px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      background: var(--blue-light);
+    }
+
+    .callout.green {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .callout.orange {
+      border-color: var(--orange);
+      background: var(--orange-light);
+    }
+
+    .callout.purple {
+      border-color: var(--purple);
+      background: var(--purple-light);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.05);
+    }
+
+    .concept-card {
+      cursor: pointer;
+      transition: border-color 0.14s, box-shadow 0.14s;
+    }
+
+    .concept-card:hover,
+    .concept-card.open {
+      border-color: var(--blue);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.10);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: #374151;
+    }
+
+    .card-detail {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .concept-card.open .card-detail {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stat-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: white;
+    }
+
+    .stat-value {
+      display: block;
+      color: #111827;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      font-weight: 850;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 6px;
+      color: var(--gray);
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .loop-widget {
+      margin: 26px 0;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      overflow: hidden;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      padding: 18px 20px;
+      border-bottom: 1px solid #dbeafe;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .widget-header h3 {
+      margin-bottom: 4px;
+      color: var(--blue-dark);
+    }
+
+    .widget-header p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .target-toggle,
+    .step-toggle,
+    .bands-mode-toggle {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--gray-light);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .target-toggle button,
+    .step-toggle button,
+    .bands-mode-toggle button {
+      border: 0;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: transparent;
+      color: var(--gray);
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .target-toggle button.active,
+    .step-toggle button.active,
+    .bands-mode-toggle button.active {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .loop-canvas {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .loop-diagram {
+      position: relative;
+      min-height: 560px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 45%, #ffffff 0 22%, rgba(219,234,254,0.72) 23% 26%, transparent 27%),
+        linear-gradient(135deg, rgba(13,148,136,0.08), rgba(124,58,237,0.06));
+      overflow: hidden;
+    }
+
+    .loop-arrow-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .loop-arrow-svg path {
+      fill: none;
+      stroke: rgba(37,99,235,0.4);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 8 10;
+    }
+
+    .loop-center {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+      width: 210px;
+      padding: 16px;
+      border: 1px solid #c4b5fd;
+      border-radius: 8px;
+      background: white;
+      text-align: center;
+      box-shadow: var(--shadow);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .loop-center-label {
+      color: var(--purple);
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .loop-vector {
+      height: 62px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .loop-vector span {
+      width: 16px;
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(180deg, #7c3aed, #c4b5fd);
+    }
+
+    .loop-stage {
+      position: absolute;
+      width: 210px;
+      min-height: 178px;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 10px 26px rgba(15,23,42,0.08);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s;
+    }
+
+    .loop-stage.active {
+      border-color: var(--orange);
+      box-shadow: 0 12px 28px rgba(217,119,6,0.18);
+      transform: translateY(-3px);
+    }
+
+    .loop-stage h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    .loop-stage p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .loop-stage strong {
+      color: #111827;
+    }
+
+    .stage-1 { left: 24px; top: 24px; }
+    .stage-2 { right: 24px; top: 24px; }
+    .stage-3 { right: 24px; bottom: 24px; }
+    .stage-4 { left: 50%; bottom: 18px; transform: translateX(-50%); }
+    .stage-4.active { transform: translateX(-50%) translateY(-3px); }
+    .stage-5 { left: 24px; bottom: 24px; }
+
+    .mini {
+      height: 70px;
+      margin-bottom: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      overflow: hidden;
+    }
+
+    .mini-images {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      padding: 7px;
+    }
+
+    .mini-images span {
+      border-radius: 6px;
+      background: linear-gradient(135deg, #93c5fd, #16a34a);
+    }
+
+    .mini-images span:nth-child(2) {
+      background: linear-gradient(135deg, #fce7f3, #db2777);
+    }
+
+    .mini-images span:nth-child(3) {
+      background: linear-gradient(135deg, #fef3c7, #f97316);
+    }
+
+    .mini-wave {
+      display: grid;
+      gap: 5px;
+      align-content: center;
+      padding: 12px;
+    }
+
+    .mini-wave span {
+      height: 7px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, #0d9488 0 10px, #bfdbfe 10px 17px);
+    }
+
+    .mini-bars {
+      display: flex;
+      align-items: end;
+      gap: 5px;
+      padding: 9px;
+    }
+
+    .mini-bars span {
+      flex: 1;
+      border-radius: 4px 4px 2px 2px;
+      background: linear-gradient(180deg, #2563eb, #bfdbfe);
+    }
+
+    .mini-score {
+      display: grid;
+      align-content: center;
+      gap: 9px;
+      padding: 12px;
+    }
+
+    .score-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .score-track span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f97316, #22c55e);
+    }
+
+    .loop-side {
+      border-left: 1px solid #dbeafe;
+      padding-left: 20px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .loop-side h3 {
+      color: var(--blue-dark);
+    }
+
+    .step-toggle {
+      flex-wrap: wrap;
+      border-radius: 8px;
+      background: white;
+      margin: 10px 0 16px;
+    }
+
+    .step-toggle button {
+      border-radius: 6px;
+    }
+
+    .stage-detail {
+      min-height: 210px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+    }
+
+    .stage-detail p {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .chips span {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--gray-light);
+      color: #334155;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 24px 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .pipe-stage {
+      position: relative;
+      min-height: 170px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .pipe-stage:not(:last-child)::after {
+      content: "->";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--blue);
+      font-weight: 900;
+      z-index: 2;
+    }
+
+    .pipe-stage h3 {
+      font-size: 0.94rem;
+      margin-bottom: 10px;
+      font-weight: 850;
+    }
+
+    .pipe-stage p {
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: #475569;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      margin: 24px 0;
+      align-items: stretch;
+    }
+
+    .chart-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .chart-card h3 {
+      margin-bottom: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 58px;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+      font-size: 0.86rem;
+    }
+
+    .bar-shell {
+      position: relative;
+      height: 18px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #0d9488);
+    }
+
+    .bar-fill.orange {
+      background: linear-gradient(90deg, #f97316, #db2777);
+    }
+
+    .band-plot {
+      height: 170px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .band-plot::before {
+      content: "";
+      position: absolute;
+      left: 38px;
+      right: 22px;
+      top: 62px;
+      height: 48px;
+      border-radius: 999px;
+      background: rgba(37,99,235,0.16);
+      transform: skewY(-7deg);
+    }
+
+    .trend-line {
+      position: absolute;
+      left: 42px;
+      right: 26px;
+      top: 88px;
+      height: 3px;
+      background: var(--blue);
+      transform: rotate(-13deg);
+      transform-origin: left center;
+    }
+
+    .trend-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.16);
+    }
+
+    .trend-dot.d1 { left: 54px; top: 108px; }
+    .trend-dot.d2 { left: 118px; top: 94px; }
+    .trend-dot.d3 { left: 188px; top: 84px; }
+    .trend-dot.d4 { right: 78px; top: 72px; }
+
+    .axis-note {
+      color: var(--gray);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      margin-top: 8px;
+    }
+
+    .limits-list {
+      display: grid;
+      gap: 10px;
+      margin: 24px 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .limit-row strong {
+      color: #111827;
+    }
+
+    .limit-row span {
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .bands-table-wrap {
+      margin: 12px 0 28px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .bands-table-wrap.hidden {
+      display: none;
+    }
+
+    .bands-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+    }
+
+    .bands-table th,
+    .bands-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #edf2f7;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .bands-table th {
+      background: var(--gray-light);
+      color: #111827;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .bands-table .source-row td {
+      background: #fafafa;
+      color: var(--gray);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
+    .term {
+      border-bottom: 1px dotted var(--gray);
+      color: #111827;
+      font-weight: 800;
+      cursor: help;
+    }
+
+    .term:hover,
+    .term.active {
+      background: var(--orange-light);
+    }
+
+    .term-tip {
+      position: absolute;
+      z-index: 1000;
+      max-width: 320px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+
+    .term-tip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .quiz-box {
+      margin: 18px 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .quiz-box p {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #111827;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .quiz-options button.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .quiz-options button.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--blue-light);
+      color: #111827;
+      font-size: 0.92rem;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .feedback-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 999px;
+      background: #92400e;
+      color: white;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(146,64,14,0.18);
+    }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: #f1f5f9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 920px) {
+      .hero-inner,
+      .loop-canvas,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .loop-side {
+        border-left: 0;
+        border-top: 1px solid #dbeafe;
+        padding-left: 0;
+        padding-top: 18px;
+      }
+
+      .pipeline,
+      .stats,
+      .feedback-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero {
+        padding: 44px 18px 30px;
+      }
+
+      .hero h1 {
+        font-size: 1.85rem;
+      }
+
+      .container {
+        padding: 0 18px 64px;
+      }
+
+      .tab-bar {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        flex: 0 0 auto;
+        padding: 8px 14px;
+      }
+
+      .cards,
+      .pipeline,
+      .stats,
+      .feedback-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .loop-diagram {
+        display: grid;
+        gap: 12px;
+        min-height: 0;
+        padding: 14px;
+        background: linear-gradient(180deg, #eff6ff, #ffffff);
+      }
+
+      .loop-arrow-svg {
+        display: none;
+      }
+
+      .loop-center,
+      .loop-stage,
+      .stage-1,
+      .stage-2,
+      .stage-3,
+      .stage-4,
+      .stage-5 {
+        position: static;
+        width: auto;
+        transform: none;
+      }
+
+      .stage-4.active {
+        transform: translateY(-3px);
+      }
+
+      .pipe-stage:not(:last-child)::after {
+        content: "down";
+        right: 14px;
+        top: auto;
+        bottom: -13px;
+        background: white;
+        padding: 0 6px;
+      }
+
+      .limit-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="mode-ez">
+  <header class="hero" id="topHero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker" id="heroKicker">braindead</div>
+        <h1>MindPilot: can pictures steer brain signals?</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta">
+          <span>ICLR 2026</span>
+          <span>arXiv:2602.10552</span>
+          <span>EEG-guided diffusion</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Closed-loop summary">
+        <div class="brain-loop-mini">
+          <div class="loop-ring"></div>
+          <div class="loop-core">target<br>brain<br>feature</div>
+          <div class="loop-node image">image</div>
+          <div class="loop-node signal">brain<br>signal</div>
+          <div class="loop-node score">score</div>
+          <div class="loop-node next">next<br>image</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Explainer tabs">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main class="container">
+    <article id="tab-ez" class="tab-panel active">
+      <div class="ez-hero">
+        <h2>The whole paper in 5 minutes 🧠💥</h2>
+        <p>MindPilot asks a wild but simple question: can an artificial intelligence system keep changing pictures until a person's brain signals move closer to a desired state?</p>
+      </div>
+
+      <section>
+        <p class="ez-big"><strong>The paper is about a feedback loop.</strong> Show someone a picture, record the tiny electrical wiggles from electrodes on the scalp, score whether those wiggles look closer to the desired brain pattern, then use that score to choose or generate the next picture.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🖼️ The system controls the pictures, not the brain directly.</li>
+            <li>📡 The brain replies with noisy scalp-electrode signals.</li>
+            <li>🎯 The system keeps pictures that seem to push the signal in the right direction.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          Think of it like playing hot-and-cold while blindfolded. The system cannot see the person's exact thought. It only gets warmer/colder hints from the brain signal, then picks the next picture based on those hints.
+        </div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The trick is treating the brain like a black box.</strong> The authors do not try to open the brain and calculate perfect instructions. They treat it like a vending machine with mysterious wiring: put in an image, get out a signal, learn from the signal, try again.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🧃 Input: a natural-looking image.</li>
+            <li>⚡ Output: a messy electrical response.</li>
+            <li>🧭 Goal: make future outputs more like the target response.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          It is like adjusting a recipe by taste. You do not know the exact chemistry of the soup. You taste it, add salt, taste again, and slowly move toward the flavor you want.
+        </div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The pictures are not just picked from a folder.</strong> MindPilot can also use an image-making model. Better-scoring pictures become parents for new pictures, so the next batch is not random mush - it is a guided remix of what seemed to work.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🧬 Good pictures pass along their "family traits."</li>
+            <li>🎨 The image generator makes new candidates.</li>
+            <li>🔁 The loop repeats until the system finds a better match.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          Imagine a photographer taking many shots, showing you the best few, then making the next photos more like the ones that made your face light up. MindPilot does that, except the "face lighting up" is replaced by scalp-electrode signals or ratings.
+        </div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The results are promising, but not magic.</strong> A lot of the testing uses a stand-in brain model trained from public data. The human study is small, and some people's signals were too messy for part of the analysis. The paper is saying "this might be possible," not "we can now program moods from across the room."</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>✅ It shows the loop can improve over repeated attempts.</li>
+            <li>🧪 It works best when the target is clear enough to score.</li>
+            <li>🧯 It still has noise, person-to-person differences, and speed problems.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          This is more like the first clunky steering wheel for brain-guided image generation than a self-driving car. The wheel turns, but nobody should pretend the highway is solved.
+        </div>
+      </section>
+
+      <section>
+        <div class="ez-tldr">
+          <h3>TL;DR</h3>
+          <p>MindPilot shows a possible recipe for making images that adapt to brain feedback: show picture, measure response, score closeness to a target, generate a better next picture. The exciting part is the closed loop. The caution is that the signal is noisy, the human evidence is early, and "steering brain states" is still a careful proof-of-concept.</p>
+        </div>
+      </section>
+    </article>
+
+    <article id="tab-normal" class="tab-panel">
+      <section>
+        <div class="section-label">The Question</div>
+        <h2>Can image generation be optimized by brain feedback instead of text prompts?</h2>
+        <p>Most brain-computer interface work decodes brain signals into intent or behavior. MindPilot flips the direction: use controlled visual stimuli to steer brain activity toward a target feature. The key difficulty is that electroencephalography (EEG) is noisy, subjective states are hard to quantify, and the brain is not differentiable.</p>
+        <div class="callout">
+          <strong>Core claim:</strong> A closed-loop image system can use EEG-derived rewards to search for, and generate, naturalistic images that better match semantic, spectral, or affective brain targets.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Key Concepts</div>
+        <h2>Four ideas that carry the paper</h2>
+        <div class="cards">
+          <article class="card concept-card" onclick="toggleCard(this)">
+            <h3>Black-box brain model</h3>
+            <p>The optimizer only needs input-output feedback.</p>
+            <div class="card-detail">
+              <p>An image goes in; a real brain or proxy image-to-EEG model returns a response. The optimizer does not require gradients through the brain.</p>
+            </div>
+          </article>
+          <article class="card concept-card" onclick="toggleCard(this)">
+            <h3>Target feature</h3>
+            <p>The goal is a representation, not a literal thought.</p>
+            <div class="card-detail">
+              <p>The target can be a semantic embedding aligned with CLIP, a power spectral density feature, or a behavioral affect rating used as a reward signal.</p>
+            </div>
+          </article>
+          <article class="card concept-card" onclick="toggleCard(this)">
+            <h3>Reward spreading</h3>
+            <p>Good images make similar images more likely next.</p>
+            <div class="card-detail">
+              <p>After each batch, the top-scoring candidates receive direct reward, and that reward is spread to nearby images in CLIP embedding space before softmax sampling.</p>
+            </div>
+          </article>
+          <article class="card concept-card" onclick="toggleCard(this)">
+            <h3>Pseudo-model guidance</h3>
+            <p>A surrogate estimates where diffusion should move.</p>
+            <div class="card-detail">
+              <p>For generation, a Gaussian Process surrogate estimates local reward gradients in latent space. This avoids expensive global black-box optimization over huge diffusion latents.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Interactive Widget</div>
+        <h2>The closed loop, step by step</h2>
+        <p>The main mechanism is easier to see than to read as equations. Pick a target type, then step through the visible object and hidden data object at each stage.</p>
+
+        <div class="loop-widget">
+          <div class="widget-header">
+            <div>
+              <h3>MindPilot control loop</h3>
+              <p>Surface layer: what the participant sees. Data layer: what the optimizer updates.</p>
+            </div>
+            <div class="target-toggle" aria-label="Target type">
+              <button class="active" onclick="setTargetMode('semantic', this)">semantic</button>
+              <button onclick="setTargetMode('psd', this)">spectral</button>
+              <button onclick="setTargetMode('affect', this)">affect</button>
+            </div>
+          </div>
+          <div class="loop-canvas">
+            <div class="loop-diagram" aria-label="Closed-loop optimization diagram">
+              <svg class="loop-arrow-svg" viewBox="0 0 680 560" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M164 96 C260 42, 418 42, 516 96"></path>
+                <path d="M592 176 C636 286, 590 424, 516 472"></path>
+                <path d="M426 514 C326 552, 238 548, 164 472"></path>
+                <path d="M86 420 C26 300, 38 176, 164 96"></path>
+                <path d="M182 378 C282 326, 398 326, 498 378"></path>
+              </svg>
+              <div class="loop-center">
+                <div class="loop-center-label">target</div>
+                <strong id="targetTitle">CLIP-aligned semantic feature</strong>
+                <div class="loop-vector" aria-hidden="true">
+                  <span style="height: 44%"></span>
+                  <span style="height: 72%"></span>
+                  <span style="height: 58%"></span>
+                  <span style="height: 86%"></span>
+                  <span style="height: 36%"></span>
+                </div>
+                <p id="targetText">A feature vector describing what kind of image the brain response should resemble.</p>
+              </div>
+
+              <article class="loop-stage stage-1 active" data-step="1">
+                <h4>1. Show image</h4>
+                <div class="mini mini-images" aria-hidden="true"><span></span><span></span><span></span></div>
+                <p><strong>Surface:</strong> a natural image. <strong>Data:</strong> pixels and image embedding.</p>
+              </article>
+              <article class="loop-stage stage-2" data-step="2">
+                <h4>2. Measure response</h4>
+                <div class="mini mini-wave" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                <p><strong>Surface:</strong> participant views it. <strong>Data:</strong> EEG channels x time.</p>
+              </article>
+              <article class="loop-stage stage-3" data-step="3">
+                <h4>3. Extract feature</h4>
+                <div class="mini mini-bars" aria-hidden="true"><span style="height:24%"></span><span style="height:80%"></span><span style="height:54%"></span><span style="height:88%"></span><span style="height:42%"></span></div>
+                <p><strong>Surface:</strong> none visible. <strong>Data:</strong> semantic, spectral, or rating feature.</p>
+              </article>
+              <article class="loop-stage stage-4" data-step="4">
+                <h4>4. Score target fit</h4>
+                <div class="mini mini-score" aria-hidden="true"><div class="score-track"><span style="width:50%"></span></div><div class="score-track"><span style="width:72%"></span></div></div>
+                <p><strong>Surface:</strong> no user-facing change. <strong>Data:</strong> similarity reward.</p>
+              </article>
+              <article class="loop-stage stage-5" data-step="5">
+                <h4>5. Generate next</h4>
+                <div class="mini mini-images" aria-hidden="true"><span></span><span></span><span></span></div>
+                <p><strong>Surface:</strong> new images. <strong>Data:</strong> updated weights and diffusion embedding.</p>
+              </article>
+            </div>
+            <aside class="loop-side">
+              <h3>Inspect a stage</h3>
+              <div class="step-toggle" aria-label="Loop stages">
+                <button class="active" onclick="setLoopStep(1, this)">1</button>
+                <button onclick="setLoopStep(2, this)">2</button>
+                <button onclick="setLoopStep(3, this)">3</button>
+                <button onclick="setLoopStep(4, this)">4</button>
+                <button onclick="setLoopStep(5, this)">5</button>
+              </div>
+              <div class="stage-detail" id="stageDetail">
+                <h3>Show image</h3>
+                <p>The controllable action is the visual stimulus. In search mode this comes from a fixed pool; in generation mode it can come from SDXL-Lightning with IP-Adapter conditioning.</p>
+                <div class="chips"><span>image</span><span>CLIP embedding</span><span>candidate batch</span></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Method</div>
+        <h2>What runs in each experiment</h2>
+        <div class="pipeline">
+          <article class="pipe-stage">
+            <h3>Public EEG corpus</h3>
+            <p>THINGS-EEG2 supplies visual responses from 10 subjects, with 82,160 image trials after repetitions.</p>
+          </article>
+          <article class="pipe-stage">
+            <h3>Proxy model</h3>
+            <p>Backbones such as AlexNet and ResNet50 predict 17-channel x 250-timepoint EEG windows.</p>
+          </article>
+          <article class="pipe-stage">
+            <h3>Feature encoder</h3>
+            <p>ATM-S maps EEG toward CLIP-aligned semantic vectors; power spectral density captures spectral targets.</p>
+          </article>
+          <article class="pipe-stage">
+            <h3>Reward update</h3>
+            <p>Similarity scores update image probabilities with direct reward and reward spreading across similar images.</p>
+          </article>
+          <article class="pipe-stage">
+            <h3>Diffusion search</h3>
+            <p>A Gaussian Process pseudo-model guides SDXL-Lightning/IP-Adapter toward higher-scoring candidates.</p>
+          </article>
+        </div>
+
+        <div class="stats">
+          <div class="stat-box">
+            <span class="stat-value">600</span>
+            <span class="stat-label">image search space in the main retrieval setup</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-value">10</span>
+            <span class="stat-label">random starting images in search and generation setups</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-value">17 x 250</span>
+            <span class="stat-label">proxy output shape: selected EEG channels by time points</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-value">0.1 / 0.1</span>
+            <span class="stat-label">reported alpha and beta settings for reward movement and spreading</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Reference Table</div>
+        <h2>Plain versus scientific terms</h2>
+        <p>This paper is term-dense, so the table can switch between the version you would explain at a whiteboard and the version used by the methods section.</p>
+        <div class="bands-mode-toggle">
+          <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
+          <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
+        </div>
+        <div class="bands-table-wrap" id="bandsTablePlain">
+          <table class="bands-table">
+            <thead>
+              <tr><th>Term</th><th>Plain meaning</th><th>Why it matters here</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Brain response</td><td>The scalp-electrode squiggle after a picture appears.</td><td>This is the feedback signal that tells the system warmer or colder.</td></tr>
+              <tr><td>Meaning vector</td><td>A compact code for what the picture seems to be about.</td><td>MindPilot can chase "make the response more like this target image."</td></tr>
+              <tr><td>Rhythm energy</td><td>How strong different brain-signal rhythms are after the picture.</td><td>The system can target signal shape, not only picture meaning.</td></tr>
+              <tr><td>Stand-in brain</td><td>A model trained to predict brain responses from images.</td><td>It makes large closed-loop tests possible before expensive live EEG studies.</td></tr>
+              <tr class="source-row"><td colspan="3">Source: paper Sections 3-4 and Appendix A.1-A.3.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bands-table-wrap hidden" id="bandsTableScience">
+          <table class="bands-table">
+            <thead>
+              <tr><th>Term</th><th>Scientific meaning</th><th>Why it matters here</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="term" title="Electroencephalography records electrical activity from electrodes on the scalp.">EEG</span></td><td>Multi-channel signal x in C by T after visual stimulus u.</td><td>The optimizer treats x = g(u) as a non-differentiable black-box output.</td></tr>
+              <tr><td><span class="term" title="CLIP maps images and text into a shared semantic embedding space.">CLIP</span> embedding</td><td>Semantic representation aligned with ATM-S EEG features.</td><td>It lets image similarity and EEG semantic similarity be compared.</td></tr>
+              <tr><td><span class="term" title="Power spectral density measures signal power across frequency bands.">PSD</span> feature</td><td>Frequency-domain feature derived from EEG power.</td><td>It supports targets based on neural spectral patterns rather than categories.</td></tr>
+              <tr><td><span class="term" title="A Gaussian Process estimates a local reward surface from sampled observations.">Gaussian Process</span> pseudo-model</td><td>Surrogate used to estimate local reward gradients in latent space.</td><td>It guides diffusion without gradients through the brain or EEG encoder.</td></tr>
+              <tr class="source-row"><td colspan="3">Source: paper Sections 3.1-3.5 and Appendix A.2.4.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Results</div>
+        <h2>What improved, and how much?</h2>
+        <div class="result-grid">
+          <article class="chart-card">
+            <h3>Semantic iteration score</h3>
+            <div class="bar-row"><span>Random</span><div class="bar-shell"><div class="bar-fill" style="width:60.12%"></div></div><strong>0.6012</strong></div>
+            <div class="bar-row"><span>Step 1</span><div class="bar-shell"><div class="bar-fill" style="width:73.70%"></div></div><strong>0.7370</strong></div>
+            <div class="bar-row"><span>Best step</span><div class="bar-shell"><div class="bar-fill" style="width:84.51%"></div></div><strong>0.8451</strong></div>
+            <p class="axis-note">Average Semantic Similarity Score from Table 3. The paper reports an average improvement of 10.9088 percentage points in semantic similarity and 2.6498 percentage points in intensity similarity.</p>
+          </article>
+
+          <article class="chart-card">
+            <h3>Generation benchmark</h3>
+            <div class="bar-row"><span>Chance CLIP</span><div class="bar-shell"><div class="bar-fill orange" style="width:48%"></div></div><strong>0.48</strong></div>
+            <div class="bar-row"><span>MindPilot</span><div class="bar-shell"><div class="bar-fill orange" style="width:67%"></div></div><strong>0.67</strong></div>
+            <div class="bar-row"><span>Upper bound</span><div class="bar-shell"><div class="bar-fill orange" style="width:76%"></div></div><strong>0.76</strong></div>
+            <p class="axis-note">CLIP metric from Table 2. MindPilot is not a direct EEG-to-image decoder; it searches iteratively without seeing the ground-truth target image.</p>
+          </article>
+
+          <article class="chart-card">
+            <h3>Reported confidence band</h3>
+            <p>The image-EEG embedding relationship in Figure 3B is reported as R = 0.23, P &lt; 0.01 with a 95% confidence band. The exact band endpoints are not exposed in the text extraction, so this panel keeps the exact reported point and shows the band qualitatively.</p>
+            <div class="band-plot" aria-label="Qualitative confidence band around positive correlation">
+              <div class="trend-line"></div>
+              <span class="trend-dot d1"></span>
+              <span class="trend-dot d2"></span>
+              <span class="trend-dot d3"></span>
+              <span class="trend-dot d4"></span>
+            </div>
+            <p class="axis-note">Read as: positive trend, noisy cloud, confidence region around the fitted line.</p>
+          </article>
+
+          <article class="chart-card">
+            <h3>Human validation</h3>
+            <div class="bar-row"><span>Emotion start</span><div class="bar-shell"><div class="bar-fill" style="width:45%"></div></div><strong>0.45</strong></div>
+            <div class="bar-row"><span>Emotion end</span><div class="bar-shell"><div class="bar-fill" style="width:60%"></div></div><strong>0.60</strong></div>
+            <div class="bar-row"><span>Reward rating R</span><div class="bar-shell"><div class="bar-fill" style="width:71.4%"></div></div><strong>0.714</strong></div>
+            <p class="axis-note">Figure 7 reports emotion ratings rising from 0.45 to 0.60, and estimator rewards correlating with human ratings at R = 0.714, P &lt;= 0.001.</p>
+          </article>
+        </div>
+
+        <div class="callout orange">
+          <strong>Important reading:</strong> the strongest quantitative sections are proxy/simulation-heavy. The real-time human experiment recruited 10 participants, but Appendix A.2.6 says 4 were excluded from the Figure 6 E-F correlation analysis because of poor data quality.
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Implications</div>
+        <h2>What this could matter for</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>If you build generative systems</h3>
+            <p>MindPilot is a template for using noisy human signals as optimization feedback without a clean differentiable reward model.</p>
+          </article>
+          <article class="card">
+            <h3>If you study neuroscience</h3>
+            <p>It turns EEG from an offline readout into an active experimental control signal, which could create new adaptive stimulus paradigms.</p>
+          </article>
+          <article class="card">
+            <h3>If you evaluate claims</h3>
+            <p>Separate "closed-loop optimization works in a proxy setting" from "we can robustly modulate real people in real time."</p>
+          </article>
+          <article class="card">
+            <h3>If you think about safety</h3>
+            <p>The paper stays in consent-based lab experiments, but the direction raises obvious questions about affective manipulation and governance.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Limits</div>
+        <h2>The caveats that matter</h2>
+        <div class="limits-list">
+          <div class="limit-row"><strong>Many-to-one ambiguity</strong><span>Multiple different images can evoke similar EEG responses, so the optimized stimulus is not necessarily unique or semantically exact.</span></div>
+          <div class="limit-row"><strong>Person variability</strong><span>The paper says current models do not explicitly solve inter-subject variability; subject-adaptive strategies are future work.</span></div>
+          <div class="limit-row"><strong>Human data quality</strong><span>Ten participants were recruited, but four were excluded from part of the correlation analysis because of poor signal quality.</span></div>
+          <div class="limit-row"><strong>Latency</strong><span>The authors validate feasibility but say the current experiments are not optimized for real-time latency.</span></div>
+          <div class="limit-row"><strong>Proxy gap</strong><span>Large-scale tests rely on synthetic/proxy EEG. The sim-to-real gap is central, especially for fine-grained semantic matching.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Quiz</div>
+        <h2>Check your reading</h2>
+        <div class="quiz-box">
+          <p><strong>1. What makes MindPilot "closed loop"?</strong></p>
+          <div class="quiz-options">
+            <button onclick="answerQuiz(this, false, 'Not quite. A text prompt can condition an image model, but MindPilot updates from brain or rating feedback after each batch.')">It writes better text prompts after seeing generated images.</button>
+            <button onclick="answerQuiz(this, true, 'Correct. The output of one round - EEG features or ratings - changes which images are searched or generated next.')">Brain feedback from one round changes the next image batch.</button>
+            <button onclick="answerQuiz(this, false, 'No. The paper uses non-invasive EEG in human experiments, not implanted stimulation.')">It directly stimulates neurons with implanted electrodes.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-box">
+          <p><strong>2. Why use a pseudo-model instead of ordinary Bayesian optimization over the whole image latent space?</strong></p>
+          <div class="quiz-options">
+            <button onclick="answerQuiz(this, false, 'The point is not that Bayesian optimization is impossible at small budgets; the appendix argues it scales poorly in high-dimensional latent spaces.')">Because Bayesian optimization cannot ever handle noisy data.</button>
+            <button onclick="answerQuiz(this, true, 'Correct. The appendix argues the surrogate-gradient approach gives a local update direction and avoids global acquisition optimization in huge diffusion latents.')">Because local surrogate guidance is more scalable in very high-dimensional latent spaces.</button>
+            <button onclick="answerQuiz(this, false, 'No. The proxy exists because live EEG queries are expensive, not because all rewards are text labels.')">Because the rewards are always written as text.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-box">
+          <p><strong>3. Which caveat is most important when interpreting the human results?</strong></p>
+          <div class="quiz-options">
+            <button onclick="answerQuiz(this, false, 'The paper did use real human experiments; the caveat is about size, quality, and scope.')">There were no real human participants.</button>
+            <button onclick="answerQuiz(this, true, 'Correct. The study is early: 10 recruited participants, exclusions for some correlation analyses, and the authors explicitly flag sim-to-real and latency limits.')">The human study is small and uneven, so the result is feasibility evidence rather than a mature controller.</button>
+            <button onclick="answerQuiz(this, false, 'No. The paper uses naturalistic images and diffusion, not only flicker stimuli.')">The system only works with low-level flicker patterns.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </section>
+    </article>
+
+    <article id="tab-feedback" class="tab-panel">
+      <section>
+        <div class="section-label">Review Loop</div>
+        <h2>comment/feedback</h2>
+        <p>This public GitHub Pages copy is read-only. The live feedback workflow runs in the local server version, where submitted batches are saved locally so Codex can process comments and update this page before the next publish.</p>
+        <div class="feedback-grid">
+          <article class="card">
+            <h3>Open locally</h3>
+            <p>Run the local feedback server to load the floating review panel and collect comments.</p>
+          </article>
+          <article class="card">
+            <h3>Attach a note</h3>
+            <p>In the local version, highlight wording, select a section, or leave a general comment.</p>
+          </article>
+          <article class="card">
+            <h3>Publish changes</h3>
+            <p>After Codex applies feedback locally, push the updated static HTML to refresh this hosted page.</p>
+          </article>
+        </div>
+        <p>Local inbox path: <code>papers/2602.10552/feedback/inbox.jsonl</code></p>
+        <button class="feedback-button" disabled>feedback panel is local-only</button>
+        <div class="callout orange">
+          GitHub Pages hosts the changed explainer as static HTML. It does not run the Python feedback server or accept feedback POST requests.
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <script>
+    const heroCopy = {
+      ez: {
+        mode: "mode-ez",
+        kicker: "braindead",
+        subtitle: "The whole paper in 5 minutes 🧠💥"
+      },
+      normal: {
+        mode: "mode-normal",
+        kicker: "braingood",
+        subtitle: "Rigorous walkthrough: loop mechanics, features, evidence, limits, and quiz."
+      },
+      feedback: {
+        mode: "mode-feedback",
+        kicker: "comment/feedback",
+        subtitle: "Review the page, submit notes, and let the local feedback loop capture changes."
+      }
+    };
+
+    const targetModes = {
+      semantic: {
+        title: "CLIP-aligned semantic feature",
+        text: "A feature vector describing what kind of image the brain response should resemble."
+      },
+      psd: {
+        title: "Power spectral density feature",
+        text: "A frequency-domain signature describing the energy shape of the EEG response."
+      },
+      affect: {
+        title: "Human valence rating",
+        text: "A behavioral reward from 0 negative to 1 positive, used when no explicit EEG target is available."
+      }
+    };
+
+    const stageDetails = {
+      1: {
+        title: "Show image",
+        text: "The controllable action is the visual stimulus. In search mode this comes from a fixed pool; in generation mode it can come from SDXL-Lightning with IP-Adapter conditioning.",
+        chips: ["image", "CLIP embedding", "candidate batch"]
+      },
+      2: {
+        title: "Measure response",
+        text: "The system records a live EEG response or asks a trained proxy model to predict one. This is deliberately treated as a black-box function.",
+        chips: ["EEG", "channels x time", "black box"]
+      },
+      3: {
+        title: "Extract feature",
+        text: "Raw EEG becomes a target-comparable feature: semantic embedding via ATM-S, spectral power via PSD, or a human rating in the affect task.",
+        chips: ["ATM-S", "PSD", "rating"]
+      },
+      4: {
+        title: "Score target fit",
+        text: "The current feature is compared with the target. The paper mainly uses cosine similarity for EEG features and ratings for emotion regulation.",
+        chips: ["similarity", "reward", "target"]
+      },
+      5: {
+        title: "Generate next",
+        text: "Direct rewards and spreading update probabilities. In the generation setup, parent embeddings are crossed over and diffusion creates new candidate images.",
+        chips: ["softmax", "crossover", "diffusion"]
+      }
+    };
+
+    function switchTab(id, btn) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+      const panel = document.getElementById("tab-" + id);
+      if (panel) panel.classList.add("active");
+      document.querySelectorAll(".tab-btn").forEach(tab => tab.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      const copy = heroCopy[id] || heroCopy.ez;
+      document.body.classList.add(copy.mode);
+      document.getElementById("heroKicker").textContent = copy.kicker;
+      document.getElementById("heroSubtitle").textContent = copy.subtitle;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleCard(card) {
+      card.classList.toggle("open");
+    }
+
+    function setTargetMode(mode, btn) {
+      const data = targetModes[mode] || targetModes.semantic;
+      document.getElementById("targetTitle").textContent = data.title;
+      document.getElementById("targetText").textContent = data.text;
+      document.querySelectorAll(".target-toggle button").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    function setLoopStep(step, btn) {
+      document.querySelectorAll(".loop-stage").forEach(stage => {
+        stage.classList.toggle("active", stage.dataset.step === String(step));
+      });
+      document.querySelectorAll(".step-toggle button").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      const data = stageDetails[step];
+      const detail = document.getElementById("stageDetail");
+      detail.innerHTML = [
+        "<h3>" + data.title + "</h3>",
+        "<p>" + data.text + "</p>",
+        '<div class="chips">' + data.chips.map(chip => "<span>" + chip + "</span>").join("") + "</div>"
+      ].join("");
+    }
+
+    function setBandsMode(mode, btn) {
+      const plain = document.getElementById("bandsTablePlain");
+      const science = document.getElementById("bandsTableScience");
+      if (!plain || !science) return;
+      if (mode === "science") {
+        plain.classList.add("hidden");
+        science.classList.remove("hidden");
+      } else {
+        science.classList.add("hidden");
+        plain.classList.remove("hidden");
+      }
+      document.querySelectorAll(".bands-mode-toggle button").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    function answerQuiz(button, correct, message) {
+      const box = button.closest(".quiz-box");
+      box.querySelectorAll(".quiz-options button").forEach(b => {
+        b.classList.remove("correct", "wrong");
+      });
+      button.classList.add(correct ? "correct" : "wrong");
+      const feedback = box.querySelector(".quiz-feedback");
+      feedback.textContent = message;
+      feedback.classList.add("show");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    (function initTermTips() {
+      const tip = document.createElement("div");
+      tip.className = "term-tip";
+      document.body.appendChild(tip);
+      let activeTerm = null;
+
+      document.querySelectorAll(".term[title]").forEach(term => {
+        term.setAttribute("data-def", term.getAttribute("title"));
+        term.removeAttribute("title");
+      });
+
+      function showTip(term) {
+        const text = term.getAttribute("data-def");
+        if (!text) return;
+        tip.textContent = text;
+        const rect = term.getBoundingClientRect();
+        tip.style.left = (rect.left + window.scrollX) + "px";
+        tip.style.top = (rect.bottom + window.scrollY + 10) + "px";
+        tip.classList.add("visible");
+        requestAnimationFrame(() => {
+          const tipRect = tip.getBoundingClientRect();
+          if (tipRect.right > window.innerWidth - 12) {
+            tip.style.left = (window.innerWidth - tipRect.width - 12 + window.scrollX) + "px";
+          }
+        });
+        if (activeTerm && activeTerm !== term) activeTerm.classList.remove("active");
+        term.classList.add("active");
+        activeTerm = term;
+      }
+
+      function hideTip() {
+        tip.classList.remove("visible");
+        if (activeTerm) activeTerm.classList.remove("active");
+        activeTerm = null;
+      }
+
+      document.addEventListener("mouseover", event => {
+        const term = event.target.closest(".term");
+        if (term) showTip(term);
+      });
+      document.addEventListener("mouseout", event => {
+        const term = event.target.closest(".term");
+        if (!term) return;
+        hideTip();
+      });
+      document.addEventListener("click", event => {
+        const term = event.target.closest(".term");
+        if (term) {
+          event.preventDefault();
+          if (activeTerm === term) hideTip();
+          else showTip(term);
+        } else if (activeTerm) {
+          hideTip();
+        }
+      });
+      window.addEventListener("scroll", () => {
+        if (activeTerm) hideTip();
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
