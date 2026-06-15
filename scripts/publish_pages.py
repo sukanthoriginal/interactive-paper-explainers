@@ -35,8 +35,8 @@ JS_REMOVE_RE = re.compile(
     re.IGNORECASE,
 )
 OPEN_FEEDBACK_BUTTON_RE = re.compile(
-    r'<button([^>]*?)\s+onclick=["\']openFeedbackPanel\(\)["\']([^>]*)>\s*open feedback panel\s*</button>',
-    re.IGNORECASE,
+    r'<button([^>]*?)\s+onclick=["\']openFeedbackPanel\(\)["\']([^>]*)>.*?</button>',
+    re.IGNORECASE | re.DOTALL,
 )
 TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 H1_RE = re.compile(r"<h1[^>]*>(.*?)</h1>", re.IGNORECASE | re.DOTALL)

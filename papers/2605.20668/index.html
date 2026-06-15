@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Reviewers Paper Explainer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Cpath d='M18 18h28v28H18z' fill='white'/%3E%3Cpath d='M24 27h16M24 34h12' stroke='%232563eb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --blue: #2563eb;       --blue-light: #dbeafe;     --blue-dark: #1e40af;
+    --gray: #6b7280;       --gray-light: #f3f4f6;     --gray-dark: #1f2937;
+    --green: #059669;      --green-light: #d1fae5;
+    --red: #dc2626;        --red-light: #fee2e2;
+    --orange: #d97706;     --orange-light: #fef3c7;
+    --purple: #7c3aed;     --purple-light: #ede9fe;
+    --teal: #0d9488;       --teal-light: #ccfbf1;
+    --pink: #db2777;       --pink-light: #fce7f3;
+    --ink: #111827;
+    --line: #e5e7eb;
+    --paper: #ffffff;
+    --soft: #fafafa;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--gray-dark);
+    background: var(--soft);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.68;
+    overflow-x: hidden;
+  }
+
+  button, .tab-bar, .hero, .meta, .tag, .stat-box, .cards, .card,
+  .callout, .viz-flow, .viz-stage, .metric-board, .metric-pill,
+  .overlap-board, .chart-card, .weakness-atlas, .panel-lab,
+  .quiz-box, .answer, .ez-emoji-block, .ez-analogy, .ez-tldr,
+  .feedback-card, .bands-mode-toggle, .bands-table, footer {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .hero {
+    color: white;
+    padding: 70px 24px 54px;
+    text-align: center;
+    transition: background 0.25s ease;
+  }
+
+  .hero.mode-ez {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  }
+
+  .hero.mode-normal,
+  .hero.mode-feedback {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 58%, #0f766e 100%);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 14px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    max-width: 1020px;
+    margin: 0 auto 18px;
+    font-size: clamp(2rem, 5vw, 4.1rem);
+    line-height: 1.05;
+    font-weight: 450;
+    letter-spacing: 0;
+  }
+
+  .hero .subtitle {
+    max-width: 820px;
+    margin: 0 auto 26px;
+    font-size: clamp(1.02rem, 2vw, 1.22rem);
+    line-height: 1.55;
+    opacity: 0.9;
+  }
+
+  .meta {
+    max-width: 980px;
+    margin: 0 auto;
+    font-size: 0.88rem;
+    opacity: 0.78;
+  }
+
+  .tab-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: white;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 1px 7px rgba(17,24,39,0.06);
+  }
+
+  .tab-btn {
+    min-width: 148px;
+    min-height: 50px;
+    padding: 13px 20px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--gray);
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .tab-btn:hover { color: var(--blue); }
+  .tab-btn.active {
+    color: var(--blue-dark);
+    border-bottom-color: var(--blue);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .container {
+    width: min(1040px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  section {
+    padding: 58px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section:last-child { border-bottom: 0; }
+
+  .section-kicker {
+    margin-bottom: 8px;
+    color: var(--blue);
+    font-size: 0.78rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-size: clamp(1.55rem, 3vw, 2.3rem);
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    color: var(--ink);
+    font-size: 1.08rem;
+    line-height: 1.28;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 1.04rem;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  .callout {
+    margin: 26px 0;
+    padding: 17px 20px;
+    border-left: 5px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    background: var(--blue-light);
+    line-height: 1.5;
+  }
+
+  .callout.green { border-color: var(--green); background: var(--green-light); }
+  .callout.orange { border-color: var(--orange); background: var(--orange-light); }
+  .callout.purple { border-color: var(--purple); background: var(--purple-light); }
+  .callout.red { border-color: var(--red); background: var(--red-light); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 28px 0;
+  }
+
+  .stat-box {
+    min-height: 132px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .stat-box .num {
+    display: block;
+    color: var(--blue-dark);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .stat-box .label {
+    display: block;
+    margin-top: 9px;
+    color: var(--gray);
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .card {
+    min-height: 198px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .card:hover,
+  .card.open {
+    border-color: var(--blue);
+    box-shadow: 0 10px 22px rgba(37,99,235,0.08);
+  }
+
+  .card-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-weight: 900;
+  }
+
+  .card .card-short {
+    color: var(--gray);
+    font-size: 0.93rem;
+    line-height: 1.45;
+  }
+
+  .card .card-detail {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: #374151;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .card.open .card-detail { display: block; }
+
+  /* braindead */
+  .ez-wrap {
+    width: min(900px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  .ez-hero {
+    margin: 34px 0 10px;
+    padding: 24px;
+    border: 1px solid #fbcfe8;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 100%);
+  }
+
+  .ez-big {
+    margin-bottom: 22px;
+    font-size: clamp(1.18rem, 2.5vw, 1.48rem);
+    line-height: 1.55;
+  }
+
+  .ez-emoji-block {
+    margin: 18px 0 26px;
+    padding: 18px 20px;
+    border: 1px solid #f9a8d4;
+    border-radius: 8px;
+    background: #fff7fb;
+  }
+
+  .ez-emoji-block p {
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .ez-analogy {
+    margin: 22px 0;
+    padding: 18px 20px;
+    border: 1px solid #fde68a;
+    border-left: 5px solid #f59e0b;
+    border-radius: 8px;
+    background: #fffbeb;
+    color: #713f12;
+    line-height: 1.5;
+  }
+
+  .ez-tldr {
+    margin: 32px 0 10px;
+    padding: 24px;
+    border: 1px solid #c084fc;
+    border-radius: 8px;
+    background: #faf5ff;
+  }
+
+  .ez-tldr h2 { margin-bottom: 10px; }
+
+  /* process visualization */
+  .viz-flow {
+    margin: 28px 0;
+    padding: 22px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: white;
+  }
+
+  .viz-flow-caption {
+    margin-bottom: 18px;
+    color: var(--gray);
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .viz-flow-track {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(145px, 1fr));
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .viz-stage {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 76px auto auto;
+    gap: 10px;
+    min-height: 238px;
+    padding: 15px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  }
+
+  .viz-stage:not(:last-child)::after {
+    content: ">";
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: white;
+    color: var(--blue);
+    border: 1px solid #bfdbfe;
+    font-weight: 900;
+    transform: translateY(-50%);
+  }
+
+  .viz-stage-label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--ink);
+    font-weight: 850;
+    line-height: 1.2;
+  }
+
+  .viz-stage-label span {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--blue);
+    color: white;
+    font-size: 0.78rem;
+  }
+
+  .viz-stage p {
+    margin: 0;
+    color: #374151;
+    font-size: 0.86rem;
+    line-height: 1.42;
+  }
+
+  .viz-mini {
+    min-height: 76px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #eff6ff;
+    overflow: hidden;
+  }
+
+  .mini-paper {
+    display: grid;
+    place-items: center;
+    padding: 9px;
+  }
+
+  .paper-sheet {
+    width: 54px;
+    height: 66px;
+    border: 1px solid #93c5fd;
+    border-radius: 5px;
+    background: white;
+    transform: rotate(-7deg);
+    padding: 9px 7px;
+  }
+
+  .paper-sheet i,
+  .review-lines i {
+    display: block;
+    height: 3px;
+    margin-bottom: 5px;
+    border-radius: 999px;
+    background: #93c5fd;
+  }
+
+  .mini-review {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .review-lines {
+    padding: 8px 5px;
+    border-radius: 5px;
+    background: white;
+    border: 1px solid #bfdbfe;
+  }
+
+  .mini-items {
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .mini-items span {
+    height: 13px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #60a5fa, #14b8a6);
+  }
+
+  .mini-rubric {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .mini-rubric span {
+    display: grid;
+    place-items: center;
+    min-height: 54px;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 850;
+  }
+
+  .mini-rubric span:nth-child(1) { background: var(--green); }
+  .mini-rubric span:nth-child(2) { background: var(--orange); }
+  .mini-rubric span:nth-child(3) { background: var(--purple); }
+
+  .mini-output {
+    display: grid;
+    align-content: center;
+    gap: 7px;
+    padding: 12px;
+  }
+
+  .mini-output span {
+    height: 12px;
+    border-radius: 999px;
+    background: #bfdbfe;
+  }
+
+  .mini-output span:first-child { width: 88%; background: #60a5fa; }
+  .mini-output span:nth-child(2) { width: 70%; background: #22c55e; }
+  .mini-output span:nth-child(3) { width: 52%; background: #f97316; }
+
+  /* metric board */
+  .metric-board {
+    margin: 28px 0;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .metric-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .metric-pill,
+  .panel-choice,
+  .atlas-choice,
+  .quiz-option,
+  .feedback-open {
+    min-height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: white;
+    color: #374151;
+    padding: 8px 14px;
+    font-weight: 760;
+    cursor: pointer;
+  }
+
+  .metric-pill.active,
+  .panel-choice.active,
+  .atlas-choice.active {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    color: var(--blue-dark);
+  }
+
+  .bar-list {
+    display: grid;
+    gap: 13px;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: minmax(130px, 180px) 1fr minmax(58px, auto);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .bar-label {
+    color: #374151;
+    font-weight: 760;
+    line-height: 1.25;
+  }
+
+  .bar-track {
+    height: 18px;
+    border-radius: 999px;
+    background: #eef2f7;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    min-width: 2px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--blue), var(--teal));
+    transition: width 0.2s ease;
+  }
+
+  .bar-value {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    font-weight: 850;
+  }
+
+  .metric-note {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #374151;
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  /* overlap */
+  .overlap-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 28px 0;
+  }
+
+  .chart-card {
+    min-height: 360px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .stacked-bars {
+    display: grid;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .stack-row {
+    display: grid;
+    grid-template-columns: 104px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .stack-label {
+    color: var(--ink);
+    font-weight: 850;
+  }
+
+  .stack {
+    display: flex;
+    width: 100%;
+    height: 36px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+
+  .seg {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 850;
+    white-space: nowrap;
+  }
+
+  .seg.same-evidence { background: #0f766e; }
+  .seg.same-crit { background: #86efac; color: #064e3b; }
+  .seg.same-target { background: #fca5a5; color: #7f1d1d; }
+  .seg.different { background: #b91c1c; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-top: 16px;
+    color: #4b5563;
+    font-size: 0.82rem;
+  }
+
+  .legend span {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .legend i {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  .coverage-bars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: end;
+    gap: 18px;
+    height: 250px;
+    margin: 24px 0 14px;
+    border-left: 1px solid #d1d5db;
+    border-bottom: 1px solid #d1d5db;
+    padding: 0 10px;
+  }
+
+  .coverage-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    align-items: end;
+    height: 100%;
+  }
+
+  .coverage-bar {
+    position: relative;
+    display: grid;
+    align-items: end;
+    height: 100%;
+  }
+
+  .coverage-bar span {
+    display: block;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .coverage-bar strong {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .coverage-labels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    color: #374151;
+    font-size: 0.82rem;
+    font-weight: 760;
+    text-align: center;
+  }
+
+  /* taxonomy */
+  .weakness-atlas {
+    display: grid;
+    grid-template-columns: minmax(230px, 290px) 1fr;
+    gap: 18px;
+    margin: 28px 0;
+  }
+
+  .atlas-list {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+
+  .atlas-choice {
+    width: 100%;
+    border-radius: 8px;
+    text-align: left;
+    line-height: 1.25;
+  }
+
+  .atlas-choice.red.active {
+    background: var(--red-light);
+    border-color: var(--red);
+    color: #991b1b;
+  }
+
+  .atlas-choice.green.active {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: #064e3b;
+  }
+
+  .atlas-detail {
+    min-height: 420px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .atlas-count {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    background: var(--gray-light);
+    color: var(--gray-dark);
+    font-size: 0.84rem;
+    font-weight: 850;
+  }
+
+  .taxonomy-bars {
+    display: grid;
+    gap: 9px;
+    margin-top: 24px;
+  }
+
+  .tax-row {
+    display: grid;
+    grid-template-columns: minmax(175px, 230px) 1fr 38px;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .tax-fill.red { background: #b91c1c; }
+  .tax-fill.green { background: #15803d; }
+
+  /* panel simulator */
+  .panel-lab {
+    margin: 28px 0;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .panel-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(280px, 1.15fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .panel-people {
+    min-height: 318px;
+    padding: 18px;
+    border: 1px solid #d1fae5;
+    border-radius: 8px;
+    background: #f0fdf4;
+  }
+
+  .reviewer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .reviewer-token {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    min-height: 72px;
+    padding: 8px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.84rem;
+    font-weight: 850;
+    text-align: center;
+    line-height: 1.12;
+  }
+
+  .reviewer-token.human { background: #2563eb; }
+  .reviewer-token.ai { background: #0f766e; }
+  .reviewer-token.filter { background: #7c3aed; }
+
+  .panel-metrics {
+    min-height: 318px;
+    padding: 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+
+  .mini-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .mini-stat {
+    min-height: 84px;
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .mini-stat strong {
+    display: block;
+    color: var(--blue-dark);
+    font-size: 1.45rem;
+    line-height: 1;
+  }
+
+  .mini-stat span {
+    color: var(--gray);
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  /* dual-mode table */
+  .bands-mode-toggle {
+    display: inline-flex;
+    margin: 18px 0 0;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--gray-light);
+  }
+
+  .bands-mode-toggle button {
+    min-height: 36px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--gray);
+    font-size: 0.88rem;
+    font-weight: 760;
+    cursor: pointer;
+  }
+
+  .bands-mode-toggle button.active {
+    background: white;
+    color: var(--blue-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .bands-table-wrap {
+    margin: 12px 0 28px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .bands-table-wrap.hidden { display: none; }
+  .bands-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  .bands-table th {
+    padding: 12px 14px;
+    border-bottom: 2px solid var(--line);
+    background: var(--gray-light);
+    color: var(--gray-dark);
+    font-size: 0.76rem;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bands-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    line-height: 1.45;
+  }
+
+  .bands-table .source-row td {
+    background: #fafafa;
+    color: var(--gray);
+    font-size: 0.82rem;
+    font-style: italic;
+  }
+
+  .term {
+    border-bottom: 1px dotted var(--gray);
+    color: var(--ink);
+    font-weight: 760;
+    cursor: help;
+  }
+
+  .term:hover,
+  .term.active { background: var(--orange-light); }
+
+  .term-tip {
+    position: absolute;
+    max-width: 320px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #1f2937;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+
+  .term-tip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* quiz and feedback */
+  .quiz-box {
+    margin: 18px 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .quiz-options {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .quiz-option {
+    border-radius: 8px;
+    text-align: left;
+  }
+
+  .quiz-option.correct {
+    border-color: var(--green);
+    background: var(--green-light);
+    color: #064e3b;
+  }
+
+  .quiz-option.wrong {
+    border-color: var(--red);
+    background: var(--red-light);
+    color: #7f1d1d;
+  }
+
+  .answer {
+    display: none;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--blue);
+    background: var(--blue-light);
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .answer.visible { display: block; }
+
+  .feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 26px 0;
+  }
+
+  .feedback-card {
+    min-height: 154px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .feedback-open {
+    border-radius: 8px;
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  code {
+    padding: 2px 5px;
+    border-radius: 5px;
+    background: #f3f4f6;
+    color: #111827;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.9em;
+  }
+
+  footer {
+    padding: 34px 20px 48px;
+    color: var(--gray);
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 920px) {
+    .viz-flow-track,
+    .overlap-board,
+    .weakness-atlas,
+    .panel-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .viz-stage:not(:last-child)::after {
+      content: "v";
+      top: auto;
+      right: 18px;
+      bottom: -12px;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .container,
+    .ez-wrap {
+      width: min(100% - 28px, 1040px);
+    }
+
+    .hero { padding: 52px 16px 38px; }
+    .tab-btn {
+      flex: 1 1 33.333%;
+      min-width: 0;
+      padding-inline: 4px;
+      font-size: 0.72rem;
+      line-height: 1.15;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    section { padding: 42px 0; }
+    .stats,
+    .mini-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .bar-row,
+    .tax-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .coverage-bars {
+      gap: 8px;
+      padding: 0 4px;
+    }
+
+    .coverage-labels {
+      gap: 8px;
+      font-size: 0.72rem;
+    }
+  }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body>
+  <header class="hero mode-ez" id="pageHero">
+    <div class="tag" id="heroTag">braindead</div>
+    <h1 id="heroTitle">AI reviewers: helpful extra eyes, not replacement scientists</h1>
+    <p class="subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+    <p class="meta" id="heroMeta">Kim et al., arXiv:2605.20668v1, May 20, 2026. 45 expert scientists reviewed the reviews of 82 Nature-family papers.</p>
+  </header>
+
+  <nav class="tab-bar" aria-label="Explainer modes">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <div id="tab-ez" class="tab-panel active">
+      <div class="ez-wrap">
+        <div class="ez-hero">
+          <p class="ez-big"><strong>This paper asks a scary-simple question:</strong> if an AI writes a peer review, is it actually useful, or is it just wearing a lab coat and sounding confident?</p>
+          <p class="ez-big">The authors did not judge AI reviews by the final score, because final scores are messy. Instead, they chopped each review into little complaint chunks and asked real scientists: is this complaint true, important, and backed up?</p>
+        </div>
+
+        <section>
+          <p class="ez-big"><strong>Imagine a restaurant critic.</strong> A bad way to judge the critic is: “Did they give the same star rating as another critic?” A better way is to inspect every sentence: “Was the soup actually cold? Did the critic notice the burned sauce? Did they complain about the wallpaper for no reason?”</p>
+          <div class="ez-emoji-block">
+            <p>🍲 Final review score = noisy restaurant star rating.</p>
+            <p>🔎 Individual criticism = one specific complaint you can check.</p>
+            <p>🧑‍🔬 Expert scientist = person who knows whether the complaint is fair.</p>
+          </div>
+          <div class="ez-analogy"><strong>Analogy:</strong> The paper stops asking “did the AI give the same grade?” and starts asking “was each red mark on the homework deserved?” That is the whole move.</div>
+        </section>
+
+        <section>
+          <p class="ez-big"><strong>The experiment was big and expensive.</strong> They used papers from Nature-family journals, took the official human peer reviews, generated AI reviews with frontier models, split everything into tiny criticism chunks, and asked 45 domain scientists to judge those chunks.</p>
+          <div class="ez-emoji-block">
+            <p>📄 82 papers from physical, biological, and health sciences.</p>
+            <p>🧑‍🔬 45 scientists did the judging.</p>
+            <p>⏱️ 469 total hours of expert annotation.</p>
+            <p>🧩 2,960 individual criticism chunks.</p>
+          </div>
+          <div class="ez-analogy"><strong>Analogy:</strong> Instead of asking one judge “who won the debate?”, they replayed every sentence and scored each point separately. Painful, but much cleaner.</div>
+        </section>
+
+        <section>
+          <p class="ez-big"><strong>The surprising good news:</strong> AI reviewers were not useless. They were like tireless junior reviewers who actually open the code, check stats, compare sections, and complain when the evidence does not match the claim.</p>
+          <div class="ez-emoji-block">
+            <p>✅ AI found many real problems humans missed.</p>
+            <p>📊 AI was strong on statistics and methodology.</p>
+            <p>💻 AI sometimes found issues by inspecting source code.</p>
+            <p>🧾 When AI was right, its complaints were often well supported.</p>
+          </div>
+          <div class="ez-analogy"><strong>Analogy:</strong> A human reviewer may read the paper carefully. The AI is the intern who also opens the messy spreadsheet, checks the code folder, and asks why the test set was used like a practice set.</div>
+        </section>
+
+        <section>
+          <p class="ez-big callout red" data-cf-change="ch-ai-limits-highlight"><strong>The bad news:</strong> AI reviewers also made more wrong complaints than the best human reviewers. Their worst pattern was not random nonsense. It was bad judgment about context: not knowing what a field considers normal, asking for unrealistic extra work, or missing something already written elsewhere in the paper.</p>
+          <div class="ez-emoji-block">
+            <p>⚠️ Less correct than top-rated human reviewers.</p>
+            <p>🧭 Weak at field norms: what is normal in ecology may look weak to an outsider.</p>
+            <p>📚 Weak at long context: sometimes says “missing” when the paper already says it.</p>
+            <p>🔁 Multiple AI reviewers repeated each other much more than humans did.</p>
+          </div>
+          <div class="ez-analogy"><strong>Analogy:</strong> AI is a very energetic substitute teacher. It can spot copied homework, but it may not know that in this class everyone uses that weird notation and the real teacher is fine with it.</div>
+        </section>
+
+        <section>
+          <p class="ez-big"><strong>The practical answer:</strong> one AI reviewer can be useful next to humans. A panel made only of AIs is risky because they tend to notice the same things. You get fewer truly different perspectives.</p>
+          <div class="ez-emoji-block">
+            <p>🤝 Best role: assistant or extra reviewer.</p>
+            <p>🚫 Bad role: replacing all human experts.</p>
+            <p>🎯 Strongest use: pre-submission feedback for authors.</p>
+            <p>🧠 Big lesson: judge each criticism, not the confident tone.</p>
+          </div>
+          <div class="ez-analogy"><strong>Analogy:</strong> Bring AI to the review meeting like a meticulous checklist person. Do not let it be the whole committee.</div>
+          <div class="ez-tldr">
+            <h2>TL;DR</h2>
+            <p>AI reviewers are already useful at finding real, evidence-backed problems, especially code and statistics problems. But they still need humans because they are worse at factual grounding, field norms, and diverse judgment. The paper’s verdict is not “AI replaces peer review.” It is “AI can be a good extra reviewer if humans stay in charge.”</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="tab-normal" class="tab-panel">
+      <section>
+        <div class="container">
+          <div class="section-kicker">The Question</div>
+          <h2>What should count as evidence that an AI reviewer is good?</h2>
+          <p>Prior evaluations often asked whether AI reviewers matched human verdicts: similar score, same accept or reject, similar review text. This paper argues that those are weak tests. Human verdicts are themselves noisy, and the thing authors actually use is not the final score but the individual criticisms.</p>
+          <p>The authors therefore move the unit of analysis from the review to the review item: one atomic criticism directed at one target in the manuscript. Each item is judged on three axes: correctness, significance, and sufficiency of evidence.</p>
+          <div class="stats">
+            <div class="stat-box"><span class="num">82</span><span class="label">Nature-family papers with public human reviews and pre-review manuscripts.</span></div>
+            <div class="stat-box"><span class="num">45</span><span class="label">Domain scientists recruited as expert meta-reviewers.</span></div>
+            <div class="stat-box"><span class="num">469</span><span class="label">Expert annotation hours across physical, biological, and health sciences.</span></div>
+            <div class="stat-box"><span class="num">2,960</span><span class="label">Individual human and AI review items scored under the same rubric.</span></div>
+          </div>
+          <div class="callout">The paper’s core methodological move is bidirectional: human review items and AI review items are judged by the same scientists under the same criteria. Humans are not treated as an automatic gold standard.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Key Concepts</div>
+          <h2>The evaluation works because it separates four ideas that usually get blurred.</h2>
+          <div class="cards">
+            <div class="card" onclick="toggleCard(this)">
+              <div class="card-mark">1</div>
+              <h3>Review item</h3>
+              <p class="card-short">One specific criticism, not the whole peer review.</p>
+              <p class="card-detail">A single review may contain many items. The authors manually split human reviews into atomic criticisms and instructed AI agents to produce up to five structured items per paper.</p>
+            </div>
+            <div class="card" onclick="toggleCard(this)">
+              <div class="card-mark">2</div>
+              <h3>Cascading rubric</h3>
+              <p class="card-short">A criticism must pass each gate before the next one matters.</p>
+              <p class="card-detail">If the item is not correct, significance and evidence are not assessed. If it is correct but not at least marginally significant, evidence is skipped. This prevents “well-evidenced but wrong” from looking useful.</p>
+            </div>
+            <div class="card" onclick="toggleCard(this)">
+              <div class="card-mark">3</div>
+              <h3>Fully positive</h3>
+              <p class="card-short">The paper’s strict composite for a useful criticism.</p>
+              <p class="card-detail">An item is fully positive only if it is correct, rated significant at the highest level, and evidence-sufficient. This is the best compact measure of whether a review item helps an author improve a paper.</p>
+            </div>
+            <div class="card" onclick="toggleCard(this)">
+              <div class="card-mark">4</div>
+              <h3>Overlap</h3>
+              <p class="card-short">Two reviewers can point at the same target but say different things.</p>
+              <p class="card-detail">The similarity analysis separates target, criticism, and evidence. Same figure but different complaint is not treated as the same criticism. Same target and same criticism is the threshold for overlap.</p>
+            </div>
+          </div>
+
+          <div class="bands-mode-toggle">
+            <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
+            <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
+          </div>
+          <div class="bands-table-wrap" id="bandsTablePlain">
+            <table class="bands-table">
+              <thead><tr><th>Thing</th><th>Plain meaning</th><th>Why it matters</th></tr></thead>
+              <tbody>
+                <tr><td>Correct</td><td>The complaint is true.</td><td>A false complaint wastes author time even if it sounds smart.</td></tr>
+                <tr><td>Significant</td><td>The complaint would meaningfully improve the paper.</td><td>A true typo is less valuable than a true flaw in the method.</td></tr>
+                <tr><td>Evidence-sufficient</td><td>The complaint gives enough proof or pointing for an expert to verify it.</td><td>A review should not just accuse; it should show the trail.</td></tr>
+                <tr><td>Fully positive</td><td>True, important, and supported.</td><td>This is the paper’s compact definition of a useful review item.</td></tr>
+                <tr class="source-row"><td colspan="3">Source: Sections 2.1, 3, and Appendix B.3 of the paper.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bands-table-wrap hidden" id="bandsTableScience">
+            <table class="bands-table">
+              <thead><tr><th>Term</th><th>Operational definition</th><th>Analytical role</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term" title="Binary judgment: the main point of the criticism is correct and clearly stated.">Correctness</span></td><td>Binary item-level label.</td><td>First gate in the cascade; failure skips downstream labels.</td></tr>
+                <tr><td><span class="term" title="Three-way ordinal judgment over correct items: significant, marginally significant, or not significant.">Significance</span></td><td>Ordinal 0-2 label conditional on correctness.</td><td>Captures whether a true item is substantive or merely minor.</td></tr>
+                <tr><td><span class="term" title="Binary judgment over correct and at least marginally significant items: enough support for the main point.">Sufficiency of evidence</span></td><td>Binary label conditional on the first two gates.</td><td>Distinguishes supported critique from unsupported assertion.</td></tr>
+                <tr><td><span class="term" title="Composite indicator: correct, significant at the highest level, and evidence-sufficient.">Fully positive</span></td><td>Strict three-axis composite.</td><td>Main aggregate item-quality metric in Table 4 and panel analysis.</td></tr>
+                <tr class="source-row"><td colspan="3">Source: Sections 2.1, 3, and Appendix B.3 of the paper.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Method</div>
+          <h2>The paper turns peer review into a five-stage measurement pipeline.</h2>
+          <div class="viz-flow">
+            <h3>Criticism-level evaluation pipeline</h3>
+            <p class="viz-flow-caption">Each paper yields human reviews and AI reviews. Those reviews are decomposed into review items, then domain scientists judge each item along the same rubric.</p>
+            <div class="viz-flow-track">
+              <div class="viz-stage">
+                <div class="viz-stage-label"><span>1</span>Paper package</div>
+                <div class="viz-mini mini-paper"><div class="paper-sheet"><i></i><i></i><i></i><i></i></div></div>
+                <p><strong>Surface:</strong> manuscript, figures, supplements, code.</p>
+                <p><strong>Data:</strong> one Nature-family paper with source material.</p>
+              </div>
+              <div class="viz-stage">
+                <div class="viz-stage-label"><span>2</span>Reviewer panel</div>
+                <div class="viz-mini mini-review">
+                  <div class="review-lines"><i></i><i></i><i></i></div>
+                  <div class="review-lines"><i></i><i></i><i></i></div>
+                  <div class="review-lines"><i></i><i></i><i></i></div>
+                </div>
+                <p><strong>Surface:</strong> official human reviews plus generated AI reviews.</p>
+                <p><strong>Data:</strong> three human reviewers and three AI agents where available.</p>
+              </div>
+              <div class="viz-stage">
+                <div class="viz-stage-label"><span>3</span>Atomic items</div>
+                <div class="viz-mini mini-items"><span></span><span></span><span></span><span></span></div>
+                <p><strong>Surface:</strong> individual criticisms.</p>
+                <p><strong>Data:</strong> 2,960 review items, each targeting one aspect.</p>
+              </div>
+              <div class="viz-stage">
+                <div class="viz-stage-label"><span>4</span>Expert labels</div>
+                <div class="viz-mini mini-rubric"><span>C</span><span>S</span><span>E</span></div>
+                <p><strong>Surface:</strong> domain scientist annotation sheet.</p>
+                <p><strong>Data:</strong> correctness, significance, evidence labels.</p>
+              </div>
+              <div class="viz-stage">
+                <div class="viz-stage-label"><span>5</span>Comparisons</div>
+                <div class="viz-mini mini-output"><span></span><span></span><span></span></div>
+                <p><strong>Surface:</strong> tables, overlap charts, panel simulations.</p>
+                <p><strong>Data:</strong> per-paper means, item rates, similarity pairs.</p>
+              </div>
+            </div>
+            <div class="callout green">Core claim: once review quality is measured at the criticism level, AI reviewers look neither fake nor ready to replace humans. They look complementary.</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Results</div>
+          <h2>AI reviewers trade lower correctness for higher significance and evidence.</h2>
+          <p>Table 3 shows the main tension. The top-rated human reviewer is more factually correct than every AI reviewer. But among correct items, AI reviewers raise more significant criticisms, and GPT-5.2 and Claude Opus 4.5 provide more sufficient evidence.</p>
+          <div class="callout purple" data-cf-change="ch-rank-table3-models"><strong>Best-performing AI reviewers in Table 3:</strong> GPT-5.2 ranks first on the composite fully-positive rate at 60.0%, Claude Opus 4.5 follows at 53.1% with the strongest AI balance of correctness and evidence, and Gemini 3.0 Pro is third at 50.2%.</div>
+          <div class="metric-board">
+            <div class="metric-controls" aria-label="Reviewer metric selector">
+              <button class="metric-pill active" onclick="setMetricReviewer('topHuman', this)">top-rated human</button>
+              <button class="metric-pill" onclick="setMetricReviewer('gpt52', this)">GPT-5.2</button>
+              <button class="metric-pill" onclick="setMetricReviewer('claude45', this)">Claude Opus 4.5</button>
+              <button class="metric-pill" onclick="setMetricReviewer('gemini30', this)">Gemini 3.0 Pro</button>
+            </div>
+            <div class="bar-list">
+              <div class="bar-row"><div class="bar-label">correctness</div><div class="bar-track"><div class="bar-fill" id="metricCorrect"></div></div><div class="bar-value" id="metricCorrectValue"></div></div>
+              <div class="bar-row"><div class="bar-label">significance score</div><div class="bar-track"><div class="bar-fill" id="metricSignificance"></div></div><div class="bar-value" id="metricSignificanceValue"></div></div>
+              <div class="bar-row"><div class="bar-label">evidence sufficient</div><div class="bar-track"><div class="bar-fill" id="metricEvidence"></div></div><div class="bar-value" id="metricEvidenceValue"></div></div>
+              <div class="bar-row"><div class="bar-label">fully positive</div><div class="bar-track"><div class="bar-fill" id="metricFull"></div></div><div class="bar-value" id="metricFullValue"></div></div>
+            </div>
+            <p class="metric-note" id="metricNote"></p>
+          </div>
+          <div class="callout orange">The composite result is model-dependent: GPT-5.2 reaches a 60.0% paper-level fully-positive rate, above the top-rated human’s 48.2%; Claude Opus 4.5 and Gemini 3.0 Pro are statistically indistinguishable from the top-rated human on the composite.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Overlap</div>
+          <h2>AI reviewers cover many of the same targets, but not the same specific criticisms.</h2>
+          <p>The similarity analysis compares every review item pair within the same paper. Two items count as similar only if they share the same target and the same criticism. That distinction matters: an AI and a human may both point at Figure 2 while disagreeing about what is wrong with it.</p>
+          <div class="overlap-board">
+            <div class="chart-card">
+              <h3>Pairwise item similarity</h3>
+              <p class="viz-flow-caption">Rogan-Gladen-corrected percentages for between-reviewer pairs.</p>
+              <div class="stacked-bars">
+                <div class="stack-row">
+                  <div class="stack-label">H-H</div>
+                  <div class="stack"><div class="seg same-evidence" style="width:0.3%"> </div><div class="seg same-crit" style="width:3.1%">3.1</div><div class="seg same-target" style="width:8.4%">8.4</div><div class="seg different" style="width:88.3%">88.3</div></div>
+                </div>
+                <div class="stack-row">
+                  <div class="stack-label">H-A</div>
+                  <div class="stack"><div class="seg same-evidence" style="width:0.3%"> </div><div class="seg same-crit" style="width:4.9%">4.9</div><div class="seg same-target" style="width:14.8%">14.8</div><div class="seg different" style="width:80.1%">80.1</div></div>
+                </div>
+                <div class="stack-row">
+                  <div class="stack-label">A-A</div>
+                  <div class="stack"><div class="seg same-evidence" style="width:3.1%">3.1</div><div class="seg same-crit" style="width:17.9%">17.9</div><div class="seg same-target" style="width:20.2%">20.2</div><div class="seg different" style="width:58.9%">58.9</div></div>
+                </div>
+              </div>
+              <div class="legend">
+                <span><i class="seg same-evidence"></i>same target, criticism, evidence</span>
+                <span><i class="seg same-crit"></i>same target and criticism</span>
+                <span><i class="seg same-target"></i>same target, different criticism</span>
+                <span><i class="seg different"></i>different target</span>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3>Coverage of another reviewer’s items</h3>
+              <p class="viz-flow-caption">Target-level coverage rises faster than criticism-level coverage.</p>
+              <div class="coverage-bars">
+                <div class="coverage-group">
+                  <div class="coverage-bar"><strong>43.8</strong><span style="height:43.8%; background:#fca5a5"></span></div>
+                  <div class="coverage-bar"><strong>25.8</strong><span style="height:25.8%; background:#86efac"></span></div>
+                </div>
+                <div class="coverage-group">
+                  <div class="coverage-bar"><strong>64.2</strong><span style="height:64.2%; background:#fca5a5"></span></div>
+                  <div class="coverage-bar"><strong>27.1</strong><span style="height:27.1%; background:#86efac"></span></div>
+                </div>
+                <div class="coverage-group">
+                  <div class="coverage-bar"><strong>83.0</strong><span style="height:83%; background:#fca5a5"></span></div>
+                  <div class="coverage-bar"><strong>46.3</strong><span style="height:46.3%; background:#86efac"></span></div>
+                </div>
+              </div>
+              <div class="coverage-labels">
+                <div>1 human -> 1 human</div>
+                <div>1 human -> 1 AI</div>
+                <div>3 humans -> 3 AIs</div>
+              </div>
+              <div class="legend">
+                <span><i style="background:#fca5a5"></i>same target</span>
+                <span><i style="background:#86efac"></i>same criticism</span>
+              </div>
+            </div>
+          </div>
+          <div class="callout purple">The headline overlap result is asymmetric. One AI paired with humans keeps diversity mostly intact. Several AI reviewers together become much more redundant than several human reviewers.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Failure Modes And Strengths</div>
+          <h2>Experts described AI reviewers as contextually uncalibrated, not empty.</h2>
+          <p>The qualitative analysis categorizes 442 substantive expert comments on AI reviews: 260 weakness comments and 132 strength comments. The weakness side is dominated by field-norm and severity calibration failures. The strength side is dominated by methodological rigor, code reading, and niche technical catches.</p>
+          <div class="weakness-atlas">
+            <div class="atlas-list">
+              <button class="atlas-choice red active" onclick="setAtlas('w1', this)">W1 field norms</button>
+              <button class="atlas-choice red" onclick="setAtlas('w2', this)">W2 over-harsh demands</button>
+              <button class="atlas-choice red" onclick="setAtlas('w3', this)">W3 says missing when present</button>
+              <button class="atlas-choice red" onclick="setAtlas('w4', this)">W4 AI-AI redundancy</button>
+              <button class="atlas-choice green" onclick="setAtlas('s1', this)">S1 statistical rigor</button>
+              <button class="atlas-choice green" onclick="setAtlas('s2', this)">S2 code reading</button>
+              <button class="atlas-choice green" onclick="setAtlas('s3', this)">S3 niche field catch</button>
+            </div>
+            <div class="atlas-detail">
+              <span class="atlas-count" id="atlasCount"></span>
+              <h3 id="atlasTitle"></h3>
+              <p id="atlasBody"></p>
+              <div class="taxonomy-bars" id="taxonomyBars"></div>
+            </div>
+          </div>
+          <div class="callout red">The dominant weakness is calibration. The AI often has a technically sensible point, but applies the wrong severity standard for the field, paper scope, or submission timeline.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">PeerReview Bench And Deployment</div>
+          <h2>The released benchmark measures precision and recall for AI reviewers.</h2>
+          <p>PeerReview Bench uses 78 of the 82 papers. Recall asks how much of the fully positive human-review rubric a candidate AI reviewer also raises. Precision asks how many AI-raised items are judged fully positive by an AI meta-reviewer calibrated against expert annotations.</p>
+          <div class="stats">
+            <div class="stat-box"><span class="num">50.89</span><span class="label">Best backbone F1 in Table 8: Claude Opus 4.5, balancing precision and recall.</span></div>
+            <div class="stat-box"><span class="num">93.81%</span><span class="label">Highest Table 8 precision: GPT-5.4, but with lower recall.</span></div>
+            <div class="stat-box"><span class="num">58.64</span><span class="label">CMU Paper Reviewer with GPT-5.4 and a 15-item cap in the public-platform comparison.</span></div>
+            <div class="stat-box"><span class="num">78</span><span class="label">Benchmark papers after excluding papers with no fully positive human rubric items.</span></div>
+          </div>
+          <div class="callout">The benchmark does not say “newer model always wins.” Across model families, newer variants sometimes traded recall for precision or lost recall sharply.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Panel Simulator</div>
+          <h2>One AI reviewer can preserve useful feedback; all-AI panels lose diversity.</h2>
+          <p>Appendix H simulates reviewer panels over 53 papers with complete three-human and three-AI data. The most actionable result is that replacing one of three humans with one AI preserves the same number of fully positive and unique items while reducing total review burden.</p>
+          <div class="panel-lab">
+            <div class="panel-controls">
+              <button class="panel-choice active" onclick="setPanel('3h', this)">3 humans</button>
+              <button class="panel-choice" onclick="setPanel('2h1ai', this)">2 humans + 1 AI</button>
+              <button class="panel-choice" onclick="setPanel('1h2ai', this)">1 human + 2 AIs</button>
+              <button class="panel-choice" onclick="setPanel('3ai', this)">3 AIs</button>
+              <button class="panel-choice" onclick="setPanel('1h2aiFilter', this)">1 human + 2 AIs + filter</button>
+              <button class="panel-choice" onclick="setPanel('3aiFilter', this)">3 AIs + filter</button>
+            </div>
+            <div class="panel-grid">
+              <div class="panel-people">
+                <h3 id="panelTitle"></h3>
+                <div class="reviewer-row" id="panelTokens"></div>
+                <p id="panelInterpretation"></p>
+              </div>
+              <div class="panel-metrics">
+                <div class="mini-stats">
+                  <div class="mini-stat"><strong id="panelTotal"></strong><span>total items per paper</span></div>
+                  <div class="mini-stat"><strong id="panelUseful"></strong><span>fully positive + unique items</span></div>
+                  <div class="mini-stat"><strong id="panelYield"></strong><span>yield: useful unique / total</span></div>
+                  <div class="mini-stat"><strong id="panelNoise"></strong><span>noise per useful unique item</span></div>
+                </div>
+                <div class="bar-list">
+                  <div class="bar-row"><div class="bar-label">unique items</div><div class="bar-track"><div class="bar-fill" id="panelUniqueBar"></div></div><div class="bar-value" id="panelUnique"></div></div>
+                  <div class="bar-row"><div class="bar-label">not fully positive</div><div class="bar-track"><div class="bar-fill" id="panelNoiseBar"></div></div><div class="bar-value" id="panelNotFull"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="callout green">Recommended default from the appendix: 2 humans + 1 AI gives the same useful unique feedback count as 3 humans, with less filler for authors and editors to read.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Limits</div>
+          <h2>What should make you cautious?</h2>
+          <div class="cards">
+            <div class="card open">
+              <div class="card-mark">L1</div>
+              <h3>Dataset scope</h3>
+              <p class="card-short">The study uses Nature-family papers, not all peer-review settings.</p>
+              <p class="card-detail">Single-discipline conferences, very short review deadlines, or papers written for narrower expert audiences may have different overlap and calibration patterns.</p>
+            </div>
+            <div class="card open">
+              <div class="card-mark">L2</div>
+              <h3>Historical timing</h3>
+              <p class="card-short">AI reviewers saw already-published papers and could cite later literature.</p>
+              <p class="card-detail">Some weaknesses came from using evidence that appeared after the manuscript under review. The released platform mitigates this with publication-date filtering.</p>
+            </div>
+            <div class="card open">
+              <div class="card-mark">L3</div>
+              <h3>AI meta-reviewer limits</h3>
+              <p class="card-short">The benchmark depends partly on AI judges calibrated to humans.</p>
+              <p class="card-detail">The appendix shows AI meta-reviewers approach human agreement on per-axis labels, but have their own biases, especially partial-evidence traps and technical-specificity over-leniency.</p>
+            </div>
+            <div class="card open">
+              <div class="card-mark">L4</div>
+              <h3>Models change</h3>
+              <p class="card-short">The exact leaderboard is a moving target.</p>
+              <p class="card-detail">The paper’s durable contribution is the evaluation apparatus: per-item, bidirectional, multi-axis, domain-expert validation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">Quiz</div>
+          <h2>Check the core claims.</h2>
+          <div class="quiz-box">
+            <h3>1. Why does the paper avoid using accept/reject agreement as the main evaluation?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="checkQuiz(this, false)">Because AI reviewers never produce final scores.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, true)">Because verdicts are noisy and hide whether individual criticisms are correct, important, and supported.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, false)">Because Nature papers do not include peer reviews.</button>
+            </div>
+            <div class="answer">Right. The paper’s unit is the review item because two reviews can reach similar verdicts while giving completely different and differently useful criticisms.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>2. What is the main tradeoff in Table 3?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="checkQuiz(this, false)">AI reviewers are less significant and less evidenced than humans.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, true)">AI reviewers are less correct than top humans, but their correct items are more significant and often better evidenced.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, false)">Human reviewers and AI reviewers are identical on every dimension.</button>
+            </div>
+            <div class="answer">Right. That is why the paper’s conclusion is complementarity, not simple replacement.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>3. Why is an all-AI panel risky even if individual AI reviewers are useful?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="checkQuiz(this, true)">AI reviewers overlap with each other much more than human reviewers, reducing diversity of criticism.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, false)">AI reviewers cannot read code.</button>
+              <button class="quiz-option" onclick="checkQuiz(this, false)">AI reviewers only produce stylistic comments.</button>
+            </div>
+            <div class="answer">Right. The paper finds AI reviewers can add useful items, but multiple AI reviewers tend to converge, so the panel loses independent perspectives.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="tab-feedback" class="tab-panel">
+      <section>
+        <div class="container">
+          <div class="section-kicker">comment/feedback</div>
+          <h2>Review this explainer inline.</h2>
+          <p>The feedback runtime lets you highlight text, select page elements, attach notes, and submit a batch of comments. The local server saves those comments to the paper folder so Codex can process them against this HTML file.</p>
+          <div class="feedback-grid">
+            <div class="feedback-card">
+              <h3>Open the panel</h3>
+              <p>Use the floating launcher or the button below to open the comment panel.</p>
+            </div>
+            <div class="feedback-card">
+              <h3>Attach a note</h3>
+              <p>Highlight a sentence or select an element, then write the change you want.</p>
+            </div>
+            <div class="feedback-card">
+              <h3>Submit batch</h3>
+              <p>Submitted comments are written to <code>papers/arxiv-2605-20668/feedback/inbox.jsonl</code>.</p>
+            </div>
+          </div>
+          <button class="feedback-open" type="button" disabled>feedback panel is local-only</button>
+          <div class="callout">Feedback inbox path: <code>papers/arxiv-2605-20668/feedback/inbox.jsonl</code>. History path: <code>papers/arxiv-2605-20668/feedback/history.json</code>.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Interactive explainer for Kim et al., “On the limits and opportunities of AI reviewers: Reviewing the reviews of Nature-family papers with 45 expert scientists.”
+  </footer>
+
+<script>
+  const heroContent = {
+    ez: {
+      mode: "mode-ez",
+      tag: "braindead",
+      title: "AI reviewers: helpful extra eyes, not replacement scientists",
+      subtitle: "The whole paper in 5 minutes 🧠💥",
+      meta: "Kim et al., arXiv:2605.20668v1, May 20, 2026. 45 expert scientists reviewed the reviews of 82 Nature-family papers."
+    },
+    normal: {
+      mode: "mode-normal",
+      tag: "braingood",
+      title: "A criticism-level audit of AI peer reviewers",
+      subtitle: "The rigorous version: study design, data, tradeoffs, overlap, failure modes, benchmark, and deployment guidance.",
+      meta: "Three AI agents, official human peer reviews, 2,960 review items, and expert validation across correctness, significance, and evidence."
+    },
+    feedback: {
+      mode: "mode-feedback",
+      tag: "comment/feedback",
+      title: "Comment on the explainer",
+      subtitle: "Highlight text, select elements, and submit review batches for Codex to process.",
+      meta: "Local feedback is served from this paper folder and written to feedback/inbox.jsonl."
+    }
+  };
+
+  const metrics = {
+    topHuman: {
+      correctness: 92.3,
+      significance: 1.39,
+      evidence: 92.2,
+      full: 48.2,
+      note: "Top-rated human reviewers are the factual-correctness reference point: 92.3% correctness, but a lower 48.2% fully-positive rate."
+    },
+    gpt52: {
+      correctness: 86.2,
+      significance: 1.61,
+      evidence: 97.1,
+      full: 60.0,
+      note: "GPT-5.2 has lower correctness than the top-rated human, but its higher significance and evidence rates produce the strongest composite result."
+    },
+    claude45: {
+      correctness: 83.7,
+      significance: 1.53,
+      evidence: 96.5,
+      full: 53.1,
+      note: "Claude Opus 4.5 is statistically indistinguishable from the top-rated human on fully-positive rate, with strong evidence sufficiency."
+    },
+    gemini30: {
+      correctness: 81.9,
+      significance: 1.56,
+      evidence: 89.5,
+      full: 50.2,
+      note: "Gemini 3.0 Pro also raises more significant issues than the top-rated human, but its correctness and evidence numbers are weaker than the other AI reviewers."
+    }
+  };
+
+  const atlas = {
+    w1: {
+      count: "weakness, n = 54",
+      title: "Missing community and field norms",
+      body: "The AI flags a technically plausible gap but misjudges how severe it is because it lacks the field's background norms. The particle-physics example asks for public reproducibility artifacts that the field normally keeps internally.",
+      kind: "red"
+    },
+    w2: {
+      count: "weakness, n = 46",
+      title: "Over-harsh, out-of-scope, or unrealistic demands",
+      body: "The critique may be true in isolation but asks for experiments, data, or proof outside the paper's feasible scope. Experts often read these as limitations to mention, not fatal review points.",
+      kind: "red"
+    },
+    w3: {
+      count: "weakness, n = 37",
+      title: "Paper explicitly states X, AI says missing",
+      body: "The AI claims something is absent even though the paper states it elsewhere, in methods, supplements, or another section. The authors link this to long-context management failures.",
+      kind: "red"
+    },
+    w4: {
+      count: "weakness, n = 28",
+      title: "Redundancy across AI reviewers",
+      body: "Different AI models tend to converge on the same concerns more than human reviewers do. This makes an all-AI panel less diverse even when each AI reviewer is individually competent.",
+      kind: "red"
+    },
+    s1: {
+      count: "strength, n = 45",
+      title: "Statistical and methodological rigor",
+      body: "AI reviewers catch validation leakage, independence violations, missing uncertainty, and weak statistical support. These are labor-intensive checks human reviewers sometimes skip.",
+      kind: "green"
+    },
+    s2: {
+      count: "strength, n = 28",
+      title: "Inspecting submitted source code",
+      body: "Agentic AI reviewers open source files and compare implementation against manuscript claims. Experts singled this out as work humans often avoid because it is time-consuming.",
+      kind: "green"
+    },
+    s3: {
+      count: "strength, n = 27",
+      title: "Specialized niche field catch",
+      body: "Sometimes the AI recognizes a technical commitment hidden inside a term, method, or claim and raises a legitimate domain-specific concern that other reviewers missed.",
+      kind: "green"
+    }
+  };
+
+  const taxRows = [
+    ["W1 field norms", 54, "red"],
+    ["W2 over-harsh", 46, "red"],
+    ["W3 says missing", 37, "red"],
+    ["W4 redundancy", 28, "red"],
+    ["W5 vague/no action", 24, "red"],
+    ["S1 statistical rigor", 45, "green"],
+    ["S2 code reading", 28, "green"],
+    ["S3 niche catch", 27, "green"],
+    ["S4 internal consistency", 15, "green"]
+  ];
+
+  const panels = {
+    "3h": {
+      title: "3 human reviewers",
+      people: ["H", "H", "H"],
+      filter: false,
+      total: 25.8,
+      unique: 11.5,
+      notFull: 14.6,
+      useful: 3.9,
+      yield: "15.1%",
+      noise: 3.74,
+      interpretation: "The baseline gives broad coverage and the highest useful unique count, but authors read many not-fully-positive items."
+    },
+    "2h1ai": {
+      title: "2 humans + 1 AI",
+      people: ["H", "H", "AI"],
+      filter: false,
+      total: 21.4,
+      unique: 10.9,
+      notFull: 11.5,
+      useful: 3.9,
+      yield: "18.2%",
+      noise: 2.95,
+      interpretation: "The paper's natural recommendation: same useful unique count as three humans, with fewer total and not-fully-positive items."
+    },
+    "1h2ai": {
+      title: "1 human + 2 AIs",
+      people: ["H", "AI", "AI"],
+      filter: false,
+      total: 17.1,
+      unique: 8.5,
+      notFull: 8.4,
+      useful: 3.5,
+      yield: "20.5%",
+      noise: 2.40,
+      interpretation: "Efficiency improves, but useful unique feedback begins to fall because AI reviewers overlap with each other."
+    },
+    "3ai": {
+      title: "3 AI reviewers",
+      people: ["AI", "AI", "AI"],
+      filter: false,
+      total: 12.7,
+      unique: 3.1,
+      notFull: 5.2,
+      useful: 1.8,
+      yield: "14.2%",
+      noise: 2.89,
+      interpretation: "An all-AI panel is selective but narrow: it produces far fewer unique issues than human-containing panels."
+    },
+    "1h2aiFilter": {
+      title: "1 human + 2 AIs + meta-reviewer filter",
+      people: ["H", "AI", "AI"],
+      filter: true,
+      total: 10.2,
+      unique: 4.1,
+      notFull: 4.1,
+      useful: 2.1,
+      yield: "20.6%",
+      noise: 1.95,
+      interpretation: "Best triage efficiency in Table 52, but lower useful feedback volume than the unfiltered human-heavy panels."
+    },
+    "3aiFilter": {
+      title: "3 AIs + meta-reviewer filter",
+      people: ["AI", "AI", "AI"],
+      filter: true,
+      total: 9.4,
+      unique: 1.9,
+      notFull: 3.5,
+      useful: 1.2,
+      yield: "12.8%",
+      noise: 2.92,
+      interpretation: "Useful as a high-confidence shortlist, not as a full peer-review replacement."
+    }
+  };
+
+  function switchTab(tabName, btn) {
+    document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+    document.getElementById("tab-" + tabName).classList.add("active");
+    document.querySelectorAll(".tab-btn").forEach(button => button.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    const hero = document.getElementById("pageHero");
+    const content = heroContent[tabName];
+    hero.className = "hero " + content.mode;
+    document.getElementById("heroTag").textContent = content.tag;
+    document.getElementById("heroTitle").textContent = content.title;
+    document.getElementById("heroSubtitle").textContent = content.subtitle;
+    document.getElementById("heroMeta").textContent = content.meta;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function toggleCard(card) {
+    card.classList.toggle("open");
+  }
+
+  function setMetricReviewer(key, btn) {
+    const data = metrics[key];
+    document.querySelectorAll(".metric-pill").forEach(pill => pill.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    document.getElementById("metricCorrect").style.width = data.correctness + "%";
+    document.getElementById("metricCorrectValue").textContent = data.correctness.toFixed(1) + "%";
+    document.getElementById("metricSignificance").style.width = (data.significance / 2 * 100).toFixed(1) + "%";
+    document.getElementById("metricSignificanceValue").textContent = data.significance.toFixed(2) + " / 2";
+    document.getElementById("metricEvidence").style.width = data.evidence + "%";
+    document.getElementById("metricEvidenceValue").textContent = data.evidence.toFixed(1) + "%";
+    document.getElementById("metricFull").style.width = data.full + "%";
+    document.getElementById("metricFullValue").textContent = data.full.toFixed(1) + "%";
+    document.getElementById("metricNote").textContent = data.note;
+  }
+
+  function setAtlas(key, btn) {
+    const data = atlas[key];
+    document.querySelectorAll(".atlas-choice").forEach(choice => choice.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    document.getElementById("atlasCount").textContent = data.count;
+    document.getElementById("atlasTitle").textContent = data.title;
+    document.getElementById("atlasBody").textContent = data.body;
+    const rows = taxRows.map(row => {
+      const width = Math.max(4, row[1] / 54 * 100);
+      return '<div class="tax-row"><div>' + row[0] + '</div><div class="bar-track"><div class="bar-fill tax-fill ' + row[2] + '" style="width:' + width + '%"></div></div><strong>' + row[1] + '</strong></div>';
+    }).join("");
+    document.getElementById("taxonomyBars").innerHTML = rows;
+  }
+
+  function setPanel(key, btn) {
+    const data = panels[key];
+    document.querySelectorAll(".panel-choice").forEach(choice => choice.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    document.getElementById("panelTitle").textContent = data.title;
+    const tokens = data.people.map(person => '<div class="reviewer-token ' + (person === "H" ? "human" : "ai") + '">' + (person === "H" ? "human" : "AI") + '</div>');
+    if (data.filter) tokens.push('<div class="reviewer-token filter">filter</div>');
+    document.getElementById("panelTokens").innerHTML = tokens.join("");
+    document.getElementById("panelInterpretation").textContent = data.interpretation;
+    document.getElementById("panelTotal").textContent = data.total.toFixed(1);
+    document.getElementById("panelUseful").textContent = data.useful.toFixed(1);
+    document.getElementById("panelYield").textContent = data.yield;
+    document.getElementById("panelNoise").textContent = data.noise.toFixed(2);
+    document.getElementById("panelUnique").textContent = data.unique.toFixed(1);
+    document.getElementById("panelNotFull").textContent = data.notFull.toFixed(1);
+    document.getElementById("panelUniqueBar").style.width = (data.unique / 11.5 * 100).toFixed(1) + "%";
+    document.getElementById("panelNoiseBar").style.width = (data.notFull / 14.6 * 100).toFixed(1) + "%";
+  }
+
+  function checkQuiz(button, correct) {
+    const box = button.closest(".quiz-box");
+    box.querySelectorAll(".quiz-option").forEach(option => {
+      option.classList.remove("correct", "wrong");
+      option.disabled = true;
+    });
+    button.classList.add(correct ? "correct" : "wrong");
+    if (!correct) {
+      const correctButton = Array.from(box.querySelectorAll(".quiz-option")).find(option => option.getAttribute("onclick").includes("true"));
+      if (correctButton) correctButton.classList.add("correct");
+    }
+    box.querySelector(".answer").classList.add("visible");
+  }
+
+  function setBandsMode(mode, btn) {
+    const plain = document.getElementById("bandsTablePlain");
+    const science = document.getElementById("bandsTableScience");
+    if (!plain || !science) return;
+    (mode === "science" ? plain : science).classList.add("hidden");
+    (mode === "science" ? science : plain).classList.remove("hidden");
+    document.querySelectorAll(".bands-mode-toggle button").forEach(button => button.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+  }
+
+  function openFeedbackPanel() {
+    const toggle = document.getElementById("cf-toggle");
+    if (toggle) {
+      toggle.click();
+      return;
+    }
+    window.setTimeout(() => {
+      const retryToggle = document.getElementById("cf-toggle");
+      if (retryToggle) retryToggle.click();
+    }, 250);
+  }
+
+  (function initTermTips() {
+    const tip = document.createElement("div");
+    tip.className = "term-tip";
+    document.body.appendChild(tip);
+    let activeTerm = null;
+
+    document.querySelectorAll(".term[title]").forEach(term => {
+      term.setAttribute("data-def", term.getAttribute("title"));
+      term.removeAttribute("title");
+    });
+
+    function showTip(term) {
+      const text = term.getAttribute("data-def");
+      if (!text) return;
+      tip.textContent = text;
+      const rect = term.getBoundingClientRect();
+      tip.style.left = (rect.left + window.scrollX) + "px";
+      tip.style.top = (rect.bottom + window.scrollY + 10) + "px";
+      tip.classList.add("visible");
+      window.requestAnimationFrame(() => {
+        const tipRect = tip.getBoundingClientRect();
+        if (tipRect.right > window.innerWidth - 12) {
+          tip.style.left = (window.innerWidth - tipRect.width - 12 + window.scrollX) + "px";
+        }
+      });
+      if (activeTerm && activeTerm !== term) activeTerm.classList.remove("active");
+      term.classList.add("active");
+      activeTerm = term;
+    }
+
+    function hideTip() {
+      tip.classList.remove("visible");
+      if (activeTerm) activeTerm.classList.remove("active");
+      activeTerm = null;
+    }
+
+    document.addEventListener("mouseover", event => {
+      const term = event.target.closest(".term");
+      if (term) showTip(term);
+    });
+    document.addEventListener("mouseout", event => {
+      const term = event.target.closest(".term");
+      if (!term) return;
+      const next = event.relatedTarget && event.relatedTarget.closest && event.relatedTarget.closest(".term");
+      if (next === term) return;
+      hideTip();
+    });
+    document.addEventListener("click", event => {
+      const term = event.target.closest(".term");
+      if (term) {
+        event.preventDefault();
+        if (activeTerm === term) hideTip(); else showTip(term);
+      } else if (activeTerm) {
+        hideTip();
+      }
+    });
+    window.addEventListener("scroll", () => { if (activeTerm) hideTip(); }, { passive: true });
+  })();
+
+  setMetricReviewer("topHuman");
+  setAtlas("w1");
+  setPanel("3h");
+</script>
+</body>
+</html>
