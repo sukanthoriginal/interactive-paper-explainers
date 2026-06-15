@@ -54,9 +54,47 @@ Claude will:
 4. Ask before continuing.
 5. Build **braingood** with paper-specific interactive widgets.
 6. Wire **comment/feedback** by injecting the bundled feedback runtime and starting the local feedback server with event-triggered Codex processing.
-7. Stop again, ask if anything else.
+7. Optionally publish a static GitHub Pages copy and rebuild the homepage.
+8. Stop again, ask if anything else.
 
 The output is a single `index.html` next to the PDF. The explainer content opens standalone in a browser; the default `comment/feedback` flow uses the bundled local server so comments can be saved to disk, plus an event-triggered `codex exec` processor so submitted comments can be applied back into the page during review without idle polling.
+
+---
+
+## GitHub Pages publishing
+
+Local feedback and public hosting are intentionally split:
+
+- The **local review copy** keeps the feedback runtime and talks to `lib/server.py`.
+- The **GitHub Pages copy** is static/read-only, keeps the `comment/feedback` tab as workflow context, and strips `/lib/feedback.css` plus `/lib/feedback.js`.
+- The root homepage, `index.html`, is regenerated so visitors can browse every published paper.
+
+Publish a generated explainer into this repo:
+
+```bash
+python scripts/publish_pages.py /path/to/paper-folder --slug paper-slug
+```
+
+For example:
+
+```bash
+python scripts/publish_pages.py ../papers/2602.10552 --slug 2602.10552
+```
+
+Rebuild only the homepage:
+
+```bash
+python scripts/publish_pages.py --homepage-only
+```
+
+Then commit and push. With GitHub Pages enabled from `main` at `/`, public pages resolve as:
+
+```text
+https://sukanthoriginal.github.io/interactive-paper-explainers/
+https://sukanthoriginal.github.io/interactive-paper-explainers/papers/<paper-slug>/
+```
+
+Do not publish the source PDF by default; publish only the static HTML unless you explicitly want the PDF in the repo.
 
 ---
 

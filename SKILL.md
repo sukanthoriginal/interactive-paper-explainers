@@ -21,8 +21,9 @@ Hard default rule:
 - The `comment/feedback` tab MUST be present even before the feedback runtime is injected; use a short placeholder until Step 5 wires the real feedback panel.
 - `brainstorm` is never the third default tab. It is optional fourth-tab content only.
 - After `braingood` is built, run the bundled feedback injection/server workflow by default unless the user explicitly asks for no feedback runtime.
+- If the user asks to publish, share, host, push, or update GitHub Pages, create a static public copy with `scripts/publish_pages.py` and rebuild the homepage index.
 
-The output is one `index.html` file that lives next to the paper PDF (e.g. `papers/paperN/index.html`). The explainer content is self-contained and can be opened directly. The default `comment/feedback` workflow uses the bundled local feedback server so comments can be saved to disk.
+The local review output is one `index.html` file that lives next to the paper PDF (e.g. `papers/paperN/index.html`). The explainer content is self-contained and can be opened directly. The default `comment/feedback` workflow uses the bundled local feedback server so comments can be saved to disk. The optional GitHub Pages output is a static read-only copy under this repo's `papers/<paper-slug>/`, with the local feedback runtime stripped.
 
 > **Forked from / inspired by** Paras Chopra's [`make-pages-interactive`](https://github.com/paraschopra/make-pages-interactive) — that skill turns any folder of HTML into a commenting surface. This skill produces the HTML to *feed* it. The two compose by default: build an explainer with this skill, then wire the bundled feedback runtime so readers can leave inline comments and iterate.
 
@@ -209,13 +210,53 @@ function openFeedbackPanel() {
 
 To take the page back to a clean state later: `python <skill-dir>/scripts/inject.py <papers-dir>/<paper-slug>/ --remove`.
 
+### Step 6 — Publish a static GitHub Pages copy when requested
+
+Publishing is separate from local review:
+- The local copy keeps `/lib/feedback.css`, `/lib/feedback.js`, `feedback/inbox.jsonl`, and the running Python server.
+- The GitHub Pages copy is static and read-only. It keeps the three tabs, including `comment/feedback`, but strips the local feedback runtime so it does not try to POST comments to GitHub Pages.
+- The repository homepage is regenerated so all published explainers are discoverable from `/`.
+
+When the user asks to publish, push, host, share on GitHub Pages, or "add it to the homepage", run from the skill/repo root:
+
+```bash
+# Copy local explainer into this repo, strip local feedback runtime, and rebuild /index.html
+python scripts/publish_pages.py <papers-dir>/<paper-slug>/ --slug <paper-slug>
+
+# Optional: rebuild only the homepage after manual changes
+python scripts/publish_pages.py --homepage-only
+```
+
+Then verify the static path locally before committing:
+
+```bash
+python -m http.server 8891
+# open http://127.0.0.1:8891/papers/<paper-slug>/
+# open http://127.0.0.1:8891/
+```
+
+Commit and push only the static publishing files, normally:
+- `.nojekyll`
+- `index.html`
+- `papers/<paper-slug>/index.html`
+- `scripts/publish_pages.py` if the helper changed
+
+Do not publish the PDF by default. If GitHub Pages is not enabled, enable it from `main` at `/` (repo root). After pushing, the public page path is usually:
+
+```text
+https://<owner>.github.io/<repo>/papers/<paper-slug>/
+```
+
 ---
 
 ## File output convention
 
 - One paper → one HTML file
-- Path: `<papers-dir>/<paper-slug>/index.html`
+- Local review path: `<papers-dir>/<paper-slug>/index.html`
+- GitHub Pages path, when published: `<skill-repo>/papers/<paper-slug>/index.html`
+- Homepage path, when published: `<skill-repo>/index.html`
 - Single file: all explainer CSS inline in `<style>`, all explainer JS inline in `<script>`. The feedback runtime adds the two default `/lib/feedback.css` and `/lib/feedback.js` tags when `scripts/inject.py` is run.
+- Public GitHub Pages copies are produced through `scripts/publish_pages.py`; do not manually leave `/lib/feedback.css` or `/lib/feedback.js` tags in the hosted copy.
 - Mobile-responsive (test under 600px width)
 - No emojis in the page unless they're functional UI. The default tab labels (`braindead` / `braingood` / `comment/feedback`) are emoji-free; emoji is fine inside `.ez-emoji-block` bullets and inline within braindead prose.
 

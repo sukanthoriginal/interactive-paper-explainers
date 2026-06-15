@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Paper Explainers</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1e40af;
+      --teal: #0d9488;
+      --pink: #db2777;
+      --gray: #6b7280;
+      --gray-dark: #1f2937;
+      --line: #e5e7eb;
+      --paper: #ffffff;
+      --body: #fafafa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    .shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 36px 24px 72px;
+    }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      padding: 26px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      color: #111827;
+      font-size: 2.35rem;
+      line-height: 1.12;
+      font-weight: 540;
+    }
+    .subhead {
+      margin: 14px 0 0;
+      max-width: 760px;
+      color: #4b5563;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+    .count-box {
+      min-width: 150px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: right;
+    }
+    .count-box strong {
+      display: block;
+      color: #111827;
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .count-box span {
+      color: var(--gray);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .notice {
+      margin: 22px 0 26px;
+      padding: 14px 16px;
+      border: 1px solid #fed7aa;
+      border-left: 5px solid #d97706;
+      border-radius: 0 8px 8px 0;
+      background: #fff7ed;
+      color: #7c2d12;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .paper-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 142px 1fr;
+      min-height: 212px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      overflow: hidden;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .paper-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+    }
+    .paper-link {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+    .paper-visual {
+      position: relative;
+      min-height: 212px;
+      background:
+        radial-gradient(circle at 54% 48%, rgba(255,255,255,0.95) 0 19%, transparent 20%),
+        linear-gradient(135deg, var(--a), var(--b));
+    }
+    .paper-visual .node {
+      position: absolute;
+      width: 42px;
+      height: 32px;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+    }
+    .paper-visual .n1 { left: 18px; top: 24px; }
+    .paper-visual .n2 { right: 18px; top: 72px; }
+    .paper-visual .n3 { left: 26px; bottom: 28px; }
+    .paper-visual .line {
+      position: absolute;
+      height: 2px;
+      border-top: 2px dashed rgba(255,255,255,0.72);
+      transform-origin: left center;
+    }
+    .paper-visual .l1 { left: 56px; top: 48px; width: 70px; transform: rotate(26deg); }
+    .paper-visual .l2 { left: 48px; bottom: 62px; width: 82px; transform: rotate(-30deg); }
+    .paper-visual .bars {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      height: 52px;
+    }
+    .paper-visual .bars i {
+      width: 8px;
+      border-radius: 4px 4px 1px 1px;
+      background: var(--c);
+    }
+    .paper-visual .bars i:nth-child(1) { height: 34%; }
+    .paper-visual .bars i:nth-child(2) { height: 78%; }
+    .paper-visual .bars i:nth-child(3) { height: 56%; }
+    .paper-visual .bars i:nth-child(4) { height: 92%; }
+    .paper-copy {
+      padding: 18px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .paper-slug {
+      color: var(--blue);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+    .paper-card h2 {
+      margin: 0;
+      color: #111827;
+      font-size: 1.14rem;
+      line-height: 1.25;
+      font-weight: 760;
+    }
+    .paper-card p {
+      margin: 0;
+      color: #4b5563;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .badges span {
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: #f1f5f9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+    .empty-state {
+      padding: 26px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      background: white;
+    }
+    @media (max-width: 720px) {
+      .shell { padding: 24px 16px 54px; }
+      header { grid-template-columns: 1fr; }
+      h1 { font-size: 1.85rem; }
+      .count-box { text-align: left; }
+      .paper-card { grid-template-columns: 1fr; }
+      .paper-visual { min-height: 152px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">Interactive Paper Explainers</p>
+        <h1>Generated explainers</h1>
+        <p class="subhead">A browsable shelf of paper explainers generated by the skill. Each page is static on GitHub Pages; local feedback stays in the local review server.</p>
+      </div>
+      <div class="count-box">
+        <strong>2</strong>
+        <span>explainers</span>
+      </div>
+    </header>
+
+    <div class="notice">
+      Public pages are read-only mirrors. Run the local feedback server while reviewing, then republish the accepted HTML with <code>scripts/publish_pages.py</code>.
+    </div>
+
+    <section class="grid" aria-label="Generated paper explainers">
+
+        <article class="paper-card">
+          <a class="paper-link" href="papers/2602.10552/" aria-label="Open MindPilot: can pictures steer brain signals?"></a>
+
+          <div class="paper-visual" style="--a:#2563eb; --b:#0d9488; --c:#f97316;" aria-hidden="true">
+            <span class="node n1"></span>
+            <span class="node n2"></span>
+            <span class="node n3"></span>
+            <span class="line l1"></span>
+            <span class="line l2"></span>
+            <span class="bars"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <div class="paper-copy">
+            <div class="paper-slug">2602.10552</div>
+            <h2>MindPilot: can pictures steer brain signals?</h2>
+            <p>The whole paper in 5 minutes 🧠💥</p>
+            <div class="badges"><span>arXiv:2602.10552</span><span>braingood</span><span>comment/feedback</span></div>
+          </div>
+        </article>
+
+        <article class="paper-card">
+          <a class="paper-link" href="papers/paper2/" aria-label="Open Where in your brain does &quot;relaxed&quot; live?"></a>
+
+          <div class="paper-visual" style="--a:#db2777; --b:#7c3aed; --c:#2563eb;" aria-hidden="true">
+            <span class="node n1"></span>
+            <span class="node n2"></span>
+            <span class="node n3"></span>
+            <span class="line l1"></span>
+            <span class="line l2"></span>
+            <span class="bars"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <div class="paper-copy">
+            <div class="paper-slug">paper2</div>
+            <h2>Where in your brain does &quot;relaxed&quot; live?</h2>
+            <p>For nearly 100 years, alpha waves have been the popular signature of a calm mind. A meta-analysis of 54 studies finds the truth is location-dependent — and there may not be a single &quot;relaxation signal&quot; at all.</p>
+            <div class="badges"><span>braingood</span><span>comment/feedback</span></div>
+          </div>
+        </article>
+    </section>
+  </main>
+</body>
+</html>
