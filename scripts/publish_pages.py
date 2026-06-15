@@ -47,6 +47,47 @@ SUBTITLE_RE = re.compile(
 ARXIV_RE = re.compile(r"arxiv[:\s-]*([0-9]{4}\.[0-9]{4,5})", re.IGNORECASE)
 TAG_RE = re.compile(r"<[^>]+>")
 SLUG_RE = re.compile(r"[^a-zA-Z0-9._-]+")
+HOME_LINK_CLASS = "ipe-home-link"
+HOME_LINK_HTML = (
+    '  <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">'
+    '&larr; all explainers</a>\n'
+)
+HOME_LINK_CSS = """
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+"""
 
 
 @dataclass
@@ -133,6 +174,9 @@ def publicize_html(text: str) -> str:
             text = text.replace("\n    code {\n", disabled_css + "\n    code {\n", 1)
         else:
             text = text.replace("</style>", disabled_css + "</style>", 1)
+    if HOME_LINK_CLASS not in text:
+        text = text.replace("</style>", HOME_LINK_CSS + "</style>", 1)
+        text = re.sub(r"(<body\b[^>]*>\s*)", r"\1" + HOME_LINK_HTML, text, count=1, flags=re.IGNORECASE)
     if "GitHub Pages copy: local feedback runtime stripped" not in text:
         text = text.replace(
             "</head>",

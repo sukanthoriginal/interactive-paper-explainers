@@ -216,6 +216,7 @@ Publishing is separate from local review:
 - The local copy keeps `/lib/feedback.css`, `/lib/feedback.js`, `feedback/inbox.jsonl`, and the running Python server.
 - The GitHub Pages copy is static and read-only. It keeps the three tabs, including `comment/feedback`, but strips the local feedback runtime so it does not try to POST comments to GitHub Pages.
 - The repository homepage is regenerated so all published explainers are discoverable from `/`.
+- Every GitHub Pages paper page must include a persistent home link labeled `all explainers` that points back to the repository homepage. Let `scripts/publish_pages.py` inject this link; do not rely on each generated explainer design to remember it.
 
 When the user asks to publish, push, host, share on GitHub Pages, or "add it to the homepage", run from the skill/repo root:
 
@@ -257,6 +258,7 @@ https://<owner>.github.io/<repo>/papers/<paper-slug>/
 - Homepage path, when published: `<skill-repo>/index.html`
 - Single file: all explainer CSS inline in `<style>`, all explainer JS inline in `<script>`. The feedback runtime adds the two default `/lib/feedback.css` and `/lib/feedback.js` tags when `scripts/inject.py` is run.
 - Public GitHub Pages copies are produced through `scripts/publish_pages.py`; do not manually leave `/lib/feedback.css` or `/lib/feedback.js` tags in the hosted copy.
+- Public GitHub Pages copies include a persistent `all explainers` link back to the homepage so readers can move from any paper page back to the shelf.
 - Mobile-responsive (test under 600px width)
 - No emojis in the page unless they're functional UI. The default tab labels (`braindead` / `braingood` / `comment/feedback`) are emoji-free; emoji is fine inside `.ez-emoji-block` bullets and inline within braindead prose.
 

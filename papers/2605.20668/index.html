@@ -1132,11 +1132,47 @@
       opacity: 0.62;
       box-shadow: none;
     }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
 </style>
   <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
 </head>
 <body>
-  <header class="hero mode-ez" id="pageHero">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero mode-ez" id="pageHero">
     <div class="tag" id="heroTag">braindead</div>
     <h1 id="heroTitle">AI reviewers: helpful extra eyes, not replacement scientists</h1>
     <p class="subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>

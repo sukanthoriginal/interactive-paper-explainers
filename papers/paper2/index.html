@@ -854,11 +854,53 @@
     text-transform: uppercase;
     font-weight: 700;
   }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
 </style>
-  <link rel="stylesheet" href="/lib/feedback.css">
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
 </head>
 <body>
 
+  <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
 <div class="hero">
   <div class="tag">Journal of Cognitive Neuroscience &middot; 2025 &middot; Open Access</div>
   <h1>Where in your brain does "relaxed" live?</h1>
@@ -2337,6 +2379,5 @@ selectRegion('occipital', null); // start with the strongest finding
 setForest('overall', document.querySelector('.forest-btn.active'));
 </script>
 
-<script src="/lib/feedback.js" defer></script>
 </body>
 </html>

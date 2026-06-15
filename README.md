@@ -68,6 +68,7 @@ Local feedback and public hosting are intentionally split:
 - The **local review copy** keeps the feedback runtime and talks to `lib/server.py`.
 - The **GitHub Pages copy** is static/read-only, keeps the `comment/feedback` tab as workflow context, and strips `/lib/feedback.css` plus `/lib/feedback.js`.
 - The root homepage, `index.html`, is regenerated so visitors can browse every published paper.
+- Every published paper page gets a persistent `all explainers` home link back to the homepage.
 
 Publish a generated explainer into this repo:
 
