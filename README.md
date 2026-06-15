@@ -2,6 +2,8 @@
 
 A Claude Code skill that turns an academic paper PDF into a single self-contained interactive HTML explainer.
 
+Published explainers homepage: <https://sukanthoriginal.github.io/interactive-paper-explainers/>
+
 Default tabs, in order:
 
 1. **braindead** — the entire paper in 5 minutes, no jargon, heavy analogies.
