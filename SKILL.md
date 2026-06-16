@@ -11,6 +11,8 @@ Generates a single-file HTML explainer of an academic paper. The default page al
 2. **braingood** — the rigorous version: key concepts, study design, interactive visualizations of the data, results, limits, quiz.
 3. **comment/feedback** — a built-in review tab that explains how to highlight text, select elements, submit feedback batches, and open the floating feedback panel.
 
+Before building a new explainer, processing feedback, redesigning a visual block, or changing publish/review behavior, read `LESSONS.md`. It is the durable memory of previous failure modes: preserving the user's current tab/context, building paper-grounded teaching boards, keeping evidence images inspectable, avoiding blank card towers, verifying at the actual browser width, and making publish belong to the current local explainer.
+
 An optional fourth tab, **brainstorm**, can be added for research-direction riffs that go beyond the paper itself, but never replace or reorder the first three tabs.
 
 The three canonical default tab labels — **`braindead`**, **`braingood`**, **`comment/feedback`** — are required across every paper in this repo, in that order. If an optional brainstorming tab is added, its display label is **`brainstorm`** and it comes after `comment/feedback`.

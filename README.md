@@ -105,6 +105,8 @@ Do not publish the source PDF by default; publish only the static HTML unless yo
 
 The skill should not turn explicit visualization requests into plain tables with emoji. Process loops, model pipelines, experimental protocols, scoring functions, and data transformations should become actual figures: flow diagrams, state machines, timelines, architecture sketches, mini charts, or interactive steppers.
 
+For accumulated review-session lessons, see [`LESSONS.md`](LESSONS.md). Future explainer work should treat it as the durable QA memory for local feedback flow, visual teaching boards, evidence image sizing, responsive verification, and publish behavior.
+
 For visual first drafts, use the bundled helper:
 
 ```bash
