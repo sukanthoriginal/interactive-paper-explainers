@@ -99,11 +99,11 @@ Paths:
 - Feedback inbox: {feedback_dir / "inbox.jsonl"}
 - Feedback history: {feedback_dir / "history.json"}
 
-Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
+Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. Take the user's wording literally: if they ask for a visual, illustration, diagram, separate column, or interactive explanation, make an actual structural visual/interactive HTML+CSS change rather than another paragraph or table. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If an edit is made for a comment, that comment id must be recorded in history.json before finishing. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
     cmd = [
         _codex_auto_config["codex_bin"],
         "-c",
-        'model_reasoning_effort="low"',
+        'model_reasoning_effort="medium"',
         "-c",
         'model_reasoning_summary="none"',
         "--sandbox",
@@ -285,7 +285,9 @@ class FeedbackHandler(http.server.SimpleHTTPRequestHandler):
     # Silence the default request logging — too noisy for our purposes.
     def log_message(self, format, *args):
         # Only log POSTs and errors
-        if args and (args[0].startswith("POST") or " 4" in " ".join(map(str, args)) or " 5" in " ".join(map(str, args))):
+        message = " ".join(map(str, args))
+        first = str(args[0]) if args else ""
+        if first.startswith("POST") or " 4" in message or " 5" in message:
             sys.stderr.write("%s - %s\n" % (self.address_string(), format % args))
 
 
