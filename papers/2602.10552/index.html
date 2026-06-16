@@ -1419,6 +1419,136 @@
       border: 1px solid #dbeafe;
     }
 
+    .feature-compare-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+    }
+
+    .feature-compare-panel {
+      display: grid;
+      gap: 6px;
+      padding: 7px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+    }
+
+    .feature-compare-panel b {
+      color: #1e3a8a;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clip-vector-compare {
+      display: grid;
+      grid-template-columns: 48px 1fr 34px;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .clip-vector-compare img {
+      width: 48px;
+      height: 44px;
+      object-fit: cover;
+      object-position: top left;
+      border-radius: 8px;
+      border: 1px solid #fdba74;
+    }
+
+    .clip-bars {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      align-items: end;
+      min-height: 38px;
+      padding: 4px;
+      border-radius: 8px;
+      background: #eff6ff;
+    }
+
+    .clip-bars span {
+      border-radius: 3px 3px 0 0;
+      background: #2563eb;
+    }
+
+    .clip-vector-compare em {
+      font-style: normal;
+      font-size: 0.62rem;
+      font-weight: 900;
+      color: #15803d;
+      text-align: center;
+    }
+
+    .psd-wave-profile {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      align-items: end;
+    }
+
+    .psd-mini-wave {
+      height: 42px;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, transparent 48%, #bfdbfe 48% 54%, transparent 54%),
+        linear-gradient(90deg, #f8fafc, #eff6ff);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #dbeafe;
+    }
+
+    .psd-mini-wave::after {
+      content: "";
+      position: absolute;
+      inset: 6px 4px;
+      background: #0d9488;
+      clip-path: polygon(0 55%, 8% 32%, 16% 70%, 24% 36%, 32% 65%, 40% 40%, 48% 58%, 56% 35%, 64% 72%, 72% 42%, 80% 62%, 88% 38%, 100% 56%, 100% 70%, 88% 52%, 80% 76%, 72% 56%, 64% 86%, 56% 49%, 48% 72%, 40% 55%, 32% 80%, 24% 50%, 16% 84%, 8% 46%, 0 68%);
+    }
+
+    .psd-bars {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      align-items: end;
+      min-height: 54px;
+      padding: 5px;
+      border-radius: 8px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+    }
+
+    .psd-bars span {
+      display: grid;
+      place-items: end center;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #f97316, #fed7aa);
+      color: #7c2d12;
+      font-size: 0.5rem;
+      font-weight: 900;
+      padding-bottom: 2px;
+    }
+
+    .paper-psd-crop {
+      width: 100%;
+      height: 62px;
+      object-fit: cover;
+      object-position: left top;
+      border-radius: 8px;
+      border: 1px solid #fed7aa;
+    }
+
+    .feature-compare-panel small {
+      color: #475569;
+      font-size: 0.64rem;
+      line-height: 1.25;
+    }
+
     .score-meter {
       height: 12px;
       border-radius: 999px;
@@ -2496,6 +2626,37 @@
                       <div class="feature-choice">
                         <div><b>Semantic search:</b> ATM-S maps the 17 x 250 EEG into a CLIP-aligned vector, then compares it with the target image/category vector.</div>
                         <div><b>PSD target:</b> the EEG wave is converted into frequency-band power, then compared with the reference rhythm profile.</div>
+                      </div>
+                      <div class="feature-compare-board" data-cf-change="ch-feature-comparison-visual-board" aria-label="Visual comparison of EEG to CLIP target and PSD reference rhythm profile">
+                        <div class="feature-compare-panel">
+                          <b>Semantic / CLIP route</b>
+                          <div class="clip-vector-compare" aria-label="Current EEG vector compared with target image vector">
+                            <img src="assets/paper-a11-groundtruth-bicycle.png" alt="Target bicycle crop from Figure A.11">
+                            <div class="clip-bars" aria-hidden="true">
+                              <span style="height:35%"></span><span style="height:66%"></span><span style="height:48%"></span><span style="height:82%"></span><span style="height:57%"></span><span style="height:72%"></span><span style="height:42%"></span>
+                            </div>
+                            <em>target image vector</em>
+                          </div>
+                          <div class="clip-vector-compare" aria-label="Candidate EEG vector compared with target image vector">
+                            <img src="assets/paper-figure-a11-search.png" alt="Figure A.11 search candidates shown by the paper">
+                            <div class="clip-bars" aria-hidden="true">
+                              <span style="height:30%"></span><span style="height:61%"></span><span style="height:44%"></span><span style="height:76%"></span><span style="height:53%"></span><span style="height:67%"></span><span style="height:38%"></span>
+                            </div>
+                            <em>current EEG vector</em>
+                          </div>
+                          <small>ATM-S turns the 17 x 250 EEG into the same kind of CLIP-aligned coordinate list as the target image/category; cosine similarity asks whether the two bar patterns point in the same direction.</small>
+                        </div>
+                        <div class="feature-compare-panel">
+                          <b>PSD / rhythm route</b>
+                          <div class="psd-wave-profile" aria-label="EEG waveform converted into a PSD band-power profile">
+                            <div class="psd-mini-wave" aria-hidden="true"></div>
+                            <div class="psd-bars" aria-hidden="true">
+                              <span style="height:30%">δ</span><span style="height:48%">θ</span><span style="height:78%">α</span><span style="height:58%">β</span><span style="height:35%">γ</span>
+                            </div>
+                          </div>
+                          <img class="paper-psd-crop" src="assets/paper-figure-a13-psd.png" alt="Figure A.13 PSD-driven generation crop with reference-only target and iterative best result">
+                          <small>A reference rhythm profile means the desired band-power shape, not a picture label. In Figure A.13 the paper shows a “Reference only” PSD target, then Step 1 through a Best step; the score improves when the candidate EEG's PSD bars look more like that reference profile.</small>
+                        </div>
                       </div>
                       <p>So the raw matrix is not the final reward; it is transformed into whichever feature language the task is using.</p>
                     </div>
