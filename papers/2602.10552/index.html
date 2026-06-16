@@ -1419,12 +1419,17 @@
 
     .after-eeg-card img {
       width: 100%;
-      height: 78px;
-      object-fit: cover;
-      object-position: top left;
+      height: 132px;
+      object-fit: contain;
+      object-position: center;
       border-radius: 9px;
       border: 1px solid #fdba74;
-      background: #fff;
+      background: #fff7ed;
+    }
+
+    .after-eeg-card.step-a img {
+      height: clamp(132px, 34vw, 190px);
+      padding: 8px;
     }
 
     .matrix-mini {
@@ -2205,33 +2210,20 @@
       .paper-stimulus-strip,
       .pixel-feature-board,
       .proxy-deep-board,
-      .stimulus-example,
-      .feature-pipeline,
-      .sample-equation,
-      .after-eeg-flow,
-      .feature-choice,
-      .feature-compare-board,
-      .after-eeg-card.step-d {
+      .sample-equation {
         grid-template-columns: 1fr;
-      }
-
-      .after-eeg-card.step-d p {
-        grid-column: auto;
-        grid-row: auto;
       }
 
       .channel-map {
         grid-template-columns: 52px repeat(3, minmax(46px, 1fr));
       }
 
-      .stimulus-example img {
-        width: 100%;
-        height: auto;
-        max-height: 220px;
-      }
-
       .proxy-flow-arrow {
         transform: rotate(90deg);
+      }
+
+      .feature-pipeline .proxy-flow-arrow {
+        transform: none;
       }
 
       .loop-diagram {
@@ -2273,6 +2265,28 @@
 
       .limit-row {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stimulus-example,
+      .feature-pipeline,
+      .after-eeg-flow,
+      .feature-choice,
+      .feature-compare-board,
+      .after-eeg-card.step-d {
+        grid-template-columns: 1fr;
+      }
+
+      .stimulus-example img {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+      }
+
+      .after-eeg-card.step-d p {
+        grid-column: auto;
+        grid-row: auto;
       }
     }
   
