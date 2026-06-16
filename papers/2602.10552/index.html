@@ -1588,19 +1588,557 @@
       padding-bottom: 2px;
     }
 
-    .paper-psd-crop {
+    .after-eeg-card img.paper-psd-crop {
       width: 100%;
-      height: 62px;
-      object-fit: cover;
-      object-position: left top;
+      height: 170px;
+      object-fit: contain;
+      object-position: center;
       border-radius: 8px;
       border: 1px solid #fed7aa;
+      background: #fff7ed;
     }
 
     .feature-compare-panel small {
       color: #475569;
       font-size: 0.64rem;
       line-height: 1.25;
+    }
+
+    .psd-principles-board {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 8px;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #fdba74;
+      background: linear-gradient(135deg, #fff7ed, #ffffff 58%, #f0fdfa);
+    }
+
+    .psd-principles-board h6 {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: #7c2d12;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .rhythm-demo {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .rhythm-wave-stack,
+    .rhythm-bars-stack,
+    .semantic-vs-rhythm {
+      padding: 7px;
+      border-radius: 9px;
+      border: 1px solid #fed7aa;
+      background: #ffffff;
+    }
+
+    .rhythm-wave-stack strong,
+    .rhythm-bars-stack strong,
+    .semantic-vs-rhythm strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #0f172a;
+      font-size: 0.66rem;
+    }
+
+    .rhythm-wave {
+      height: 24px;
+      margin: 3px 0;
+      border-radius: 999px;
+      background: #eff6ff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rhythm-wave::after {
+      content: "";
+      position: absolute;
+      inset: 5px 4px;
+      background: #2563eb;
+      clip-path: polygon(0 55%, 8% 42%, 16% 60%, 24% 38%, 32% 62%, 40% 35%, 48% 66%, 56% 40%, 64% 58%, 72% 36%, 80% 64%, 88% 42%, 100% 56%, 100% 72%, 88% 58%, 80% 80%, 72% 52%, 64% 74%, 56% 56%, 48% 82%, 40% 51%, 32% 76%, 24% 54%, 16% 76%, 8% 58%, 0 70%);
+    }
+
+    .rhythm-wave.slow::after {
+      background: #0d9488;
+      clip-path: polygon(0 55%, 14% 35%, 28% 70%, 42% 38%, 56% 68%, 70% 36%, 84% 66%, 100% 48%, 100% 68%, 84% 82%, 70% 52%, 56% 84%, 42% 54%, 28% 86%, 14% 50%, 0 72%);
+    }
+
+    .rhythm-arrow {
+      color: #ea580c;
+      font-weight: 900;
+    }
+
+    .rhythm-mini-bars {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      align-items: end;
+      min-height: 58px;
+    }
+
+    .rhythm-mini-bars span {
+      display: grid;
+      place-items: end center;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #f97316, #fed7aa);
+      color: #7c2d12;
+      font-size: 0.5rem;
+      font-weight: 900;
+      padding-bottom: 2px;
+    }
+
+    .semantic-vs-rhythm {
+      display: grid;
+      gap: 6px;
+    }
+
+    .semantic-vs-rhythm div {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 7px;
+      align-items: center;
+      padding: 6px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .semantic-vs-rhythm b {
+      color: #1e3a8a;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+    }
+
+    .semantic-vs-rhythm span {
+      color: #334155;
+      font-size: 0.66rem;
+      line-height: 1.22;
+    }
+
+    .band-definition-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .band-definition-row span {
+      display: grid;
+      gap: 2px;
+      padding: 5px 4px;
+      border-radius: 7px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #7c2d12;
+      font-size: 0.52rem;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .band-definition-row em {
+      color: #475569;
+      font-style: normal;
+      font-size: 0.48rem;
+      font-weight: 800;
+    }
+
+    .route-split-board {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .route-panel {
+      display: grid;
+      gap: 7px;
+      padding: 8px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+    }
+
+    .route-panel strong {
+      color: #0f172a;
+      font-size: 0.66rem;
+    }
+
+    .route-mini-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 5px;
+      align-items: stretch;
+    }
+
+    .route-mini-flow span,
+    .route-mini-flow b {
+      display: grid;
+      place-items: center;
+      min-height: 46px;
+      padding: 5px;
+      border-radius: 8px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 0.56rem;
+      line-height: 1.12;
+      text-align: center;
+    }
+
+    .route-mini-flow b {
+      border: 0;
+      background: transparent;
+      color: #64748b;
+      font-size: 0.7rem;
+      padding: 0;
+    }
+
+    .route-panel small {
+      color: #475569;
+      font-size: 0.62rem;
+      line-height: 1.25;
+    }
+
+    .why-not-classify {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 7px;
+      align-items: center;
+      padding: 8px;
+      border-radius: 9px;
+      border: 1px solid #99f6e4;
+      background: #f0fdfa;
+    }
+
+    .why-not-classify div {
+      padding: 7px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #ccfbf1;
+    }
+
+    .why-not-classify b {
+      display: block;
+      color: #0f766e;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 3px;
+    }
+
+    .why-not-classify span {
+      color: #334155;
+      font-size: 0.66rem;
+      line-height: 1.24;
+    }
+
+    .why-not-classify > span {
+      color: #0f766e;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .same-eeg-two-readouts {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 0.82fr auto 1fr;
+      gap: 8px;
+      align-items: stretch;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #bfdbfe;
+      background: linear-gradient(135deg, #eff6ff, #ffffff 54%, #ecfeff);
+    }
+
+    .same-eeg-input,
+    .readout-stack,
+    .correlation-note {
+      padding: 8px;
+      border-radius: 9px;
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+    }
+
+    .same-eeg-input strong,
+    .readout-card strong,
+    .correlation-note strong {
+      display: block;
+      color: #1e3a8a;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .same-eeg-matrix {
+      display: grid;
+      grid-template-columns: 24px repeat(10, 1fr);
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+
+    .same-eeg-matrix b,
+    .same-eeg-matrix span {
+      min-height: 13px;
+      border-radius: 3px;
+      background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+
+    .same-eeg-matrix b {
+      display: grid;
+      place-items: center;
+      color: #475569;
+      font-size: 0.48rem;
+      background: #f8fafc;
+    }
+
+    .same-eeg-matrix .warm { background: #fed7aa; border-color: #fdba74; }
+    .same-eeg-matrix .hot { background: #fb7185; border-color: #f43f5e; }
+    .same-eeg-matrix .cool { background: #bae6fd; border-color: #7dd3fc; }
+
+    .same-eeg-input small,
+    .readout-card small,
+    .correlation-note small {
+      display: block;
+      color: #475569;
+      font-size: 0.61rem;
+      line-height: 1.24;
+    }
+
+    .fork-arrow {
+      display: grid;
+      place-items: center;
+      color: #2563eb;
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .readout-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .readout-card {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 7px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .readout-card strong,
+    .readout-card small {
+      grid-column: 1 / -1;
+      margin-bottom: 0;
+    }
+
+    .readout-icon {
+      min-height: 50px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      color: #0f172a;
+      font-size: 0.58rem;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .readout-bars {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 3px;
+      align-items: end;
+      min-height: 50px;
+    }
+
+    .readout-bars span {
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #3b82f6, #bfdbfe);
+    }
+
+    .readout-bars.psd span {
+      display: grid;
+      place-items: end center;
+      color: #7c2d12;
+      font-size: 0.48rem;
+      font-weight: 900;
+      padding-bottom: 2px;
+      background: linear-gradient(180deg, #f97316, #fed7aa);
+    }
+
+    .current-target-pairs {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      border-radius: 9px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+    }
+
+    .pair-route {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .pair-route strong {
+      color: #0f172a;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pair-comparison {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pair-object {
+      display: grid;
+      gap: 4px;
+      padding: 6px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+    }
+
+    .pair-object b {
+      color: #1e3a8a;
+      font-size: 0.56rem;
+      text-transform: uppercase;
+    }
+
+    .pair-object small {
+      color: #475569;
+      font-size: 0.58rem;
+      line-height: 1.18;
+    }
+
+    .pair-symbol {
+      color: #64748b;
+      font-weight: 900;
+    }
+
+    .pair-route .clip-bars,
+    .pair-route .psd-bars {
+      min-height: 44px;
+    }
+
+    .pair-route > small {
+      color: #475569;
+      font-size: 0.61rem;
+      line-height: 1.22;
+    }
+
+    .psd-target-source-board {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 6px;
+      align-items: stretch;
+      padding: 7px;
+      border-radius: 8px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+    }
+
+    .psd-source-lane {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .psd-source-node {
+      display: grid;
+      gap: 3px;
+      min-height: 68px;
+      padding: 6px;
+      border-radius: 7px;
+      background: #ffffff;
+      border: 1px solid #fdba74;
+    }
+
+    .psd-source-node b {
+      color: #9a3412;
+      font-size: 0.52rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .psd-source-node small {
+      color: #7c2d12;
+      font-size: 0.54rem;
+      line-height: 1.15;
+    }
+
+    .psd-source-arrow,
+    .psd-source-vs {
+      display: grid;
+      place-items: center;
+      color: #c2410c;
+      font-weight: 900;
+      font-size: 0.72rem;
+    }
+
+    .psd-source-vs {
+      color: #64748b;
+    }
+
+    .psd-label-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      border-radius: 999px;
+      color: #9a3412;
+      background: #ffedd5;
+      border: 1px dashed #fb923c;
+      font-weight: 900;
+      font-size: 0.56rem;
+    }
+
+    .correlation-note {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      background: #f0fdfa;
+      border-color: #99f6e4;
+    }
+
+    .correlation-note div {
+      padding: 7px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #ccfbf1;
+    }
+
+    .correlation-note strong {
+      color: #0f766e;
     }
 
     .score-meter {
@@ -1647,6 +2185,636 @@
     .latent-neighbors .n2 { left: 54%; top: 28%; }
     .latent-neighbors .n3 { left: 70%; top: 62%; }
     .latent-neighbors .n4 { left: 24%; top: 68%; }
+
+    .optimizer-next-board {
+      margin-top: 9px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #a7f3d0;
+      background: linear-gradient(135deg, #ecfdf5, #ffffff 58%, #eff6ff);
+    }
+
+    .optimizer-next-board h5 {
+      margin: 0 0 8px;
+      color: #047857;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .optimizer-next-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .optimizer-step {
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #bbf7d0;
+      background: #ffffff;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .optimizer-step strong {
+      color: #064e3b;
+      font-size: 0.76rem;
+    }
+
+    .optimizer-step small {
+      color: #334155;
+      font-size: 0.69rem;
+      line-height: 1.3;
+    }
+
+    .score-to-next-batch-board {
+      display: grid;
+      gap: 8px;
+      margin: 8px 0 10px;
+      padding: 9px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .score-to-next-batch-board h6 {
+      margin: 0;
+      color: #1d4ed8;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .score-choice-note {
+      margin: 0;
+      color: #334155;
+      font-size: 0.73rem;
+      line-height: 1.35;
+    }
+
+    .score-ledger-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    .candidate-score-sheet,
+    .next-batch-diagram {
+      padding: 8px;
+      border-radius: 11px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      display: grid;
+      gap: 7px;
+    }
+
+    .candidate-score-sheet strong,
+    .next-batch-diagram strong {
+      color: #0f172a;
+      font-size: 0.74rem;
+    }
+
+    .score-ledger-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr;
+      gap: 5px;
+      align-items: center;
+      font-size: 0.64rem;
+      color: #334155;
+      font-weight: 850;
+    }
+
+    .score-ledger-row.header {
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.56rem;
+    }
+
+    .score-pill {
+      min-height: 22px;
+      border-radius: 8px;
+      border: 1px solid #bfdbfe;
+      background: linear-gradient(90deg, rgba(96, 165, 250, 0.22) var(--score, 50%), #ffffff var(--score, 50%));
+      display: grid;
+      place-items: center;
+      color: #1e3a8a;
+    }
+
+    .score-pill.hot {
+      border-color: #22c55e;
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.25) var(--score, 50%), #ffffff var(--score, 50%));
+      color: #065f46;
+    }
+
+    .chosen-objective-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+      color: #475569;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    .chosen-objective-row span {
+      padding: 6px;
+      border-radius: 9px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      text-align: center;
+    }
+
+    .chosen-objective-row b {
+      color: #15803d;
+      font-size: 0.82rem;
+    }
+
+    .neighbor-credit-map {
+      position: relative;
+      min-height: 92px;
+      border-radius: 12px;
+      border: 1px dashed #93c5fd;
+      background: radial-gradient(circle at 28% 44%, rgba(34, 197, 94, 0.26), transparent 23%), radial-gradient(circle at 59% 30%, rgba(96, 165, 250, 0.2), transparent 18%), #ffffff;
+      overflow: hidden;
+    }
+
+    .neighbor-credit-map span {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 24px;
+      border-radius: 9px;
+      border: 1px solid #bfdbfe;
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-size: 0.58rem;
+      font-weight: 900;
+    }
+
+    .neighbor-credit-map .winner {
+      left: 24%;
+      top: 34%;
+      background: #bbf7d0;
+      border-color: #22c55e;
+      color: #065f46;
+      transform: scale(1.14);
+    }
+
+    .neighbor-credit-map .neighbor-a { left: 9%; top: 14%; }
+    .neighbor-credit-map .neighbor-b { left: 46%; top: 18%; }
+    .neighbor-credit-map .neighbor-c { left: 60%; top: 59%; opacity: 0.72; }
+
+    .neighbor-credit-map .arrow {
+      width: 44px;
+      height: 2px;
+      border: 0;
+      border-radius: 999px;
+      background: #22c55e;
+      transform-origin: left center;
+    }
+
+    .neighbor-credit-map .arrow.one { left: 35%; top: 45%; transform: rotate(-28deg); }
+    .neighbor-credit-map .arrow.two { left: 36%; top: 50%; transform: rotate(24deg); opacity: 0.78; }
+
+    .next-output-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .next-output-strip span {
+      padding: 6px 4px;
+      border-radius: 9px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #065f46;
+      text-align: center;
+      font-size: 0.62rem;
+      font-weight: 900;
+    }
+
+    .reward-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 5px;
+      align-items: center;
+      font-size: 0.66rem;
+      color: #475569;
+      font-weight: 800;
+    }
+
+    .reward-row span:nth-child(2) {
+      height: 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      overflow: hidden;
+    }
+
+    .reward-row span:nth-child(2)::before {
+      content: "";
+      display: block;
+      height: 100%;
+      width: var(--score, 50%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, #60a5fa, #22c55e);
+    }
+
+    .topk-strip,
+    .probability-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      align-items: end;
+      min-height: 48px;
+    }
+
+    .topk-strip span,
+    .probability-strip span {
+      display: grid;
+      place-items: end center;
+      min-height: 28px;
+      border-radius: 8px 8px 4px 4px;
+      background: #dbeafe;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      font-size: 0.58rem;
+      font-weight: 900;
+      padding-bottom: 3px;
+    }
+
+    .topk-strip .best,
+    .probability-strip .hot {
+      background: #bbf7d0;
+      border-color: #22c55e;
+      color: #065f46;
+    }
+
+    .spread-map {
+      position: relative;
+      min-height: 66px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: radial-gradient(circle at 34% 45%, rgba(34, 197, 94, 0.25), transparent 30%), radial-gradient(circle at 68% 28%, rgba(96, 165, 250, 0.18), transparent 22%), #f8fafc;
+    }
+
+    .spread-map span {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 6px;
+      background: #bfdbfe;
+      border: 2px solid #2563eb;
+    }
+
+    .spread-map .best { left: 32%; top: 38%; background: #22c55e; border-color: #15803d; transform: scale(1.2); }
+    .spread-map .near1 { left: 21%; top: 22%; }
+    .spread-map .near2 { left: 48%; top: 24%; }
+    .spread-map .far { left: 76%; top: 62%; opacity: 0.55; }
+
+    .next-mode-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .next-mode-row span {
+      padding: 5px;
+      border-radius: 8px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      font-size: 0.62rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .score-revamp-board {
+      display: grid;
+      gap: 10px;
+    }
+
+    .score-revamp-board .paper-rule {
+      margin: 0;
+      padding: 8px;
+      border-radius: 10px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .reward-first-principles {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) auto minmax(0, 1fr) auto minmax(0, 0.9fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .reward-principle-card {
+      padding: 8px;
+      border-radius: 11px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .reward-principle-card b {
+      color: #0f172a;
+      font-size: 0.72rem;
+    }
+
+    .reward-principle-card small {
+      color: #334155;
+      font-size: 0.65rem;
+      line-height: 1.32;
+    }
+
+    .reward-principle-arrow {
+      display: grid;
+      place-items: center;
+      color: #2563eb;
+      font-weight: 950;
+      font-size: 1rem;
+    }
+
+    .reward-object-stack {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .reward-object-stack span,
+    .steering-candidate-strip span {
+      min-height: 34px;
+      border-radius: 9px;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: #1e3a8a;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 4px;
+      font-size: 0.58rem;
+      font-weight: 900;
+    }
+
+    .reward-object-stack .winner,
+    .steering-candidate-strip .hot {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #065f46;
+    }
+
+    .reward-number-card {
+      min-height: 52px;
+      border-radius: 11px;
+      border: 1px solid #22c55e;
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.26) 82%, #ffffff 82%);
+      color: #065f46;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 6px;
+      font-size: 0.8rem;
+      font-weight: 950;
+    }
+
+    .steering-candidate-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .why-not-target-note {
+      margin: 0;
+      padding: 8px;
+      border-radius: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #7c2d12;
+      font-size: 0.7rem;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .reward-route-lanes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .reward-route-lane {
+      padding: 8px;
+      border-radius: 11px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      display: grid;
+      gap: 6px;
+    }
+
+    .reward-route-lane b {
+      color: #0f172a;
+      font-size: 0.72rem;
+    }
+
+    .route-compare-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto;
+      gap: 6px;
+      align-items: center;
+      color: #334155;
+      font-size: 0.62rem;
+      font-weight: 850;
+    }
+
+    .route-chip {
+      min-height: 36px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .route-score-chip {
+      min-height: 36px;
+      min-width: 48px;
+      border-radius: 9px;
+      border: 1px solid #22c55e;
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.28) var(--score, 70%), #ffffff var(--score, 70%));
+      color: #065f46;
+      display: grid;
+      place-items: center;
+      font-size: 0.72rem;
+      font-weight: 950;
+    }
+
+    .paper-algorithm-chain {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .paper-algorithm-step {
+      padding: 8px;
+      border-radius: 11px;
+      border: 1px solid #bbf7d0;
+      background: #ffffff;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .paper-algorithm-step strong {
+      color: #064e3b;
+      font-size: 0.7rem;
+    }
+
+    .paper-algorithm-step small {
+      color: #334155;
+      font-size: 0.64rem;
+      line-height: 1.32;
+    }
+
+    .mini-score-table {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 4px;
+      font-size: 0.58rem;
+      font-weight: 900;
+      color: #1e3a8a;
+    }
+
+    .mini-score-table span {
+      border-radius: 7px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 3px;
+      text-align: center;
+    }
+
+    .mini-score-table .hot {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #065f46;
+    }
+
+    .formula-chip {
+      min-height: 32px;
+      border-radius: 9px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #065f46;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 4px;
+      font-size: 0.62rem;
+      font-weight: 950;
+    }
+
+    .probability-map-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .probability-map,
+    .next-batch-output {
+      padding: 8px;
+      border-radius: 11px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      display: grid;
+      gap: 7px;
+    }
+
+    .probability-map strong,
+    .next-batch-output strong {
+      color: #0f172a;
+      font-size: 0.72rem;
+    }
+
+    .omega-map {
+      position: relative;
+      min-height: 118px;
+      border-radius: 12px;
+      border: 1px dashed #93c5fd;
+      background: radial-gradient(circle at 28% 46%, rgba(34, 197, 94, 0.3), transparent 23%), radial-gradient(circle at 61% 30%, rgba(96, 165, 250, 0.18), transparent 20%), #ffffff;
+    }
+
+    .omega-map span {
+      position: absolute;
+      width: 36px;
+      height: 25px;
+      border-radius: 9px;
+      border: 1px solid #bfdbfe;
+      background: #dbeafe;
+      color: #1e3a8a;
+      display: grid;
+      place-items: center;
+      font-size: 0.56rem;
+      font-weight: 950;
+    }
+
+    .omega-map .best { left: 24%; top: 39%; background: #bbf7d0; border-color: #22c55e; color: #065f46; transform: scale(1.12); }
+    .omega-map .near-a { left: 10%; top: 18%; }
+    .omega-map .near-b { left: 45%; top: 22%; }
+    .omega-map .near-c { left: 42%; top: 66%; }
+    .omega-map .far { right: 9%; bottom: 14%; opacity: 0.58; }
+
+    .omega-map .credit-arrow {
+      width: 48px;
+      height: 2px;
+      border: 0;
+      border-radius: 999px;
+      background: #22c55e;
+      transform-origin: left center;
+    }
+
+    .omega-map .credit-arrow.one { left: 35%; top: 48%; transform: rotate(-30deg); }
+    .omega-map .credit-arrow.two { left: 36%; top: 52%; transform: rotate(22deg); opacity: 0.8; }
+
+    .next-batch-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .next-batch-cards span {
+      min-height: 44px;
+      border-radius: 10px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #065f46;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 5px;
+      font-size: 0.6rem;
+      font-weight: 950;
+    }
+
+    .search-generation-note {
+      margin: 0;
+      color: #334155;
+      font-size: 0.68rem;
+      line-height: 1.35;
+    }
 
     .after-eeg-note {
       margin-top: 8px;
@@ -2274,7 +3442,33 @@
       .after-eeg-flow,
       .feature-choice,
       .feature-compare-board,
+      .score-ledger-grid,
+      .psd-principles-board,
+      .same-eeg-two-readouts,
+      .current-target-pairs,
+      .pair-comparison,
+      .psd-target-source-board,
+      .psd-source-lane,
+      .route-split-board,
+      .route-mini-flow,
+      .why-not-classify,
+      .optimizer-next-flow,
+      .reward-first-principles,
+      .reward-route-lanes,
+      .paper-algorithm-chain,
+      .probability-map-row,
+      .next-mode-row,
+      .correlation-note,
+      .rhythm-demo,
       .after-eeg-card.step-d {
+        grid-template-columns: 1fr;
+      }
+
+      .fork-arrow {
+        transform: rotate(90deg);
+      }
+
+      .readout-card {
         grid-template-columns: 1fr;
       }
 
@@ -2728,6 +3922,146 @@
                           <img class="paper-psd-crop" src="assets/paper-figure-a13-psd.png" alt="Figure A.13 PSD-driven generation crop with reference-only target and iterative best result">
                           <small>A reference rhythm profile means the desired band-power shape, not a picture label. In Figure A.13 the paper shows a “Reference only” PSD target, then Step 1 through a Best step; the score improves when the candidate EEG's PSD bars look more like that reference profile.</small>
                         </div>
+                        <div class="psd-principles-board" data-cf-change="ch-psd-rhythm-first-principles" aria-label="First-principles explanation of why PSD rhythm targets differ from semantic search">
+                          <h6>First principles: PSD is the band-power output; CLIP is the meaning-vector output</h6>
+                          <div class="rhythm-demo" aria-label="A one-second EEG wave split into frequency-band power bars">
+                            <div class="rhythm-wave-stack">
+                              <strong>Same paper EEG input</strong>
+                              <div class="rhythm-wave" aria-hidden="true"></div>
+                              <div class="rhythm-wave slow" aria-hidden="true"></div>
+                              <small>Start with the 17 visual-area channels × 250 time samples from the 1-second, 250 Hz response window.</small>
+                            </div>
+                            <div class="rhythm-arrow" aria-hidden="true">→</div>
+                            <div class="rhythm-bars-stack">
+                              <strong>PSD output = five rhythm buckets</strong>
+                              <div class="rhythm-mini-bars" aria-hidden="true">
+                                <span style="height:28%">δ</span><span style="height:42%">θ</span><span style="height:82%">α</span><span style="height:54%">β</span><span style="height:31%">γ</span>
+                              </div>
+                              <div class="band-definition-row" aria-label="Named EEG frequency bands represented by the PSD output">
+                                <span>delta<em>δ slow</em></span><span>theta<em>θ</em></span><span>alpha<em>α</em></span><span>beta<em>β</em></span><span>gamma<em>γ fast</em></span>
+                              </div>
+                              <small>Yes: in this explainer, “PSD output” simply means the EEG wave has been summarized into delta, theta, alpha, beta, and gamma power bars.</small>
+                            </div>
+                          </div>
+                          <div class="route-split-board" aria-label="CLIP and PSD use the same EEG for two different scoring routes">
+                            <div class="route-panel">
+                              <strong>Route A: semantic / CLIP vector</strong>
+                              <div class="route-mini-flow" aria-hidden="true">
+                                <span>17 × 250 EEG</span><b>→</b><span>ATM-S EEG vector in CLIP-like space</span><b>↔</b><span>target image/category vector</span>
+                              </div>
+                              <small>This asks whether the brain response points toward the same meaning as the target image, such as the Figure A.11 bicycle search.</small>
+                            </div>
+                            <div class="route-panel">
+                              <strong>Route B: spectral / PSD bars</strong>
+                              <div class="route-mini-flow" aria-hidden="true">
+                                <span>17 × 250 EEG</span><b>→</b><span>δ θ α β γ power profile</span><b>↔</b><span>Figure A.13 reference rhythm profile</span>
+                              </div>
+                              <small>This asks whether the brain response has the same rhythm-energy shape as the reference-only PSD target, regardless of object label.</small>
+                            </div>
+                          </div>
+                          <div class="same-eeg-two-readouts" data-cf-change="ch-psd-clip-same-data-not-redundant" aria-label="Same EEG matrix can be read out as CLIP semantics or PSD rhythms without making the objectives identical">
+                            <div class="same-eeg-input">
+                              <strong>Same raw thing both routes read</strong>
+                              <div class="same-eeg-matrix" aria-label="Mini 17 by 250 EEG matrix read by both CLIP and PSD routes">
+                                <b>O1</b><span></span><span class="cool"></span><span></span><span class="hot"></span><span class="warm"></span><span></span><span></span><span class="cool"></span><span></span><span></span>
+                                <b>Oz</b><span class="cool"></span><span></span><span class="warm"></span><span class="hot"></span><span class="hot"></span><span></span><span class="warm"></span><span></span><span class="cool"></span><span></span>
+                                <b>Pz</b><span></span><span></span><span class="cool"></span><span class="warm"></span><span></span><span class="hot"></span><span></span><span class="warm"></span><span></span><span class="cool"></span>
+                                <b>...</b><span></span><span class="warm"></span><span></span><span></span><span class="cool"></span><span></span><span class="hot"></span><span></span><span></span><span class="warm"></span>
+                              </div>
+                              <small>Your objection is right: PSD is not a new dataset. It is another readout of the same 17 visual/parietal channels × 250 post-image samples.</small>
+                            </div>
+                            <div class="fork-arrow" aria-hidden="true">⇢</div>
+                            <div class="readout-stack">
+                              <div class="readout-card">
+                                <strong>Readout 1: train for meaning</strong>
+                                <div class="readout-icon">ATM-S<br>encoder</div>
+                                <div class="readout-bars" aria-hidden="true"><span style="height:42%"></span><span style="height:73%"></span><span style="height:48%"></span><span style="height:85%"></span><span style="height:58%"></span><span style="height:69%"></span></div>
+                                <small>ATM-S is trained so this EEG vector lands near a CLIP image/category vector. Reward asks: “does the response mean bicycle-like, dog-like, etc.?”</small>
+                              </div>
+                              <div class="readout-card">
+                                <strong>Readout 2: measure rhythm power directly</strong>
+                                <div class="readout-icon">PSD<br>formula</div>
+                                <div class="readout-bars psd" aria-hidden="true"><span style="height:30%">δ</span><span style="height:45%">θ</span><span style="height:80%">α</span><span style="height:55%">β</span><span style="height:34%">γ</span><span style="height:24%">ref</span></div>
+                                <small>PSD does not learn “bicycle.” It summarizes oscillation energy and rewards closeness to a reference spectral profile, like the Figure A.13 PSD target.</small>
+                              </div>
+                            </div>
+                            <div class="current-target-pairs" data-cf-change="ch-current-vs-desired-clip-psd-pairs" aria-label="Current candidate versus desired target comparisons for CLIP and PSD rewards">
+                              <div class="pair-route">
+                                <strong>Semantic reward pair</strong>
+                                <div class="pair-comparison" aria-label="Current image EEG CLIP vector compared with desired dog image CLIP vector">
+                                  <div class="pair-object">
+                                    <b>current candidate</b>
+                                    <div class="clip-bars" aria-hidden="true"><span style="height:38%"></span><span style="height:66%"></span><span style="height:45%"></span><span style="height:78%"></span><span style="height:50%"></span><span style="height:60%"></span><span style="height:42%"></span></div>
+                                    <small>EEG from this shown image → ATM-S CLIP-like vector</small>
+                                  </div>
+                                  <span class="pair-symbol" aria-hidden="true">vs</span>
+                                  <div class="pair-object">
+                                    <b>desired target</b>
+                                    <div class="clip-bars" aria-hidden="true"><span style="height:34%"></span><span style="height:70%"></span><span style="height:48%"></span><span style="height:82%"></span><span style="height:55%"></span><span style="height:63%"></span><span style="height:39%"></span></div>
+                                    <small>target image/category vector, e.g. dog-like or Figure A.11 bicycle-like meaning</small>
+                                  </div>
+                                </div>
+                                <small>So yes: for CLIP, the score compares “current image’s EEG-derived meaning vector” against the desired image/category meaning vector.</small>
+                              </div>
+                              <div class="pair-route">
+                                <strong>PSD reward pair</strong>
+                                <div class="psd-target-source-board" data-cf-change="ch-psd-target-source-clarification" aria-label="PSD target comes from a captured target EEG response, not from the object label">
+                                  <div class="psd-source-lane" aria-label="How the desired PSD target is made">
+                                    <div class="psd-source-node">
+                                      <b>target stimulus</b>
+                                      <span class="psd-label-chip">e.g. dog image</span>
+                                      <small>The image can be a dog, bicycle, or another visual target.</small>
+                                    </div>
+                                    <span class="psd-source-arrow" aria-hidden="true">→</span>
+                                    <div class="psd-source-node">
+                                      <b>captured target EEG</b>
+                                      <div class="psd-bars" aria-hidden="true"><span style="height:30%">δ</span><span style="height:42%">θ</span><span style="height:80%">α</span><span style="height:56%">β</span><span style="height:34%">γ</span></div>
+                                      <small>Paper equation: y<sub>target</sub> = f(x<sub>target</sub>), so the PSD target is extracted from the target EEG signal.</small>
+                                    </div>
+                                  </div>
+                                  <span class="psd-source-vs" aria-hidden="true">vs</span>
+                                  <div class="psd-source-lane" aria-label="How the current candidate PSD is scored">
+                                    <div class="psd-source-node">
+                                      <b>candidate stimulus</b>
+                                      <span class="psd-label-chip">new generated image</span>
+                                      <small>MindPilot tries a new image, then predicts or measures its EEG.</small>
+                                    </div>
+                                    <span class="psd-source-arrow" aria-hidden="true">→</span>
+                                    <div class="psd-source-node">
+                                      <b>candidate EEG PSD</b>
+                                      <div class="psd-bars" aria-hidden="true"><span style="height:26%">δ</span><span style="height:44%">θ</span><span style="height:72%">α</span><span style="height:50%">β</span><span style="height:30%">γ</span></div>
+                                      <small>Reward rises when this rhythm shape gets closer to the captured target rhythm.</small>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="pair-comparison" aria-label="Current image PSD profile compared with desired reference PSD profile">
+                                  <div class="pair-object">
+                                    <b>current candidate</b>
+                                    <div class="psd-bars" aria-hidden="true"><span style="height:26%">δ</span><span style="height:44%">θ</span><span style="height:72%">α</span><span style="height:50%">β</span><span style="height:30%">γ</span></div>
+                                    <small>EEG from this shown image → δ θ α β γ power bars</small>
+                                  </div>
+                                  <span class="pair-symbol" aria-hidden="true">vs</span>
+                                  <div class="pair-object">
+                                    <b>desired target</b>
+                                    <div class="psd-bars" aria-hidden="true"><span style="height:30%">δ</span><span style="height:42%">θ</span><span style="height:80%">α</span><span style="height:56%">β</span><span style="height:34%">γ</span></div>
+                                    <small>reference PSD profile, like the paper’s Figure A.13 PSD target</small>
+                                  </div>
+                                </div>
+                                <small>So your reading is almost right: if the reference stimulus was a dog image, the desired rhythm is the PSD feature captured from that dog-evoked target EEG. The score still does not compare to the word “dog”; it compares candidate EEG PSD vs target EEG PSD.</small>
+                              </div>
+                            </div>
+                            <div class="correlation-note">
+                              <div><strong>Can they correlate?</strong><small>Yes. The paper explicitly analyzes correlation between EEG PSD feature similarity and image CLIP feature similarity across 10 THINGS-EEG2 subjects in Figure 5A.</small></div>
+                              <div><strong>Why still use PSD?</strong><small>Correlation is not identity. A CLIP-trained vector may carry rhythm clues accidentally, but its loss function preserves semantic image alignment, not exact band-power shape.</small></div>
+                              <div><strong>What changes in MindPilot?</strong><small>The optimizer follows the chosen reward. Semantic runs climb toward target CLIP similarity; PSD runs climb toward the PSD reference even though both started from the same EEG matrix.</small></div>
+                            </div>
+                          </div>
+                          <div class="why-not-classify" data-cf-change="ch-psd-vs-clip-not-classification" aria-label="Why PSD is not redundant classification after CLIP features">
+                            <div><b>Not “classify again”</b><span>PSD does not predict bicycle/dog/category. It computes a similarity or loss between two rhythm profiles.</span></div>
+                            <span aria-hidden="true">≠</span>
+                            <div><b>Why not assume CLIP captured it?</b><span>Because “present in the raw EEG” is different from “kept by the trained reward.” CLIP and PSD can be correlated, but MindPilot must choose which readout becomes the score.</span></div>
+                          </div>
+                        </div>
                       </div>
                       <p>So the raw matrix is not the final reward; it is transformed into whichever feature language the task is using.</p>
                     </div>
@@ -2737,6 +4071,83 @@
                       <div class="score-meter" aria-label="Similarity score meter"><span></span></div>
                       <div class="latent-neighbors" aria-label="Embedding neighborhood where good image candidates spread reward"><span class="best"></span><span class="n1"></span><span class="n2"></span><span class="n3"></span><span class="n4"></span></div>
                       <p>Higher similarity means “this candidate’s predicted brain response is closer to the target.” The GP surrogate spreads that reward to nearby CLIP-embedding neighbors, then the next batch is sampled/generated there.</p>
+                    </div>
+                  </div>
+                  <div class="optimizer-next-board" data-cf-change="ch-optimizer-next-step-5" aria-label="Step 5 showing what MindPilot does after current and target features have been compared">
+                    <h5 data-cf-id="el-118">5. With the current-vs-target scores, what happens next?</h5>
+                    <div class="score-to-next-batch-board" data-cf-change="ch-score-to-next-batch-walkthrough" aria-label="Concrete walkthrough from CLIP and PSD scores to the next MindPilot image batch">
+                      <div class="score-revamp-board" data-cf-change="ch-score-to-next-first-principles" aria-label="First-principles visual explanation of Algorithm 1 score updates">
+                        <h6>After comparison, the “reward” belongs to an image candidate</h6>
+                        <p class="paper-rule"><strong>Paper rule:</strong> Algorithm 1 starts with a batch U<sub>t</sub> sampled from the image database Ω, computes r<sub>i</sub> = sim(f(g(u<sub>i</sub>)), y<sub>target</sub>), keeps the top-k set I<sub>best</sub>, spreads their scores by CLIP image-neighbor similarity, then softmax-samples the next batch.</p>
+                        <div class="reward-first-principles" data-cf-change="ch-reward-steering-first-principles" aria-label="First principles explanation of who gets reward and why it steers the next image">
+                          <div class="reward-principle-card">
+                            <b>1) Who is rewarded?</b>
+                            <div class="reward-object-stack" aria-hidden="true"><span>u1<br>image</span><span class="winner">u2<br>image</span><span>u3<br>image</span></div>
+                            <small>Not the brain, not CLIP, not PSD. The stored object is the tried image ID u<sub>i</sub> plus its score r<sub>i</sub>. Here u2 gets the high reward.</small>
+                          </div>
+                          <div class="reward-principle-arrow" aria-hidden="true">→</div>
+                          <div class="reward-principle-card">
+                            <b>2) Why this moves toward a target</b>
+                            <div class="reward-number-card">u2 earned r=.82<br><small>closest current response</small></div>
+                            <small>First principle: the target image is the goal signal, not the next thing to show. MindPilot asks “which shown image made the proxy response most target-like?”</small>
+                          </div>
+                          <div class="reward-principle-arrow" aria-hidden="true">→</div>
+                          <div class="reward-principle-card">
+                            <b>3) How it guesses next images</b>
+                            <div class="steering-candidate-strip" aria-hidden="true"><span class="hot">u2</span><span class="hot">near u2</span><span>far</span><span>explore</span></div>
+                            <small>It cannot know the perfect next image directly. It raises probability around CLIP-neighbors of rewarded winners in Ω; generation uses a GP surrogate to try a latent direction predicted to raise r.</small>
+                          </div>
+                        </div>
+                        <p class="why-not-target-note"><strong>Why not just show the target image?</strong> In the paper’s search setting the target is hidden because the task is to retrieve it from Ω; in generation, the target is a desired EEG feature such as CLIP meaning or PSD rhythm, so the system must discover or draw stimuli that produce that feature instead of simply displaying the answer.</p>
+                        <div class="reward-route-lanes">
+                          <div class="reward-route-lane" aria-label="CLIP reward route from current image EEG vector to target semantic vector">
+                            <b>CLIP / semantic run</b>
+                            <div class="route-compare-row"><span class="route-chip">current image EEG → ATM-S vector</span><span>vs</span><span class="route-chip">target image/category vector</span><span class="route-score-chip" style="--score: 82%">r=.82</span></div>
+                            <small>One candidate image wins because its EEG-derived meaning vector points most like the target meaning.</small>
+                          </div>
+                          <div class="reward-route-lane" aria-label="PSD reward route from current image EEG bands to target rhythm bands">
+                            <b>PSD / power-band run</b>
+                            <div class="route-compare-row"><span class="route-chip">current image EEG → δ θ α β γ bars</span><span>vs</span><span class="route-chip">target EEG rhythm profile</span><span class="route-score-chip" style="--score: 79%">r=.79</span></div>
+                            <small>One candidate image wins because its predicted rhythm-energy shape is closest to the reference PSD target.</small>
+                          </div>
+                        </div>
+                        <div class="paper-algorithm-chain" aria-label="Algorithm 1 update chain from rewards to next probabilities">
+                          <div class="paper-algorithm-step">
+                            <strong>1) Turn the batch into rewards</strong>
+                            <div class="mini-score-table"><span>u1</span><span>r=.41</span><span>u2</span><span class="hot">r=.82 winner</span><span>u3</span><span>r=.55</span><span>u4</span><span>r=.66</span></div>
+                            <small>Use the chosen objective only: CLIP similarity for semantic search, or PSD similarity/loss for rhythm guidance.</small>
+                          </div>
+                          <div class="paper-algorithm-step">
+                            <strong>2) Give winners direct credit</strong>
+                            <div class="formula-chip">u<sub>i</sub> ∈ I<sub>best</sub><br>S′ ← EMA(S, r)</div>
+                            <small>The paper calls this Step A: top-k images receive an exponential moving average update weighted by α.</small>
+                          </div>
+                          <div class="paper-algorithm-step">
+                            <strong>3) Spread credit through Ω</strong>
+                            <div class="formula-chip">neighbor boost ∝ exp(s(u<sub>i</sub>, u<sub>j</sub>))</div>
+                            <small>Step B boosts other database images that sit near the winners in CLIP image-embedding space, weighted by β.</small>
+                          </div>
+                          <div class="paper-algorithm-step">
+                            <strong>4) Convert scores to odds</strong>
+                            <div class="formula-chip">P<sub>t+1</sub>(u<sub>j</sub>) = softmax(S<sub>t+1</sub>)</div>
+                            <small>High-scoring neighborhoods become more likely, but low-score images are not mathematically impossible.</small>
+                          </div>
+                        </div>
+                        <div class="probability-map-row">
+                          <div class="probability-map" aria-label="Reward spreading map over the paper image database omega">
+                            <strong>What “push near the winner” means visually</strong>
+                            <div class="omega-map" aria-label="Database Ω represented as image dots where nearby dots receive credit">
+                              <span class="near-a">near</span><span class="best">winner</span><span class="near-b">near</span><span class="near-c">near</span><span class="far">far</span><span class="credit-arrow one" aria-hidden="true"></span><span class="credit-arrow two" aria-hidden="true"></span>
+                            </div>
+                            <p class="search-generation-note">The winner is one tried image. Its CLIP-neighbor images in Ω get brighter probability because the paper assumes visually/semantically nearby images may also match the target.</p>
+                          </div>
+                          <div class="next-batch-output" aria-label="Next batch can be retrieved images or generated images">
+                            <strong>The next screen of images</strong>
+                            <div class="next-batch-cards"><span>likely retrieved image</span><span>near-winner image</span><span>exploration image</span></div>
+                            <p class="search-generation-note"><strong>Search:</strong> sample images from Ω using P<sub>t+1</sub>. <strong>Generation:</strong> a GP surrogate predicts a reward-raising latent direction, then SDXL-Lightning draws new candidates.</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <p class="after-eeg-note"><strong>In one line:</strong> image pixels/features predict or cause EEG → EEG becomes a semantic/PSD feature → feature is scored against the target → high-score regions in image-embedding space get more probability → MindPilot tries the next image batch.</p>
