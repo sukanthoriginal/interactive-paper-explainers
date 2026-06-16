@@ -110,6 +110,8 @@ Quality bar for explanation feedback:
 - Take the user's wording literally. If they ask for a visual, illustration, diagram, exact example, first-principles explanation, or say they do not understand, make an actual structural visual/interactive HTML+CSS change rather than another paragraph or table.
 - Prefer a paper-grounded teaching board: show the concrete object first, then map visible input -> hidden representation -> score/output. Use exact paper facts such as figure crops, table values, data shapes, channel names, sample rates, model names, and source constraints.
 - Remove vague filler unless it is unpacked visually. Phrases like "pixels/features", "selected channels", "embedding", "score", or "samples" must be illustrated with a concrete mapping when the user asks about them.
+- Evidence images must be inspectable. Do not render paper crops or dataset examples as tiny/cropped letterbox thumbnails; use contained images with enough height, stable aspect ratio, and browser-verified visibility.
+- Avoid equal-height card rows that produce blank towers when one stage has more content. Split dense teaching boards into compact rows, give rich comparisons full width, and verify the actual in-app browser viewport with a screenshot/DOM measurement.
 - Preserve existing data-cf-change anchors that the browser/history already targets, and add a new anchor only for a major upgrade.
 
 The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If an edit is made for a comment, that comment id must be recorded in history.json before finishing. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""

@@ -114,6 +114,12 @@ python scripts/visualizer.py process-flow spec.json > flow-fragment.html
 
 Use `closed-loop` for feedback systems, optimization loops, agent-environment loops, and adaptive experiments. Use `process-flow` for one-way methods. Then customize the generated HTML/CSS for the paper. The final explainer remains self-contained; online tools like Mermaid Live, diagrams.net, Observable, or Excalidraw can be used while drafting, but final visuals should be exported or rewritten as inline SVG/HTML/CSS rather than loaded from an external CDN.
 
+Hard visual QA rules:
+
+- Paper figures, crops, and dataset examples are evidence. They must be large enough to inspect and should use contained rendering unless a deliberate crop is explained.
+- Do not ship tiny letterbox thumbnails, cropped-away objects, overflowing labels, or equal-height card rows that create giant blank columns.
+- Verify the changed region in the actual local browser viewport before calling an interactive “done.”
+
 ---
 
 ## Why two explanation modes?

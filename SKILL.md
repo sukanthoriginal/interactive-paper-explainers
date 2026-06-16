@@ -150,7 +150,9 @@ Visual QA gate before shipping braingood:
 - Reject emoji-only or icon-only visuals. They can decorate, but they cannot carry the explanation.
 - Reject any method/results figure where the reader cannot see the actual data object changing shape.
 - Reject visuals that need the table below them to make sense.
-- Check desktop and mobile layout when a browser is available; otherwise do a structural check that no process table remains and the figure has labeled data objects, connectors, and a takeaway.
+- Reject instructional images that are too small, visibly cropped, blurred beyond recognition, or shown as thin letterbox strips. If the image is evidence or the object being explained, use `object-fit: contain`, preserve its aspect ratio, and give it enough height to inspect.
+- Reject equal-height card rows that create blank vertical towers because one stage has more content than the others. Split dense flows into compact rows: input/data first, transformation next, score/output last.
+- Check the actual in-app browser width, not just abstract "desktop/mobile" breakpoints. Verify changed regions with a screenshot and simple DOM measurements so images, labels, and local feedback/publish buttons do not obscure each other.
 
 **Feedback modification quality bar:** when a user says they do not understand, asks "what does X mean?", asks for examples, asks to "show visually", says the page is handwavy/clumsy, or pushes back that Codex is only writing more words, treat that as a request for a teaching-board upgrade, not a prose patch. The fix must usually:
 - Replace the weak local block with a paper-grounded visual/interactive component.
@@ -158,6 +160,7 @@ Visual QA gate before shipping braingood:
 - Show a concrete object first: actual paper image/crop, miniature data matrix, timeline, map, loop, score gauge, or state transition. Do not begin with an abstract paragraph.
 - Explain the hidden representation with a visible mapping: e.g. pixels -> visual features -> predicted EEG; channels -> rows; time samples -> columns; score -> push; embedding -> coordinates.
 - Remove vague filler such as "represented as pixels/features" unless it is immediately unpacked into a concrete visual and a plain-language definition.
+- Treat small paper crops and dataset examples as evidence, not decoration: they must be large enough to inspect and must not be hidden by `object-fit: cover` cropping unless the crop is deliberate and explained.
 - Keep all existing `data-cf-change` anchors that the browser/history already points to, and add a new anchor only when the revision is a major upgrade.
 - Verify in the browser that the changed region is visible, on the correct tab, and not obscured by the feedback tour or launcher.
 
@@ -376,6 +379,8 @@ python <skill-dir>/scripts/visualizer.py process-flow spec.json > /tmp/flow-frag
 - Every axis, score, vector, or matrix in a figure needs a label. Decorative blobs do not count as visualization.
 - If a figure has more than five stages, add a stepper, tabs, or progressive reveal so it does not become a dense poster.
 - On mobile, the visual must remain readable without horizontal scrolling except for true reference tables.
+- Paper figures, crops, and dataset examples used as explanatory evidence must be inspectable: do not use fixed-height `object-fit: cover` thumbnails that crop away the object. Prefer contained images with stable aspect-ratio, clear captions, and enough pixel area to understand what the image is.
+- Avoid equal-height multi-card layouts for uneven explanations. If one card contains a richer visual comparison, let it span the row or become its own row so neighboring cards do not turn into empty columns.
 
 **Quality checklist before shipping a visual:**
 - Can a reader explain the mechanism without reading the surrounding paragraph?
@@ -383,6 +388,8 @@ python <skill-dir>/scripts/visualizer.py process-flow spec.json > /tmp/flow-frag
 - Are the arrows meaningful, not decorative?
 - Did you visualize the paper's actual claim rather than a generic science icon?
 - Did you replace any process table that was only pretending to be a diagram?
+- Are all evidence images uncropped and large enough to inspect in the actual in-app browser viewport?
+- Did you take a browser screenshot of the changed region and fix any cropped images, overflowing text, hidden labels, blank towers, or launcher overlap before calling it done?
 
 ---
 
