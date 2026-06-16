@@ -193,6 +193,12 @@ def publish_copy(source_html: Path, slug: str) -> Path:
     public_text = publicize_html(text)
     target = target_dir / "index.html"
     target.write_text(public_text, encoding="utf-8")
+    source_assets = source_html.parent / "assets"
+    if source_assets.is_dir():
+        target_assets = target_dir / "assets"
+        if target_assets.exists():
+            shutil.rmtree(target_assets)
+        shutil.copytree(source_assets, target_assets)
     return target
 
 

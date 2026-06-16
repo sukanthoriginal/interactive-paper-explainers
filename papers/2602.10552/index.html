@@ -758,6 +758,618 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    .first-principles-loop {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #eff6ff, #ffffff 54%, #f0fdfa);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .first-principles-loop img {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .first-principles-loop ol {
+      margin: 10px 0 0 20px;
+      padding: 0;
+    }
+
+    .first-principles-loop li {
+      margin: 9px 0;
+      color: #334155;
+      line-height: 1.45;
+    }
+
+    .first-principles-loop strong {
+      color: #0f172a;
+    }
+
+    .custom-loop-board {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .custom-loop-card {
+      min-height: 190px;
+      padding: 12px;
+      border: 1px solid #c7d2fe;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.08);
+    }
+
+    .custom-loop-card h4 {
+      margin: 0 0 8px;
+      color: var(--blue-dark);
+    }
+
+    .custom-loop-card p {
+      margin: 6px 0;
+      color: #334155;
+      font-size: 0.9rem;
+      line-height: 1.42;
+    }
+
+    .proxy-io-column {
+      grid-column: 1 / -1;
+    }
+
+    .proxy-io-column h4 {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .proxy-io-column h4 span {
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .mini-data-table {
+      width: 100%;
+      margin: 8px 0;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      line-height: 1.32;
+    }
+
+    .mini-data-table th,
+    .mini-data-table td {
+      padding: 6px;
+      border: 1px solid #dbeafe;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .mini-data-table th {
+      background: #eff6ff;
+      color: #1e3a8a;
+    }
+
+    .proxy-visual-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .proxy-visual-card {
+      min-height: 136px;
+      padding: 9px;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff, #eff6ff);
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+
+    .proxy-visual-card strong {
+      color: #1e3a8a;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .proxy-visual-card p {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    .pixel-icon,
+    .eeg-icon,
+    .dataset-icon {
+      min-height: 46px;
+      border-radius: 9px;
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .pixel-icon {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .pixel-icon span:nth-child(3n+1) { background: #bfdbfe; }
+    .pixel-icon span:nth-child(3n+2) { background: #fde68a; }
+    .pixel-icon span:nth-child(3n) { background: #bbf7d0; }
+
+    .eeg-icon {
+      padding: 6px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .eeg-icon span {
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb 20%, #93c5fd 20% 38%, #2563eb 38% 54%, #dbeafe 54% 100%);
+    }
+
+    .dataset-icon {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      padding: 5px;
+    }
+
+    .dataset-icon span {
+      border-radius: 4px;
+      background: #dbeafe;
+    }
+
+    .proxy-flow-arrow {
+      display: grid;
+      place-items: center;
+      color: #2563eb;
+      font-weight: 900;
+    }
+
+    .proxy-visual-note {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 9px;
+      background: #f8fafc;
+      border: 1px dashed #bfdbfe;
+      color: #334155;
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .proxy-deep-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 12px;
+      margin-top: 12px;
+      align-items: stretch;
+    }
+
+    .proxy-deep-panel {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #bfdbfe;
+      background: linear-gradient(180deg, #ffffff, #eff6ff);
+      display: grid;
+      gap: 10px;
+    }
+
+    .proxy-deep-panel h5 {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .proxy-deep-panel p {
+      margin: 0;
+      font-size: 0.84rem;
+      line-height: 1.42;
+      color: #334155;
+    }
+
+    .stimulus-example {
+      display: grid;
+      grid-template-columns: 116px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stimulus-example img {
+      width: 116px;
+      height: 116px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid #f97316;
+      background: #fff;
+    }
+
+    .pixel-zoom {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 2px;
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+    }
+
+    .pixel-zoom span {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: #dbeafe;
+    }
+
+    .pixel-zoom span:nth-child(4n+1) { background: #93c5fd; }
+    .pixel-zoom span:nth-child(4n+2) { background: #fde68a; }
+    .pixel-zoom span:nth-child(4n+3) { background: #bbf7d0; }
+    .pixel-zoom span:nth-child(4n) { background: #fdba74; }
+
+    .feature-pipeline {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .feature-box {
+      min-height: 84px;
+      padding: 9px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      text-align: center;
+    }
+
+    .feature-box strong {
+      color: #0f172a;
+      font-size: 0.78rem;
+    }
+
+    .feature-box small {
+      color: #64748b;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .scalp-map {
+      position: relative;
+      min-height: 260px;
+      border-radius: 16px;
+      border: 1px solid #bfdbfe;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(37, 99, 235, 0.10), transparent 18%),
+        linear-gradient(180deg, #ffffff, #eff6ff);
+      overflow: hidden;
+    }
+
+    .scalp-head {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 210px;
+      height: 220px;
+      transform: translateX(-50%);
+      border: 2px solid #93c5fd;
+      border-radius: 46% 46% 50% 50%;
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .scalp-head::before {
+      content: "front";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+      color: #94a3b8;
+      font-size: 0.65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .scalp-head::after {
+      content: "back / visual cortex side";
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      width: 160px;
+      color: #1e3a8a;
+      font-size: 0.62rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .channel-dot {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #2563eb;
+      color: #fff;
+      border: 2px solid #bfdbfe;
+      font-size: 0.58rem;
+      font-weight: 900;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.20);
+    }
+
+    .channel-dot.po { background: #0d9488; }
+    .channel-dot.p { background: #f97316; }
+
+    .channel-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .channel-legend span {
+      padding: 5px 7px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 0.68rem;
+      font-weight: 900;
+    }
+
+    .eeg-sample-board {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sample-equation {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .sample-equation div {
+      min-height: 72px;
+      padding: 9px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      text-align: center;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+    }
+
+    .sample-equation strong {
+      color: #0f172a;
+      font-size: 1rem;
+    }
+
+    .sample-equation span {
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .eeg-timeline {
+      padding: 10px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+    }
+
+    .time-wave {
+      height: 46px;
+      border-radius: 10px;
+      background:
+        linear-gradient(90deg, rgba(37, 99, 235, 0.18) 1px, transparent 1px) 0 0 / 4% 100%,
+        linear-gradient(180deg, transparent 45%, #93c5fd 45% 55%, transparent 55%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .time-wave::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      background: linear-gradient(90deg, transparent, #2563eb, transparent, #0d9488, transparent, #f97316, transparent);
+      clip-path: polygon(0 58%, 6% 35%, 12% 65%, 18% 42%, 24% 54%, 30% 30%, 38% 72%, 46% 45%, 54% 61%, 62% 28%, 70% 66%, 78% 44%, 86% 58%, 94% 38%, 100% 56%, 100% 64%, 94% 46%, 86% 66%, 78% 52%, 70% 74%, 62% 36%, 54% 69%, 46% 53%, 38% 80%, 30% 38%, 24% 62%, 18% 50%, 12% 73%, 6% 43%, 0 66%);
+      opacity: 0.95;
+    }
+
+    .paper-stimulus-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 10px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+    }
+
+    .paper-stimulus-strip img {
+      width: 100%;
+      height: 132px;
+      object-fit: cover;
+      object-position: top left;
+      border-radius: 10px;
+      border: 1px solid #fdba74;
+      background: #ffffff;
+    }
+
+    .paper-stimulus-strip p,
+    .pixel-feature-board p,
+    .channel-time-board p {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.34;
+    }
+
+    .pixel-feature-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .feature-vector {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 3px;
+      min-height: 46px;
+      padding: 5px;
+      border-radius: 9px;
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      align-items: end;
+    }
+
+    .feature-vector span {
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #2563eb, #bfdbfe);
+    }
+
+    .channel-time-board {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+    }
+
+    .channel-time-board h5 {
+      margin: 0 0 8px;
+      color: #1e3a8a;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .channel-map {
+      display: grid;
+      grid-template-columns: 58px repeat(9, minmax(30px, 1fr));
+      gap: 5px;
+      margin: 8px 0;
+      align-items: center;
+    }
+
+    .channel-map b {
+      color: #475569;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    .channel-map span {
+      display: grid;
+      min-height: 28px;
+      place-items: center;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-size: 0.68rem;
+      font-weight: 900;
+      border: 1px solid #93c5fd;
+    }
+
+    .channel-map i {
+      min-height: 1px;
+    }
+
+    .sample-ruler {
+      display: grid;
+      grid-template-columns: repeat(25, 1fr);
+      gap: 2px;
+      margin: 8px 0 4px;
+    }
+
+    .sample-ruler span {
+      height: 18px;
+      border-radius: 3px;
+      background: #bfdbfe;
+    }
+
+    .sample-ruler span:nth-child(5n) {
+      background: #2563eb;
+    }
+
+    .sample-labels {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+
+    .io-strip {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 7px;
+      margin: 8px 0;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .io-strip span:not(.arrow) {
+      padding: 7px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .feature-bars {
+      display: flex;
+      align-items: end;
+      gap: 5px;
+      height: 42px;
+      margin: 10px 0;
+    }
+
+    .feature-bars span {
+      flex: 1;
+      min-width: 12px;
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(180deg, #22c55e, #bbf7d0);
+    }
+
+    .push-meter {
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .push-meter div {
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #fb923c 62%, #e2e8f0 62%);
+    }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -985,6 +1597,86 @@
       font-style: italic;
     }
 
+    .paper-flow-figure {
+      margin: 14px 0 28px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .paper-flow-figure h3 {
+      margin: 0 0 12px;
+      color: #111827;
+      font-size: 1rem;
+    }
+
+    .paper-flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .paper-flow-card {
+      min-height: 132px;
+      padding: 12px;
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      background: #f8fbff;
+    }
+
+    .paper-flow-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--blue-dark);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    .paper-flow-card span {
+      color: #475569;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .paper-flow-note {
+      margin: 12px 0 0;
+      color: var(--gray);
+      font-size: 0.86rem;
+    }
+
+    .paper-panel-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .paper-panel {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .paper-panel img {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: #ffffff;
+    }
+
+    .paper-panel figcaption {
+      padding: 8px 10px;
+      border-top: 1px solid #f1f5f9;
+      color: #475569;
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
     .term {
       border-bottom: 1px dotted var(--gray);
       color: #111827;
@@ -1112,6 +1804,7 @@
     @media (max-width: 920px) {
       .hero-inner,
       .loop-canvas,
+      .first-principles-loop,
       .result-grid {
         grid-template-columns: 1fr;
       }
@@ -1129,6 +1822,9 @@
 
       .pipeline,
       .stats,
+      .custom-loop-board,
+      .paper-panel-grid,
+      .paper-flow-grid,
       .feedback-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1160,8 +1856,42 @@
       .cards,
       .pipeline,
       .stats,
+      .custom-loop-board,
+      .paper-panel-grid,
+      .paper-flow-grid,
       .feedback-grid {
         grid-template-columns: 1fr;
+      }
+
+      .proxy-io-column {
+        grid-column: span 1;
+      }
+
+      .proxy-visual-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .paper-stimulus-strip,
+      .pixel-feature-board,
+      .proxy-deep-board,
+      .stimulus-example,
+      .feature-pipeline,
+      .sample-equation {
+        grid-template-columns: 1fr;
+      }
+
+      .channel-map {
+        grid-template-columns: 52px repeat(3, minmax(46px, 1fr));
+      }
+
+      .stimulus-example img {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+      }
+
+      .proxy-flow-arrow {
+        transform: rotate(90deg);
       }
 
       .loop-diagram {
@@ -1474,6 +2204,141 @@
             </aside>
           </div>
         </div>
+        <div class="first-principles-loop" data-cf-change="ch-widget-first-principles-pipeline">
+          <figure>
+            <img src="assets/paper-figure-2-pipeline.png" alt="Actual crop from Figure 2 showing MindPilot's closed-loop pipeline: candidate images, black-box EEG or proxy response, feature scoring, and image update">
+            <figcaption><strong>Actual paper image:</strong> Figure 2 is the real pipeline, not a decorative placeholder.</figcaption>
+          </figure>
+          <div>
+            <h3>Read the loop from first principles</h3>
+            <ol>
+              <li><strong>Only one thing is controlled:</strong> the next image. MindPilot cannot directly edit the brain signal.</li>
+              <li><strong>The image causes a response:</strong> the viewer's EEG, or a proxy model's predicted EEG, is the black-box output.</li>
+              <li><strong>Raw EEG is too messy to optimize:</strong> it is compressed into a comparable feature, such as CLIP-aligned meaning or PSD rhythm energy.</li>
+              <li><strong>The feature becomes a score:</strong> higher similarity means this image pushed the response closer to the target.</li>
+              <li><strong>The score changes the next batch:</strong> good candidates are kept, nearby options get more probability, and diffusion can generate new images from the better embeddings.</li>
+            </ol>
+          </div>
+          <div class="custom-loop-board" data-cf-change="ch-custom-interactive-loop-illustration" aria-label="Original explanatory board for the MindPilot loop">
+            <article class="custom-loop-card" data-cf-change="ch-proxy-model-made-why">
+              <h4>Proxy model = fake participant for cheap trials</h4>
+              <div class="io-strip"><span>image shown to the model</span><span class="arrow">→</span><span>17 channels x 250 timepoints</span></div>
+              <p>It is trained on public image→EEG examples, so the optimizer can ask “what EEG would this image probably cause?” many times before expensive live human tests.</p>
+              <p><strong>Why here:</strong> the method needs repeated feedback, but collecting real EEG for every candidate would be slow and tiring.</p>
+            </article>
+            <article class="custom-loop-card proxy-io-column" data-cf-change="ch-proxy-io-separate-column">
+              <h4>Proxy I/O details <span>paper-grounded column</span></h4>
+              <div data-cf-change="ch-proxy-io-visual-flow ch-proxy-actual-dataset-pixel-feature ch-proxy-channel-time-map ch-proxy-io-major-upgrade">
+                <p class="proxy-visual-note"><strong>Read "17 x 250" as a tiny spreadsheet of brain voltage:</strong> 17 scalp electrodes near the visual system, each recorded at 250 time ticks during the first second after a picture appears.</p>
+
+                <div class="proxy-deep-board" aria-label="Paper-grounded visual explanation of proxy input, selected EEG channels, and time samples">
+                  <div class="proxy-deep-panel">
+                    <h5>1. Actual picture stimulus</h5>
+                    <div class="stimulus-example">
+                      <img src="assets/paper-a11-groundtruth-bicycle.png" alt="Bicycle groundtruth stimulus cropped from Figure A.11 of the paper">
+                      <div>
+                        <p><strong>Concrete paper example:</strong> this bicycle is cropped from Figure A.11, where the paper shows THINGS-EEG2 search examples with groundtruth targets and retrieved candidates.</p>
+                        <p>The paper does not feed the word "bicycle" to the proxy. It starts from the image.</p>
+                      </div>
+                    </div>
+                    <div class="feature-pipeline">
+                      <div class="feature-box">
+                        <strong>Pixels</strong>
+                        <div class="pixel-zoom" aria-hidden="true">
+                          <span></span><span></span><span></span><span></span><span></span><span></span>
+                          <span></span><span></span><span></span><span></span><span></span><span></span>
+                          <span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <small>colored number grid: red, green, blue values at each tiny square</small>
+                      </div>
+                      <div class="proxy-flow-arrow" aria-hidden="true">→</div>
+                      <div class="feature-box">
+                        <strong>Visual features</strong>
+                        <div class="feature-vector" aria-hidden="true">
+                          <span style="height:40%"></span><span style="height:72%"></span><span style="height:54%"></span><span style="height:86%"></span>
+                          <span style="height:32%"></span><span style="height:65%"></span><span style="height:48%"></span><span style="height:78%"></span>
+                        </div>
+                        <small>numbers from a pretrained visual model: edges, shapes, textures, object-like patterns</small>
+                      </div>
+                    </div>
+                    <p><strong>Feature does not mean "caption."</strong> It means a compressed numeric description the proxy can learn from. Section 4.1 says the proxy regresses EEG signals from pretrained visual features.</p>
+                  </div>
+
+                  <div class="proxy-deep-panel">
+                    <h5>2. Exact 17 channels selected by the paper</h5>
+                    <p><strong>"Visual-area channels" means electrodes over occipital/parietal scalp regions, not 17 separate brain areas.</strong> Appendix A.1.1 says the original 64-channel EEG was downsampled, then these 17 channels were selected because they are closely related to the visual system.</p>
+                    <div class="scalp-map" aria-label="Scalp map of selected occipital, parieto-occipital, and parietal EEG channels">
+                      <div class="scalp-head"></div>
+                      <span class="channel-dot p" style="left:15%; top:31%">P7</span>
+                      <span class="channel-dot p" style="left:27%; top:27%">P5</span>
+                      <span class="channel-dot p" style="left:38%; top:24%">P3</span>
+                      <span class="channel-dot p" style="left:48%; top:22%">P1</span>
+                      <span class="channel-dot p" style="left:58%; top:22%">Pz</span>
+                      <span class="channel-dot p" style="left:68%; top:24%">P2</span>
+                      <span class="channel-dot p" style="left:78%; top:27%">P4</span>
+                      <span class="channel-dot p" style="left:88%; top:31%">P6</span>
+                      <span class="channel-dot p" style="left:92%; top:43%">P8</span>
+                      <span class="channel-dot po" style="left:21%; top:55%">PO7</span>
+                      <span class="channel-dot po" style="left:38%; top:58%">PO3</span>
+                      <span class="channel-dot po" style="left:54%; top:61%">POz</span>
+                      <span class="channel-dot po" style="left:70%; top:58%">PO4</span>
+                      <span class="channel-dot po" style="left:84%; top:55%">PO8</span>
+                      <span class="channel-dot" style="left:38%; top:76%">O1</span>
+                      <span class="channel-dot" style="left:54%; top:80%">Oz</span>
+                      <span class="channel-dot" style="left:70%; top:76%">O2</span>
+                    </div>
+                    <div class="channel-legend" aria-label="Channel groups">
+                      <span>Occipital: O1, Oz, O2</span>
+                      <span>Parieto-occipital: PO7, PO3, POz, PO4, PO8</span>
+                      <span>Parietal: P7, P5, P3, P1, Pz, P2, P4, P6, P8</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="channel-time-board">
+                  <h5>3. What the 250 samples mean</h5>
+                  <div class="eeg-sample-board">
+                    <div class="sample-equation">
+                      <div><strong>250 Hz</strong><span>paper downsampled EEG to 250 measurements per second</span></div>
+                      <div><strong>1 sec</strong><span>trial spans 0-1000 ms after image onset</span></div>
+                      <div><strong>250 columns</strong><span>one value about every 4 ms: 0, 4, 8, ... 996 ms</span></div>
+                    </div>
+                    <div class="eeg-timeline">
+                      <div class="time-wave" aria-label="One EEG channel sampled repeatedly over one second"></div>
+                      <div class="sample-ruler" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                      </div>
+                      <div class="sample-labels"><span>0 ms</span><span>250 ms</span><span>500 ms</span><span>750 ms</span><span>1000 ms</span></div>
+                    </div>
+                    <p><strong>The proxy output is a matrix:</strong> 17 rows (electrodes) x 250 columns (time samples). Example cell: "Oz at 160 ms" is one predicted voltage value at the middle back-of-head electrode shortly after the bicycle appears.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+            <article class="custom-loop-card" data-cf-change="ch-clip-psd-feature-meaning">
+              <h4>Two feature languages</h4>
+              <div class="feature-bars" aria-hidden="true"><span style="height:28%"></span><span style="height:72%"></span><span style="height:46%"></span><span style="height:86%"></span><span style="height:55%"></span></div>
+              <p><strong>CLIP-aligned meaning:</strong> EEG is mapped into a vector space where nearby vectors mean visually/semantically similar things.</p>
+              <p><strong>PSD rhythm energy:</strong> EEG is converted into “how much power is in each frequency band,” useful when the target is a brain-rhythm pattern.</p>
+            </article>
+            <article class="custom-loop-card" data-cf-change="ch-feature-score-target-map">
+              <h4>Feature → score → push</h4>
+              <div class="push-meter" aria-hidden="true"><div></div></div>
+              <p>The target is the desired feature: for semantic search, “match this ground-truth image/category”; for PSD generation, “match this reference rhythm profile.”</p>
+              <p>The score is similarity to that target, so “push” means giving higher probability to images whose predicted response moved closer.</p>
+            </article>
+            <article class="custom-loop-card" data-cf-change="ch-embedding-next-batch-explainer">
+              <h4>Embedding = coordinates for search</h4>
+              <div class="io-strip"><span>good image</span><span class="arrow">→</span><span>nearby candidates</span></div>
+              <p>An embedding is a compact list of numbers that places an image in a searchable map: similar images land near each other.</p>
+              <p>MindPilot uses those coordinates to keep strong candidates, spread reward to neighbors, and guide diffusion toward the next batch.</p>
+            </article>
+          </div>
+        </div>
       </section>
 
       <section>
@@ -1526,6 +2391,32 @@
         <div class="section-label">Reference Table</div>
         <h2>Plain versus scientific terms</h2>
         <p>This paper is term-dense, so the table can switch between the version you would explain at a whiteboard and the version used by the methods section.</p>
+        <p class="callout" data-cf-change="ch-reference-causal-terms"><strong>Read the terms as one loop, not separate ideas:</strong> a picture causes an EEG response; that response is converted into either a meaning vector (CLIP-aligned) or rhythm energy (PSD); then the Gaussian Process uses those scores to guess which next image should move the brain response closer to the target.</p>
+        <p class="callout" data-cf-change="ch-reference-loop-example"><span data-cf-change="ch-reference-paper-examples"><strong>Actual paper examples, not invented ones:</strong> Figure 2 shows the loop as image batch → black-box EEG/proxy response → feature score → updated stimuli. In Figure A.11, interactive search examples for Subjects 8, 4, 4, and 1 start from step 1/2 candidate images and end at a “best” retrieved image, such as step 12 or step 17, that increasingly approximates the shown ground-truth category. In Figure A.13, Subject 1 PSD-generation examples start from a “Reference only” target, then show Step 1 → Step 5/7/19/38 → Step 43 (Best), with the right-side plot tracking similarity rising and loss falling. Table A.4 gives the numeric input/output benchmark: with 200 samples, MindPilot Offline reaches EEG score 0.5384 in 73.62s, while BO reaches 0.5242 in 229.06s.</span></p>
+        <figure class="paper-flow-figure" data-cf-change="ch-reference-paper-illustration">
+          <h3>Paper-grounded walkthrough</h3>
+          <div class="paper-panel-grid" data-cf-change="ch-reference-actual-pipeline-images" aria-label="Actual paper figure crops showing the pipeline and examples">
+            <figure class="paper-panel">
+              <img src="assets/paper-figure-2-pipeline.png" alt="Crop from Figure 2 showing the MindPilot closed-loop pipeline from image batch to EEG signal, feature similarity, and generation update">
+              <figcaption><strong>Figure 2:</strong> actual closed-loop pipeline: image batch → EEG/proxy output → EEG feature score → updated image.</figcaption>
+            </figure>
+            <figure class="paper-panel">
+              <img src="assets/paper-figure-a11-search.png" alt="Crop from Figure A.11 showing real search examples with groundtruth images, step 1, step 2, and best retrieved image rows">
+              <figcaption><strong>Figure A.11:</strong> actual search examples, with groundtruth targets and best retrieved candidates outlined in red.</figcaption>
+            </figure>
+            <figure class="paper-panel">
+              <img src="assets/paper-figure-a13-psd.png" alt="Crop from Figure A.13 showing PSD target curves, similarity/loss plots, and generated image steps for Subject 1">
+              <figcaption><strong>Figure A.13:</strong> actual PSD-generation examples with Step 1 → later steps → Best, plus similarity/loss plots.</figcaption>
+            </figure>
+          </div>
+          <div class="paper-flow-grid" aria-label="Step-by-step examples from the paper">
+            <div class="paper-flow-card"><strong>Figure 2 input</strong><span>A batch of candidate images is shown to the black-box brain/proxy model.</span></div>
+            <div class="paper-flow-card"><strong>Figure 2 output</strong><span>The response becomes a feature score: semantic similarity for search, or PSD similarity/loss for rhythm targets.</span></div>
+            <div class="paper-flow-card"><strong>Figure A.11 search</strong><span>Subjects 8, 4, 4, and 1 move from early candidates such as step 1/2 toward best retrieved images such as step 12/17.</span></div>
+            <div class="paper-flow-card"><strong>Figure A.13 PSD</strong><span>Subject 1 starts from “Reference only,” then iterates Step 1 → Step 5/7/19/38 → Step 43 (Best) while similarity rises and loss falls.</span></div>
+          </div>
+          <p class="paper-flow-note">Numeric check from Table A.4 at 200 samples: MindPilot Offline reaches 0.5384 EEG score in 73.62s; BO reaches 0.5242 in 229.06s.</p>
+        </figure>
         <div class="bands-mode-toggle">
           <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
           <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
