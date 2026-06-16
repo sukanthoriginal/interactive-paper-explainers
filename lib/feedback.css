@@ -249,6 +249,48 @@
 }
 .cf-processing-details summary:hover { color: #1a1a1a; }
 
+.cf-publish-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e6e0cf;
+  border-radius: 8px;
+  background: #fbfaf6;
+}
+.cf-publish-box strong {
+  display: block;
+  font-size: 12px;
+  color: #1a1a1a;
+}
+.cf-publish-box span {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: #777;
+  line-height: 1.25;
+}
+.cf-publish-box[data-state="ready"] {
+  border-color: #d97706;
+  background: #fff8e8;
+}
+.cf-publish-box[data-state="ready"] span {
+  color: #7c3f00;
+}
+.cf-publish-box[data-state="publishing"] {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+.cf-publish-box[data-state="error"] {
+  border-color: #fecaca;
+  background: #fff1f2;
+}
+.cf-publish-box[data-state="error"] span {
+  color: #991b1b;
+}
+
 @keyframes cf-spin { to { transform: rotate(360deg); } }
 .cf-spinner {
   width: 16px;

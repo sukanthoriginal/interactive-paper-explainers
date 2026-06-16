@@ -14,6 +14,7 @@ There are NO dependencies beyond the Python standard library.
 """
 import argparse
 import http.server
+import importlib.util
 import json
 import mimetypes
 import os
@@ -29,6 +30,8 @@ from urllib.parse import urlparse
 # /lib/<file> from here so artifacts can <script src="/lib/feedback.js">
 # instead of inlining — library updates apply on a simple page refresh.
 LIB_DIR = Path(__file__).resolve().parent
+REPO_ROOT = LIB_DIR.parent
+PUBLISH_SCRIPT = REPO_ROOT / "scripts" / "publish_pages.py"
 
 # ---------- Auto-shutdown bookkeeping ----------
 # Servers launched as Claude Code background tasks would otherwise outlive the
@@ -48,6 +51,8 @@ _codex_auto_config = {
 _codex_auto_lock = threading.Lock()
 _codex_auto_running = False
 _codex_auto_run_again = False
+_publish_lock = threading.Lock()
+_publish_module = None
 
 
 def _touch_activity():
@@ -168,6 +173,212 @@ def _has_unprocessed_feedback(feedback_dir: Path) -> bool:
     return False
 
 
+def _load_publish_module():
+    global _publish_module
+    if _publish_module is not None:
+        return _publish_module
+    if not PUBLISH_SCRIPT.exists():
+        raise FileNotFoundError(f"publish helper not found: {PUBLISH_SCRIPT}")
+    spec = importlib.util.spec_from_file_location("ipe_publish_pages", PUBLISH_SCRIPT)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"could not load publish helper: {PUBLISH_SCRIPT}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    _publish_module = module
+    return module
+
+
+def _paper_slug(artifact_dir: Path) -> str:
+    module = _load_publish_module()
+    return module.normalize_slug(artifact_dir.name)
+
+
+def _iter_asset_files(root: Path) -> list[Path]:
+    if not root.is_dir():
+        return []
+    return sorted(
+        p.relative_to(root)
+        for p in root.rglob("*")
+        if p.is_file() and p.name != ".DS_Store"
+    )
+
+
+def _assets_differ(source_assets: Path, target_assets: Path) -> bool:
+    source_files = _iter_asset_files(source_assets)
+    target_files = _iter_asset_files(target_assets)
+    if source_files != target_files:
+        return True
+    for rel in source_files:
+        if (source_assets / rel).read_bytes() != (target_assets / rel).read_bytes():
+            return True
+    return False
+
+
+def _run_repo_cmd(args: list[str], timeout: int = 60) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        args,
+        cwd=REPO_ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        timeout=timeout,
+        check=False,
+    )
+
+
+def _publish_scope(slug: str) -> list[str]:
+    return [
+        ".nojekyll",
+        "index.html",
+        f"papers/{slug}",
+        "scripts/publish_pages.py",
+    ]
+
+
+def _git_branch() -> str:
+    result = _run_repo_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    return result.stdout.strip() if result.returncode == 0 else "main"
+
+
+def _git_ahead_count() -> int:
+    result = _run_repo_cmd(["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+    if result.returncode != 0:
+        return 0
+    upstream = result.stdout.strip()
+    if not upstream:
+        return 0
+    result = _run_repo_cmd(["git", "rev-list", "--count", f"{upstream}..HEAD"])
+    if result.returncode != 0:
+        return 0
+    try:
+        return int(result.stdout.strip())
+    except ValueError:
+        return 0
+
+
+def _git_dirty_lines(slug: str) -> list[str]:
+    result = _run_repo_cmd(["git", "status", "--porcelain", "--", *_publish_scope(slug)])
+    if result.returncode != 0:
+        return [result.stdout.strip()]
+    return [line for line in result.stdout.splitlines() if line.strip()]
+
+
+def _publish_status_payload(artifact_dir: Path, publishing: bool | None = None) -> dict:
+    module = _load_publish_module()
+    slug = _paper_slug(artifact_dir)
+    source_html = artifact_dir / "index.html"
+    target_dir = REPO_ROOT / "papers" / slug
+    target_html = target_dir / "index.html"
+
+    html_stale = True
+    if source_html.exists() and target_html.exists():
+        expected = module.publicize_html(source_html.read_text(encoding="utf-8"))
+        html_stale = target_html.read_text(encoding="utf-8", errors="replace") != expected
+
+    assets_stale = _assets_differ(artifact_dir / "assets", target_dir / "assets")
+    static_stale = html_stale or assets_stale or not target_html.exists()
+    dirty_lines = _git_dirty_lines(slug)
+    ahead_count = _git_ahead_count()
+    is_publishing = _publish_lock.locked() if publishing is None else publishing
+    can_publish = (static_stale or bool(dirty_lines) or ahead_count > 0) and not is_publishing
+
+    if is_publishing:
+        state = "publishing"
+        message = "publishing..."
+    elif static_stale:
+        state = "ready"
+        message = "local changes ready to publish"
+    elif dirty_lines:
+        state = "ready"
+        message = "static files ready to commit"
+    elif ahead_count > 0:
+        state = "ready"
+        message = "local commit ready to push"
+    else:
+        state = "up_to_date"
+        message = "public copy up to date"
+
+    return {
+        "ok": True,
+        "slug": slug,
+        "state": state,
+        "message": message,
+        "can_publish": can_publish,
+        "static_stale": static_stale,
+        "html_stale": html_stale,
+        "assets_stale": assets_stale,
+        "dirty": dirty_lines,
+        "ahead_count": ahead_count,
+        "branch": _git_branch(),
+        "target_dir": str(target_dir),
+    }
+
+
+def _same_origin_or_no_origin(handler: http.server.BaseHTTPRequestHandler) -> bool:
+    origin = handler.headers.get("Origin")
+    if not origin:
+        return True
+    host = handler.headers.get("Host", "")
+    parsed = urlparse(origin)
+    return parsed.scheme in ("http", "https") and parsed.netloc == host
+
+
+def _publish_now(artifact_dir: Path) -> dict:
+    if not _publish_lock.acquire(blocking=False):
+        return {"ok": False, "error": "publish already running"}
+    try:
+        before = _publish_status_payload(artifact_dir, publishing=False)
+        slug = before["slug"]
+        output: list[str] = []
+
+        if before["static_stale"]:
+            result = _run_repo_cmd([sys.executable, str(PUBLISH_SCRIPT), str(artifact_dir), "--slug", slug], timeout=120)
+            output.append(result.stdout.strip())
+            if result.returncode != 0:
+                return {"ok": False, "error": "publish helper failed", "output": "\n".join(output)}
+
+        add_result = _run_repo_cmd(["git", "add", "--", *_publish_scope(slug)])
+        if add_result.returncode != 0:
+            return {"ok": False, "error": "git add failed", "output": add_result.stdout}
+
+        staged = _run_repo_cmd(["git", "diff", "--cached", "--name-only", "--", *_publish_scope(slug)])
+        if staged.returncode != 0:
+            return {"ok": False, "error": "git diff failed", "output": staged.stdout}
+
+        committed = False
+        if staged.stdout.strip():
+            commit = _run_repo_cmd(["git", "commit", "-m", f"Publish {slug} explainer updates"], timeout=120)
+            output.append(commit.stdout.strip())
+            if commit.returncode != 0:
+                return {"ok": False, "error": "git commit failed", "output": "\n".join(output)}
+            committed = True
+
+        branch = _git_branch()
+        ahead = _git_ahead_count()
+        pushed = False
+        if committed or ahead > 0:
+            push = _run_repo_cmd(["git", "push", "origin", branch], timeout=180)
+            output.append(push.stdout.strip())
+            if push.returncode != 0:
+                return {"ok": False, "error": "git push failed", "output": "\n".join(output)}
+            pushed = True
+
+        after = _publish_status_payload(artifact_dir, publishing=False)
+        return {
+            "ok": True,
+            "slug": slug,
+            "committed": committed,
+            "pushed": pushed,
+            "commit": _run_repo_cmd(["git", "rev-parse", "--short", "HEAD"]).stdout.strip(),
+            "message": "published and pushed" if pushed else "already up to date",
+            "status": after,
+            "output": "\n".join(part for part in output if part),
+        }
+    finally:
+        _publish_lock.release()
+
+
 def _with_charset(content_type: str) -> str:
     """Append `; charset=utf-8` to text-ish content types when missing. Without
     this, browsers fall back to Latin-1 and emojis / non-ASCII glyphs garble."""
@@ -220,6 +431,12 @@ class FeedbackHandler(http.server.SimpleHTTPRequestHandler):
                 "codex_auto_process": _codex_auto_config["enabled"],
             }
             self._json(200, info)
+            return
+        if parsed.path == "/publish/status":
+            try:
+                self._json(200, _publish_status_payload(self.artifact_dir))
+            except Exception as exc:
+                self._json(500, {"ok": False, "error": str(exc)})
             return
         if parsed.path.startswith("/lib/"):
             self._serve_from_lib(parsed.path[len("/lib/"):])
@@ -278,6 +495,17 @@ class FeedbackHandler(http.server.SimpleHTTPRequestHandler):
             seen_path = self.feedback_dir / "lastseen.json"
             seen_path.write_text(json.dumps(data, indent=2))
             self._json(200, {"ok": True})
+            return
+
+        if parsed.path == "/publish":
+            if not _same_origin_or_no_origin(self):
+                self._json(403, {"ok": False, "error": "publish is same-origin only"})
+                return
+            try:
+                result = _publish_now(self.artifact_dir)
+            except Exception as exc:
+                result = {"ok": False, "error": str(exc)}
+            self._json(200 if result.get("ok") else 500, result)
             return
 
         self._json(404, {"ok": False, "error": "unknown endpoint"})
