@@ -1323,6 +1323,158 @@
       font-weight: 800;
     }
 
+    .after-eeg-board {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #eef6ff;
+      border: 1px solid #93c5fd;
+    }
+
+    .after-eeg-board h5 {
+      margin: 0 0 8px;
+      color: #1e3a8a;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .after-eeg-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .after-eeg-card {
+      min-height: 154px;
+      padding: 9px;
+      border-radius: 12px;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+
+    .after-eeg-card strong {
+      color: #0f172a;
+      font-size: 0.78rem;
+    }
+
+    .after-eeg-card p {
+      margin: 0;
+      color: #334155;
+      font-size: 0.76rem;
+      line-height: 1.34;
+    }
+
+    .after-eeg-card img {
+      width: 100%;
+      height: 78px;
+      object-fit: cover;
+      object-position: top left;
+      border-radius: 9px;
+      border: 1px solid #fdba74;
+      background: #fff;
+    }
+
+    .matrix-mini {
+      display: grid;
+      grid-template-columns: 38px repeat(8, 1fr);
+      gap: 2px;
+      padding: 6px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .matrix-mini span {
+      min-height: 12px;
+      border-radius: 3px;
+      background: #bfdbfe;
+    }
+
+    .matrix-mini b {
+      color: #475569;
+      font-size: 0.56rem;
+      line-height: 1;
+      display: grid;
+      place-items: center start;
+    }
+
+    .matrix-mini .hot { background: #2563eb; }
+    .matrix-mini .warm { background: #fdba74; }
+    .matrix-mini .cool { background: #99f6e4; }
+
+    .feature-choice {
+      display: grid;
+      gap: 5px;
+    }
+
+    .feature-choice div {
+      padding: 7px;
+      border-radius: 9px;
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+    }
+
+    .score-meter {
+      height: 12px;
+      border-radius: 999px;
+      background: #dbeafe;
+      overflow: hidden;
+    }
+
+    .score-meter span {
+      display: block;
+      width: 72%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f97316, #22c55e);
+    }
+
+    .latent-neighbors {
+      position: relative;
+      min-height: 78px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: radial-gradient(circle at 35% 45%, rgba(34, 197, 94, 0.20), transparent 32%), #f8fafc;
+    }
+
+    .latent-neighbors span {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: #bfdbfe;
+      border: 2px solid #2563eb;
+    }
+
+    .latent-neighbors .best {
+      left: 34%;
+      top: 38%;
+      background: #22c55e;
+      border-color: #15803d;
+      transform: scale(1.2);
+    }
+
+    .latent-neighbors .n1 { left: 18%; top: 22%; }
+    .latent-neighbors .n2 { left: 54%; top: 28%; }
+    .latent-neighbors .n3 { left: 70%; top: 62%; }
+    .latent-neighbors .n4 { left: 24%; top: 68%; }
+
+    .after-eeg-note {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px dashed #93c5fd;
+      color: #334155;
+      font-size: 0.78rem;
+      line-height: 1.34;
+    }
+
     .io-strip {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -1876,7 +2028,8 @@
       .proxy-deep-board,
       .stimulus-example,
       .feature-pipeline,
-      .sample-equation {
+      .sample-equation,
+      .after-eeg-flow {
         grid-template-columns: 1fr;
       }
 
@@ -2316,6 +2469,45 @@
                     </div>
                     <p><strong>The proxy output is a matrix:</strong> 17 rows (electrodes) x 250 columns (time samples). Example cell: "Oz at 160 ms" is one predicted voltage value at the middle back-of-head electrode shortly after the bicycle appears.</p>
                   </div>
+                </div>
+
+                <div class="after-eeg-board" data-cf-change="ch-after-eeg-feature-score-next-step">
+                  <h5>4. What happens after image features + 17 x 250 EEG?</h5>
+                  <div class="after-eeg-flow" aria-label="Visual flow from candidate image and EEG matrix to feature score and next image batch">
+                    <div class="after-eeg-card">
+                      <strong>A. Candidate image</strong>
+                      <img src="assets/paper-a11-groundtruth-bicycle.png" alt="Paper crop of a bicycle target image from Figure A.11">
+                      <p>The image is the visible object. A pretrained visual model turns it into visual-feature numbers; the proxy uses those numbers to predict EEG.</p>
+                    </div>
+                    <div class="proxy-flow-arrow" aria-hidden="true">→</div>
+                    <div class="after-eeg-card">
+                      <strong>B. Predicted/recorded EEG matrix</strong>
+                      <div class="matrix-mini" aria-label="Miniature 17 by 250 EEG matrix">
+                        <b>O1</b><span></span><span class="cool"></span><span></span><span class="hot"></span><span></span><span></span><span class="warm"></span><span></span>
+                        <b>Oz</b><span></span><span></span><span class="warm"></span><span class="hot"></span><span class="hot"></span><span></span><span></span><span class="cool"></span>
+                        <b>O2</b><span class="cool"></span><span></span><span></span><span class="warm"></span><span></span><span class="hot"></span><span></span><span></span>
+                        <b>...</b><span></span><span class="cool"></span><span></span><span></span><span class="warm"></span><span></span><span class="hot"></span><span></span>
+                      </div>
+                      <p>This is your “250 data per second per 1 of 17 channels” idea: yes, one second of EEG values, arranged as 17 channel rows and 250 time columns.</p>
+                    </div>
+                    <div class="proxy-flow-arrow" aria-hidden="true">→</div>
+                    <div class="after-eeg-card">
+                      <strong>C. Compress EEG into the target feature</strong>
+                      <div class="feature-choice">
+                        <div><b>Semantic search:</b> ATM-S maps the 17 x 250 EEG into a CLIP-aligned vector, then compares it with the target image/category vector.</div>
+                        <div><b>PSD target:</b> the EEG wave is converted into frequency-band power, then compared with the reference rhythm profile.</div>
+                      </div>
+                      <p>So the raw matrix is not the final reward; it is transformed into whichever feature language the task is using.</p>
+                    </div>
+                    <div class="proxy-flow-arrow" aria-hidden="true">→</div>
+                    <div class="after-eeg-card">
+                      <strong>D. Score, spread reward, choose next images</strong>
+                      <div class="score-meter" aria-label="Similarity score meter"><span></span></div>
+                      <div class="latent-neighbors" aria-label="Embedding neighborhood where good image candidates spread reward"><span class="best"></span><span class="n1"></span><span class="n2"></span><span class="n3"></span><span class="n4"></span></div>
+                      <p>Higher similarity means “this candidate’s predicted brain response is closer to the target.” The GP surrogate spreads that reward to nearby CLIP-embedding neighbors, then the next batch is sampled/generated there.</p>
+                    </div>
+                  </div>
+                  <p class="after-eeg-note"><strong>In one line:</strong> image pixels/features predict or cause EEG → EEG becomes a semantic/PSD feature → feature is scored against the target → high-score regions in image-embedding space get more probability → MindPilot tries the next image batch.</p>
                 </div>
               </div>
             </article>
