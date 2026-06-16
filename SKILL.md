@@ -1,6 +1,6 @@
 ---
 name: interactive-paper-explainers
-description: Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a default three-tab page: braindead first, braingood second, comment/feedback third. Trigger phrases — "do this paper", "explain this paper", "make an explainer for this paper", "interactive version of this paper", followed by a PDF path or arxiv link.
+description: "Turn an academic paper PDF into a single self-contained interactive HTML explainer. Produces a default three-tab page: braindead first, braingood second, comment/feedback third. Trigger phrases: do this paper, explain this paper, make an explainer for this paper, interactive version of this paper, followed by a PDF path or arxiv link."
 ---
 
 # Interactive Paper Explainers
@@ -152,6 +152,15 @@ Visual QA gate before shipping braingood:
 - Reject visuals that need the table below them to make sense.
 - Check desktop and mobile layout when a browser is available; otherwise do a structural check that no process table remains and the figure has labeled data objects, connectors, and a takeaway.
 
+**Feedback modification quality bar:** when a user says they do not understand, asks "what does X mean?", asks for examples, asks to "show visually", says the page is handwavy/clumsy, or pushes back that Codex is only writing more words, treat that as a request for a teaching-board upgrade, not a prose patch. The fix must usually:
+- Replace the weak local block with a paper-grounded visual/interactive component.
+- Use exact paper facts: figure/table references, real reported examples, exact variable/data shapes, channel names, sample counts, targets, model names, or source constraints.
+- Show a concrete object first: actual paper image/crop, miniature data matrix, timeline, map, loop, score gauge, or state transition. Do not begin with an abstract paragraph.
+- Explain the hidden representation with a visible mapping: e.g. pixels -> visual features -> predicted EEG; channels -> rows; time samples -> columns; score -> push; embedding -> coordinates.
+- Remove vague filler such as "represented as pixels/features" unless it is immediately unpacked into a concrete visual and a plain-language definition.
+- Keep all existing `data-cf-change` anchors that the browser/history already points to, and add a new anchor only when the revision is a major upgrade.
+- Verify in the browser that the changed region is visible, on the correct tab, and not obscured by the feedback tour or launcher.
+
 **Reach for the dual-mode glossary table when the paper has a term-dense reference surface** — a taxonomy of mechanisms, a list of named entities, or a multi-row comparison where each row carries jargon a curious reader would otherwise have to Google. See the "Dual-mode reference tables" section below for the pattern. Do *not* apply this to narrative sections (Question / Method / Results / Implications) — braindead already serves the no-jargon audience there, and dual-versioning narrative prose just produces two worse copies of the same paragraph.
 
 When done, wire the comment/feedback runtime by default, then **ask before proceeding** to any optional extras:
@@ -180,6 +189,7 @@ Codex-native feedback handling is part of the default workflow when running in C
 - Default to event-triggered processing, not time-based polling. Start the server with `--codex-auto-process` so each new `/feedback` submission launches one `codex exec` run to inspect `<paper-slug>/feedback/inbox.jsonl` and `<paper-slug>/feedback/history.json`, then process only unhandled comments. This is the default; the user should not need to complain in chat to make feedback get applied, and Codex should not wake up when there is no new feedback.
 - Treat a comment as handled if its id appears in any `history[].changes[].in_response_to[]`.
 - For each unprocessed comment, make the smallest helpful edit to `<paper-slug>/index.html`, add a `data-cf-change="ch-..."` anchor to the changed element, and append a matching history batch with `id`, `title`, `anchor`, and `in_response_to`.
+- For any confusion/explanation feedback, follow the feedback modification quality bar above. Prefer a paper-grounded visual teaching board over another paragraph, table, or card. The reader should see the mental model, not merely read a definition.
 - If no unprocessed comments exist, do not edit files and do not append history.
 - Use a Codex heartbeat only as a fallback when `--codex-auto-process` is unavailable or explicitly requested. Heartbeats are time-based and can create idle no-op turns, so delete them once the review session is done or after repeated idle checks.
 - When it processes comments, it should briefly report which comment ids were handled.
@@ -240,6 +250,7 @@ Commit and push only the static publishing files, normally:
 - `.nojekyll`
 - `index.html`
 - `papers/<paper-slug>/index.html`
+- `papers/<paper-slug>/assets/**` when the explainer references paper images or crops
 - `scripts/publish_pages.py` if the helper changed
 
 Do not publish the PDF by default. If GitHub Pages is not enabled, enable it from `main` at `/` (repo root). After pushing, the public page path is usually:

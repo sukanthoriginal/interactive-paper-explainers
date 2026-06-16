@@ -99,7 +99,15 @@ Paths:
 - Feedback inbox: {feedback_dir / "inbox.jsonl"}
 - Feedback history: {feedback_dir / "history.json"}
 
-Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json. Take the user's wording literally: if they ask for a visual, illustration, diagram, separate column, or interactive explanation, make an actual structural visual/interactive HTML+CSS change rather than another paragraph or table. The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If an edit is made for a comment, that comment id must be recorded in history.json before finishing. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
+Treat a comment as already processed if any existing history[].changes[].in_response_to[] contains that comment id. For each unprocessed comment, inspect index.html, make the smallest helpful edit to answer or address the feedback, add a data-cf-change="ch-..." anchor to the changed element, and append a history batch entry to history.json.
+
+Quality bar for explanation feedback:
+- Take the user's wording literally. If they ask for a visual, illustration, diagram, exact example, first-principles explanation, or say they do not understand, make an actual structural visual/interactive HTML+CSS change rather than another paragraph or table.
+- Prefer a paper-grounded teaching board: show the concrete object first, then map visible input -> hidden representation -> score/output. Use exact paper facts such as figure crops, table values, data shapes, channel names, sample rates, model names, and source constraints.
+- Remove vague filler unless it is unpacked visually. Phrases like "pixels/features", "selected channels", "embedding", "score", or "samples" must be illustrated with a concrete mapping when the user asks about them.
+- Preserve existing data-cf-change anchors that the browser/history already targets, and add a new anchor only for a major upgrade.
+
+The history entry must include the original comments and changes entries containing id, title, anchor, and in_response_to. If an edit is made for a comment, that comment id must be recorded in history.json before finishing. If there are no unprocessed comments, do not edit files and do not append history. Keep the final response brief."""
     cmd = [
         _codex_auto_config["codex_bin"],
         "-c",
