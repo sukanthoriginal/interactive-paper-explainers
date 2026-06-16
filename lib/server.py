@@ -285,19 +285,19 @@ def _publish_status_payload(artifact_dir: Path, publishing: bool | None = None) 
 
     if is_publishing:
         state = "publishing"
-        message = "publishing..."
+        message = "publishing this explainer..."
     elif static_stale:
         state = "ready"
-        message = "local changes ready to publish"
+        message = "this explainer has unpublished changes"
     elif dirty_lines:
         state = "ready"
-        message = "static files ready to commit"
+        message = "this explainer is ready to commit"
     elif ahead_count > 0:
         state = "ready"
-        message = "local commit ready to push"
+        message = "this explainer is ready to push"
     else:
         state = "up_to_date"
-        message = "public copy up to date"
+        message = "this explainer is already published"
 
     return {
         "ok": True,
