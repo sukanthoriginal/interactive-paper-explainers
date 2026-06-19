@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Experiences in the Blind - Interactive Explainer</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --blue-dark: #1e40af;
+      --gray: #6b7280;
+      --gray-light: #f3f4f6;
+      --gray-dark: #1f2937;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --orange: #d97706;
+      --orange-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --teal: #0d9488;
+      --teal-light: #ccfbf1;
+      --pink: #db2777;
+      --pink-light: #fce7f3;
+      --ink: #111827;
+      --line: #e5e7eb;
+      --paper: #ffffff;
+      --body: #fafafa;
+      --shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.66;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a {
+      color: var(--blue-dark);
+    }
+
+    .hero {
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      padding: 58px 24px 42px;
+      transition: background 0.2s ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 58%, #0d9488 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #1f2937 0%, #7c2d12 100%);
+    }
+
+    .hero-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.42);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      max-width: 780px;
+      font-size: 2.62rem;
+      line-height: 1.1;
+      font-weight: 500;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 20px;
+      max-width: 760px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.07rem;
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      opacity: 0.92;
+    }
+
+    .hero-meta span {
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero-visual {
+      min-height: 270px;
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(8px);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .mini-device {
+      min-height: 232px;
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 12px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .mini-device-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.86);
+    }
+
+    .mini-stage {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mini-camera,
+    .mini-sound {
+      min-height: 150px;
+      border: 1px solid rgba(255,255,255,0.36);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.22);
+      padding: 12px;
+    }
+
+    .mini-camera-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 4px;
+      height: 118px;
+    }
+
+    .mini-camera-grid span {
+      border-radius: 4px;
+      background: rgba(255,255,255,0.13);
+    }
+
+    .mini-camera-grid .lit {
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 12px rgba(255,255,255,0.38);
+    }
+
+    .mini-arrow {
+      width: 34px;
+      height: 2px;
+      background: rgba(255,255,255,0.7);
+      position: relative;
+    }
+
+    .mini-arrow::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -5px;
+      border-left: 9px solid rgba(255,255,255,0.72);
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+    }
+
+    .mini-sound-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 118px;
+    }
+
+    .mini-sound-bars span {
+      width: 12%;
+      min-width: 8px;
+      border-radius: 5px 5px 2px 2px;
+      background: rgba(255,255,255,0.88);
+    }
+
+    .mini-note {
+      margin: 0;
+      font-size: 0.84rem;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .tab-btn {
+      min-width: 132px;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--gray);
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      border-color: transparent;
+      color: white;
+      background: var(--blue-dark);
+      box-shadow: 0 8px 18px rgba(30, 64, 175, 0.18);
+    }
+
+    body.mode-ez .tab-btn.active {
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      box-shadow: 0 8px 18px rgba(236, 72, 153, 0.18);
+    }
+
+    body.mode-feedback .tab-btn.active {
+      background: #7c2d12;
+      box-shadow: 0 8px 18px rgba(124, 45, 18, 0.18);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 34px 24px 70px;
+    }
+
+    section {
+      margin: 0 0 42px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.84rem;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue-dark);
+    }
+
+    .lede {
+      max-width: 830px;
+      font-size: 1.08rem;
+      color: #374151;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--blue);
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .callout.green {
+      border-left-color: var(--green);
+      background: linear-gradient(90deg, var(--green-light), white 32%);
+    }
+
+    .callout.orange {
+      border-left-color: var(--orange);
+      background: linear-gradient(90deg, var(--orange-light), white 32%);
+    }
+
+    .callout.purple {
+      border-left-color: var(--purple);
+      background: linear-gradient(90deg, var(--purple-light), white 32%);
+    }
+
+    .callout.red {
+      border-left-color: var(--red);
+      background: linear-gradient(90deg, var(--red-light), white 32%);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .card button.card-toggle {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .card .card-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 800;
+    }
+
+    .card .card-title span:last-child {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--gray-light);
+      color: var(--gray);
+    }
+
+    .card-extra {
+      display: none;
+      margin-top: 10px;
+      color: #374151;
+      font-size: 0.96rem;
+    }
+
+    .card.open .card-extra {
+      display: block;
+    }
+
+    .card.open .card-title span:last-child {
+      background: var(--blue-light);
+      color: var(--blue-dark);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat-box {
+      min-height: 116px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .stat-box strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.36rem;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .stat-box span {
+      display: block;
+      color: var(--gray);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .source-note {
+      margin-top: 12px;
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.83rem;
+    }
+
+    .ez-section {
+      max-width: 900px;
+      margin: 0 auto 32px;
+    }
+
+    .ez-big {
+      font-size: 1.34rem;
+      line-height: 1.58;
+      color: #2f1f3d;
+    }
+
+    .ez-emoji-block {
+      margin: 16px 0;
+      border: 1px solid #f5d0fe;
+      border-radius: 8px;
+      background: #fdf4ff;
+      padding: 16px 18px;
+      font-size: 1.05rem;
+    }
+
+    .ez-emoji-block ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .ez-emoji-block li {
+      margin: 8px 0;
+    }
+
+    .ez-analogy {
+      margin: 16px 0;
+      border: 1px solid #fde68a;
+      border-left: 6px solid #f59e0b;
+      border-radius: 8px;
+      background: #fffbeb;
+      padding: 16px 18px;
+      color: #3b2f12;
+    }
+
+    .ez-tldr {
+      margin: 26px auto 0;
+      max-width: 900px;
+      border: 2px solid #f0abfc;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fff7ed 0%, #fdf4ff 100%);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .ez-tldr h2 {
+      margin-bottom: 8px;
+      color: #701a75;
+    }
+
+    .viz-flow {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .viz-stage {
+      min-height: 188px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 14px;
+      position: relative;
+    }
+
+    .viz-stage h3 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.96rem;
+      color: var(--blue-dark);
+    }
+
+    .viz-stage p {
+      margin: 7px 0 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.84rem;
+      line-height: 1.38;
+      color: #374151;
+    }
+
+    .viz-mini {
+      height: 76px;
+      margin: 8px 0 10px;
+      border-radius: 8px;
+      border: 1px solid #dbeafe;
+      background: white;
+      overflow: hidden;
+    }
+
+    .mini-scene {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 3px;
+      padding: 8px;
+    }
+
+    .mini-scene span {
+      border-radius: 3px;
+      background: #e5e7eb;
+    }
+
+    .mini-scene .object {
+      background: #111827;
+    }
+
+    .mini-spectro {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 8px;
+    }
+
+    .mini-spectro span {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #2563eb, #0d9488);
+    }
+
+    .mini-person {
+      display: grid;
+      place-items: center;
+      background: #ecfeff;
+    }
+
+    .mini-person svg,
+    .mini-brain svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .mini-brain {
+      display: grid;
+      place-items: center;
+      background: #f5f3ff;
+    }
+
+    .caption {
+      margin: 8px 0 0;
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+    }
+
+    .widget {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .widget-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(300px, 1.05fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .chip-btn {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--gray-dark);
+      padding: 7px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .chip-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      color: var(--blue-dark);
+    }
+
+    .camera-board {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      gap: 3px;
+      aspect-ratio: 2 / 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #0f172a;
+      padding: 8px;
+    }
+
+    .camera-cell {
+      border-radius: 3px;
+      background: #1f2937;
+    }
+
+    .camera-cell.lit {
+      background: #f8fafc;
+      box-shadow: 0 0 10px rgba(255,255,255,0.38);
+    }
+
+    .scan-line {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      width: calc((100% - 16px) / 16);
+      border: 2px solid var(--orange);
+      border-radius: 5px;
+      pointer-events: none;
+      left: 8px;
+      transition: left 0.1s linear;
+    }
+
+    .sound-board {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 5px;
+      align-items: end;
+      min-height: 190px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #f8fafc, #ecfeff);
+      padding: 12px;
+    }
+
+    .sound-column {
+      min-width: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 3px;
+      align-items: stretch;
+    }
+
+    .sound-dot {
+      height: 12px;
+      border-radius: 999px;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .sound-dot.on {
+      background: var(--blue);
+      border-color: #1d4ed8;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
+    }
+
+    .widget-legend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .legend-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .legend-box strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .timeline-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timeline-tabs button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: var(--gray-dark);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .timeline-tabs button.active {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      color: #115e59;
+    }
+
+    .timeline-stage {
+      min-height: 294px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(260px, 1.08fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .percept-board {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #111827;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+
+    .percept-layer {
+      position: absolute;
+      inset: 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .sketch-line {
+      position: absolute;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 0 12px rgba(255,255,255,0.16);
+    }
+
+    .depth-floor {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 20px;
+      height: 118px;
+      background: linear-gradient(180deg, rgba(148,163,184,0.08), rgba(148,163,184,0.36));
+      clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+      border-bottom: 2px solid rgba(255,255,255,0.38);
+    }
+
+    .motion-ghost {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-radius: 12px;
+      opacity: 0.2;
+    }
+
+    .color-patch {
+      position: absolute;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.34);
+    }
+
+    .timeline-text {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 16px;
+    }
+
+    .timeline-text h3 {
+      color: var(--ink);
+    }
+
+    .timeline-text ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .evidence-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .evidence-nav button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      color: var(--gray-dark);
+      font-weight: 800;
+      text-align: left;
+      padding: 10px 12px;
+    }
+
+    .evidence-nav button.active {
+      border-color: var(--purple);
+      background: var(--purple-light);
+      color: #5b21b6;
+    }
+
+    .evidence-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .evidence-panel h3 {
+      color: var(--ink);
+    }
+
+    .evidence-quote {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-left: 5px solid var(--purple);
+      background: #faf5ff;
+      color: #3b0764;
+      font-size: 1.02rem;
+    }
+
+    .syna-map {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .syna-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .syna-node {
+      min-height: 154px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .syna-node strong {
+      display: block;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .syna-meter {
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .syna-meter span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .bands-mode-toggle {
+      display: inline-flex;
+      background: var(--gray-light);
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 4px;
+      margin: 16px 0 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .bands-mode-toggle button {
+      border: none;
+      background: transparent;
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--gray);
+      cursor: pointer;
+      border-radius: 999px;
+    }
+
+    .bands-mode-toggle button.active {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .bands-table-wrap {
+      margin: 12px 0 28px;
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .bands-table-wrap.hidden {
+      display: none;
+    }
+
+    .bands-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      min-width: 720px;
+    }
+
+    .bands-table thead th {
+      background: var(--gray-light);
+      color: var(--gray-dark);
+      font-weight: 800;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid #e5e7eb;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .bands-table tbody td {
+      padding: 14px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .bands-table .source-row td {
+      background: #fafafa;
+      font-size: 0.82rem;
+      color: var(--gray);
+      font-style: italic;
+    }
+
+    .bands-table .term {
+      font-weight: 700;
+      color: var(--gray-dark);
+      border-bottom: 1px dotted var(--gray);
+      cursor: help;
+    }
+
+    .bands-table .term:hover,
+    .bands-table .term.active {
+      background: var(--orange-light);
+    }
+
+    .term-tip {
+      position: absolute;
+      background: #1f2937;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      max-width: 320px;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    .term-tip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .quiz-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      margin: 14px 0;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: var(--gray-dark);
+      text-align: left;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .quiz-options button.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: #064e3b;
+    }
+
+    .quiz-options button.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: #7f1d1d;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+    }
+
+    .quiz-feedback.visible {
+      display: block;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .feedback-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: #7c2d12;
+      color: white;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(124, 45, 18, 0.18);
+    }
+
+    .path-box {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbeb;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.86rem;
+      overflow-x: auto;
+    }
+
+    footer {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 44px;
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner,
+      .widget-grid,
+      .timeline-stage,
+      .evidence-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards,
+      .stats,
+      .flow-row,
+      .syna-grid,
+      .feedback-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-tabs {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .timeline-tabs button {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        padding: 38px 16px 28px;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      main {
+        padding: 26px 16px 56px;
+      }
+
+      .tab-bar {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        min-width: 126px;
+      }
+
+      .cards,
+      .stats,
+      .flow-row,
+      .syna-grid,
+      .feedback-grid,
+      .widget-legend {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-stage {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-arrow {
+        width: 2px;
+        height: 28px;
+        justify-self: center;
+      }
+
+      .mini-arrow::after {
+        right: -5px;
+        top: 20px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 9px solid rgba(255,255,255,0.72);
+        border-bottom: 0;
+      }
+
+      .hero-visual {
+        min-height: 430px;
+      }
+
+      .mini-device {
+        height: auto;
+      }
+
+      .sound-board {
+        min-height: 160px;
+      }
+    }
+  
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+<style>
+    @media (min-width: 760px) {
+      main,
+      footer {
+        padding-right: 210px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .cf-launcher {
+        right: 10px !important;
+        bottom: 10px !important;
+        transform: scale(0.88);
+        transform-origin: right bottom;
+      }
+    }
+  </style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body class="mode-ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker" id="heroKicker">braindead</div>
+        <h1 id="heroTitle">Visual experiences in the blind induced by an auditory sensory substitution device</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes &#129504;&#128165;</p>
+        <div class="hero-meta">
+          <span>Ward &amp; Meijer</span>
+          <span>Consciousness and Cognition, 2010</span>
+          <span>The vOICe</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Miniature diagram of an image becoming a soundscape">
+        <div class="mini-device">
+          <div class="mini-device-label">camera image -> soundscape -> learned visual experience</div>
+          <div class="mini-stage">
+            <div class="mini-camera">
+              <div class="mini-camera-grid">
+                <span></span><span></span><span class="lit"></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span class="lit"></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span class="lit"></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span class="lit"></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span><span class="lit"></span>
+              </div>
+            </div>
+            <div class="mini-arrow"></div>
+            <div class="mini-sound">
+              <div class="mini-sound-bars">
+                <span style="height: 22%"></span>
+                <span style="height: 32%"></span>
+                <span style="height: 46%"></span>
+                <span style="height: 58%"></span>
+                <span style="height: 74%"></span>
+                <span style="height: 88%"></span>
+              </div>
+            </div>
+          </div>
+          <p class="mini-note">The device does not beam pictures into the brain. It teaches a stable sound code: left-to-right time, height-to-pitch, brightness-to-loudness.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Explainer tabs">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <div class="tab-panel active" id="tab-ez">
+      <section class="ez-section">
+        <p class="ez-big"><strong>This paper asks a deceptively weird question:</strong> if a blind person wears a camera that turns pictures into sound, can that person start to feel like they are seeing?</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>&#128064; The device is called <strong>The vOICe</strong>.</li>
+            <li>&#127911; It turns a camera view into a strange sound pattern.</li>
+            <li>&#129504; The user learns that sound pattern until it stops feeling like random noise.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          Think of it like learning a new alphabet. At first, the marks are just squiggles. After enough reading, the squiggles vanish and meaning pops out automatically. Here, the "squiggles" are sounds.
+        </div>
+      </section>
+
+      <section class="ez-section">
+        <p class="ez-big"><strong>The trick is a camera-to-sound recipe.</strong> Things on the left are heard earlier, things higher up sound higher, and bright things sound louder. The machine is not guessing what objects are. It just turns a picture into a sound barcode.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>&#11014;&#65039; High in the camera view becomes high pitch.</li>
+            <li>&#128266; Bright becomes loud.</li>
+            <li>&#10145;&#65039; Left-to-right in the picture becomes left-to-right through time.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          Imagine someone reading a painting out loud, stripe by stripe, so consistently that your brain starts rebuilding the painting from the voice.
+        </div>
+      </section>
+
+      <section class="ez-section">
+        <p class="ez-big"><strong>The authors focus on two expert users.</strong> Both had seen earlier in life, later became blind, then spent a long time using The vOICe in real environments. They described more than "I can identify objects." They described light, edges, depth, movement, and in one case color.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>&#128396;&#65039; At first it was like chalk outlines or dirty glasses.</li>
+            <li>&#127969; Later, rooms started to feel deep instead of flat.</li>
+            <li>&#127912; Color appeared only for one user, mostly filled in from memory.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          It is like a sketch app that slowly learns shadows, then perspective, then a few remembered colors. The sound provides the lines; memory and movement help fill the scene.
+        </div>
+      </section>
+
+      <section class="ez-section">
+        <p class="ez-big"><strong>The strangest part is that the effect did not always stop when the device came off.</strong> After long use, certain sounds could trigger visual-like experiences even without the camera. The authors treat this as a possible example of acquired synaesthesia: a learned cross-wire between sound and seeing.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>&#127925; Not every sound did it.</li>
+            <li>&#128279; vOICe-like sounds were the strongest triggers.</li>
+            <li>&#128400;&#65039; For one user, touch also started to call up visual images.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          If the brain practices "sound means shape" for long enough, the shortcut can remain installed. Later, a similar sound may press the same button.
+        </div>
+      </section>
+
+      <section class="ez-section">
+        <p class="ez-big"><strong>The paper is careful, not magical.</strong> It does not prove that sound becomes normal vision. It shows that, for these users, the experience became visual-like, automatic, and grounded in real-world action.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>&#9989; Strong phenomenology: the users gave detailed first-person reports.</li>
+            <li>&#9888;&#65039; Big caveat: this is not a large controlled trial.</li>
+            <li>&#128161; Main takeaway: the brain can learn a new route into visual experience.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy">
+          The device is less like giving the eyes back and more like building a secret side door into the visual system.
+        </div>
+      </section>
+
+      <div class="ez-tldr">
+        <h2>TL;DR</h2>
+        <p>The vOICe turns images into sound. After deep practice, two blind expert users reported experiences that felt visual: shapes, light, depth, movement, and sometimes color. The authors argue this may be learned, device-driven visual-like perception and possibly acquired synaesthesia.</p>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-normal">
+      <section>
+        <p class="eyebrow">The Question</p>
+        <h2>When vision is sent through sound, what does consciousness do with it?</h2>
+        <p class="lede">The paper sits in a tricky gap. Brain imaging can show that visual cortex becomes active during sensory substitution, but activation alone does not tell us what the user feels. Ward and Meijer therefore focus on phenomenology: detailed first-person reports from two blind expert users of The vOICe.</p>
+        <div class="callout">
+          <strong>The central claim:</strong> long-term The vOICe use can produce visual-like experiences that are not merely "I hear a sound and infer an object." The reports include light, greyscale shape, depth, smooth movement, and device-off sound-to-vision effects.
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Key Concepts</p>
+        <h2>The vocabulary, without letting vocabulary drive the bus</h2>
+        <div class="cards">
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Sensory substitution</span><span>+</span></span>
+            </button>
+            <div class="card-extra">A system sends information normally carried by one sense through another sense. Here, camera images are delivered as sound.</div>
+          </div>
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Soundscape</span><span>+</span></span>
+            </button>
+            <div class="card-extra">The vOICe output: a one-second audio scan of a camera image, with position and brightness encoded as time, pitch, stereo location, and loudness.</div>
+          </div>
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Sensorimotor contingencies</span><span>+</span></span>
+            </button>
+            <div class="card-extra">The predictable ways sensory input changes when the user moves. If moving the camera makes the sound change like moving eyes changes vision, the experience may become more vision-like.</div>
+          </div>
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Acquired synaesthesia</span><span>+</span></span>
+            </button>
+            <div class="card-extra">A learned cross-sensory experience. The paper asks whether trained sound-to-vision mappings can keep firing even when the device is not worn.</div>
+          </div>
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Prior visual knowledge</span><span>+</span></span>
+            </button>
+            <div class="card-extra">Both users had earlier visual experience. The paper argues their reports likely depend on The vOICe plus memory, touch, environment knowledge, and old visual concepts.</div>
+          </div>
+          <div class="card" onclick="toggleCard(this)">
+            <button class="card-toggle" type="button">
+              <span class="card-title"><span>Phenomenology</span><span>+</span></span>
+            </button>
+            <div class="card-extra">Careful description of experience from the inside. This paper treats user reports as evidence, while also saying those reports must be interpreted cautiously.</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Interactive Widget</p>
+        <h2>See the image-to-sound rule before judging the "seeing" claim</h2>
+        <p class="lede">The vOICe does not identify objects. It converts pixels into a sound code. Use the widget to switch shapes, then scan left to right: the camera grid is the surface layer, the sound map is the hidden data layer.</p>
+        <div class="widget" id="soundscape-widget">
+          <div class="control-row">
+            <button class="chip-btn active" type="button" data-shape="slash" onclick="setSoundShape('slash', this)">slash</button>
+            <button class="chip-btn" type="button" data-shape="x" onclick="setSoundShape('x', this)">X</button>
+            <button class="chip-btn" type="button" data-shape="plus" onclick="setSoundShape('plus', this)">plus</button>
+            <button class="chip-btn" type="button" data-shape="door" onclick="setSoundShape('door', this)">doorway</button>
+            <button class="chip-btn" type="button" onclick="playScan()">play scan</button>
+          </div>
+          <div class="widget-grid">
+            <div>
+              <h3>Surface layer: what the camera sees</h3>
+              <div class="camera-board" id="cameraBoard" aria-label="Camera pixel grid">
+                <div class="scan-line" id="scanLine"></div>
+              </div>
+              <p class="caption" id="scanCaption">Column 1 is heard first. Bright cells become louder sound.</p>
+            </div>
+            <div>
+              <h3>Data layer: what the ears receive</h3>
+              <div class="sound-board" id="soundBoard" aria-label="Soundscape columns"></div>
+              <p class="caption">Higher rows become higher pitch. More lit cells in a column make a denser moment in the soundscape.</p>
+            </div>
+          </div>
+          <div class="widget-legend">
+            <div class="legend-box"><strong>x-axis -> time and stereo</strong>The image is swept from left to right over 1 second.</div>
+            <div class="legend-box"><strong>y-axis -> pitch</strong>Higher camera pixels are mapped to higher frequencies.</div>
+            <div class="legend-box"><strong>brightness -> loudness</strong>Bright pixels sound louder than dark pixels.</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Method</p>
+        <h2>A qualitative case report, not a statistics paper</h2>
+        <div class="stats">
+          <div class="stat-box"><strong>2</strong><span>blind expert users: PF and CC</span></div>
+          <div class="stat-box"><strong>176 x 64</strong><span>PC image grid used by The vOICe</span></div>
+          <div class="stat-box"><strong>64 x 64</strong><span>mobile version image grid used by CC</span></div>
+          <div class="stat-box"><strong>1 s</strong><span>standard soundscape refresh rate</span></div>
+          <div class="stat-box"><strong>500-5000 Hz</strong><span>frequency range for pitch-height mapping</span></div>
+        </div>
+        <p class="source-note">These numbers come from the case descriptions and device description in Ward &amp; Meijer (2010), pp. 493-495.</p>
+        <div class="viz-flow" style="margin-top: 18px;">
+          <div class="flow-row">
+            <div class="viz-stage">
+              <h3>1. Camera samples the scene</h3>
+              <div class="viz-mini mini-scene">
+                <span></span><span></span><span class="object"></span><span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span class="object"></span><span class="object"></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span class="object"></span><span></span><span></span><span class="object"></span><span></span><span></span>
+                <span></span><span></span><span class="object"></span><span></span><span class="object"></span><span></span><span></span><span></span>
+                <span></span><span></span><span class="object"></span><span class="object"></span><span class="object"></span><span></span><span></span><span></span>
+              </div>
+              <p><strong>Surface:</strong> a view from a head, glasses, phone, or scanner camera.</p>
+              <p><strong>Data:</strong> a pixel array.</p>
+            </div>
+            <div class="viz-stage">
+              <h3>2. Software scans columns</h3>
+              <div class="viz-mini mini-spectro">
+                <span style="height:22%"></span><span style="height:36%"></span><span style="height:48%"></span><span style="height:72%"></span><span style="height:58%"></span><span style="height:32%"></span><span style="height:18%"></span>
+              </div>
+              <p><strong>Surface:</strong> the user hears a soundscape.</p>
+              <p><strong>Data:</strong> time, stereo position, pitch, loudness.</p>
+            </div>
+            <div class="viz-stage">
+              <h3>3. User moves and compares</h3>
+              <div class="viz-mini mini-person">
+                <svg viewBox="0 0 160 90" role="img" aria-label="User with camera and object">
+                  <circle cx="45" cy="30" r="13" fill="#0f172a"></circle>
+                  <path d="M45 45 L45 76 M25 58 L65 58" stroke="#0f172a" stroke-width="7" stroke-linecap="round"></path>
+                  <rect x="88" y="30" width="40" height="45" rx="4" fill="#2563eb"></rect>
+                  <path d="M62 35 C76 24, 88 22, 104 31" stroke="#0d9488" stroke-width="4" fill="none" stroke-dasharray="6 5"></path>
+                </svg>
+              </div>
+              <p><strong>Surface:</strong> reaching, walking, touching, turning the camera.</p>
+              <p><strong>Data:</strong> predictable changes in sound.</p>
+            </div>
+            <div class="viz-stage">
+              <h3>4. Visual-like experience emerges</h3>
+              <div class="viz-mini mini-brain">
+                <svg viewBox="0 0 160 90" role="img" aria-label="Brain reconstructing a scene">
+                  <path d="M52 64 C22 64, 20 26, 49 24 C57 7, 91 7, 98 25 C127 21, 142 52, 119 68 C94 83, 70 76, 52 64 Z" fill="#ede9fe" stroke="#7c3aed" stroke-width="4"></path>
+                  <path d="M48 54 L76 33 L107 58" stroke="#0d9488" stroke-width="5" fill="none" stroke-linecap="round"></path>
+                  <circle cx="76" cy="33" r="6" fill="#f59e0b"></circle>
+                </svg>
+              </div>
+              <p><strong>Surface:</strong> reports of edges, depth, movement, light, and sometimes color.</p>
+              <p><strong>Data:</strong> learned cross-modal mapping.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">The Users</p>
+        <h2>PF and CC are similar enough to compare, different enough to be useful</h2>
+        <div class="bands-mode-toggle">
+          <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
+          <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
+        </div>
+        <div class="bands-table-wrap" id="bandsTablePlain">
+          <table class="bands-table">
+            <thead><tr><th>User</th><th>Life history</th><th>Device setup</th><th>What matters</th></tr></thead>
+            <tbody>
+              <tr><td>PF</td><td>Had normal vision earlier, became blind as a young adult after an industrial accident, with only a little light perception left.</td><td>Started with scanned objects, then used portable cameras including glasses with a hidden camera.</td><td>Most extensive user in the paper; reports depth, smooth movement, color for known objects, and device-off sound/touch vision.</td></tr>
+              <tr><td>CC</td><td>Had poor vision that worsened through youth and was registered blind as an adult, with some residual vision for contrast and movement.</td><td>Mostly used a phone camera worn around her chest; adapted after months of immersive use.</td><td>Reports clear visual-like information from soundscapes, including depth and smooth movement, but not the same color/touch effects as PF.</td></tr>
+              <tr class="source-row"><td colspan="4">Source: Ward &amp; Meijer (2010), case descriptions on pp. 494-495.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bands-table-wrap hidden" id="bandsTableScience">
+          <table class="bands-table">
+            <thead><tr><th>User</th><th>Clinical profile</th><th>vOICe exposure</th><th>Phenomenological profile</th></tr></thead>
+            <tbody>
+              <tr><td>PF</td><td>Acquired blindness after an industrial accident; residual <span class="term" title="Remaining ability to detect light despite blindness">light perception</span> in the left eye.</td><td>Discovered The vOICe in 1998 and began <span class="term" title="Regular use in real environments rather than brief lab exposure">immersive use</span> from 2000; used 1 s refresh and normal contrast.</td><td>Reports <span class="term" title="First-person qualities of experience">visual phenomenology</span>, later color, and <span class="term" title="A learned sensory crossover that appears after a trigger or training history">acquired synaesthesia</span> for non-device sounds and touch.</td></tr>
+              <tr><td>CC</td><td>Blindness from rod dystrophy; residual acuity sufficient for finger counting and large high-contrast objects.</td><td>Found The vOICe around 2001; used a phone-based 64 x 64 mono version and reported about 3 months to adapt.</td><td>Reports soundscape-based visual experience that is <span class="term" title="Occupying the same experienced space">co-extensive</span> with residual vision, plus device-off sound-induced imagery for vOICe-like sounds.</td></tr>
+              <tr class="source-row"><td colspan="4">Source: Ward &amp; Meijer (2010), case descriptions and interviews on pp. 494-498.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Results</p>
+        <h2>The development pattern: flat sketch first, then richer seeing-like structure</h2>
+        <p class="lede">This paper has no confidence intervals because it is not measuring group effects. Its evidence is a pattern of detailed, repeated user reports, plus the fit between those reports and known properties of the device.</p>
+        <div class="timeline">
+          <div class="timeline-tabs">
+            <button class="active" type="button" onclick="showTimeline('flat', this)">flat sketch</button>
+            <button type="button" onclick="showTimeline('depth', this)">depth</button>
+            <button type="button" onclick="showTimeline('motion', this)">movement</button>
+            <button type="button" onclick="showTimeline('color', this)">color</button>
+          </div>
+          <div class="timeline-stage">
+            <div class="percept-board" id="perceptBoard" aria-label="Visual metaphor for current perceptual stage"></div>
+            <div class="timeline-text">
+              <h3 id="timelineTitle">Flat sketch / dirty glasses</h3>
+              <p id="timelineBody">PF first described the experience as shapes and placements without fine detail, like dirty glasses or a black-and-white chalk sketch. CC similarly reported bright bands, vertical objects, and texture/edge information from a static soundscape.</p>
+              <ul id="timelineBullets">
+                <li>Edges and contrast came before rich object detail.</li>
+                <li>Touch and prior visual memory helped turn sound into recognizable objects.</li>
+                <li>The paper treats this as visual-like phenomenology, while staying cautious.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Evidence Board</p>
+        <h2>What exactly did the users report?</h2>
+        <div class="evidence-grid">
+          <div class="evidence-nav">
+            <button class="active" type="button" onclick="showEvidence('light', this)">light and greyscale</button>
+            <button type="button" onclick="showEvidence('depth', this)">depth</button>
+            <button type="button" onclick="showEvidence('movement', this)">smooth movement</button>
+            <button type="button" onclick="showEvidence('color', this)">color from memory</button>
+            <button type="button" onclick="showEvidence('off', this)">device-off synaesthesia</button>
+          </div>
+          <div class="evidence-panel">
+            <h3 id="evidenceTitle">Light and greyscale</h3>
+            <p id="evidenceBody">PF was explicit that The vOICe was not "just sound" for her. She described clear white light, greys, blacks, and line drawings rather than only object inference.</p>
+            <div class="evidence-quote" id="evidenceQuote">"There IS true light perception generated by The vOICe."</div>
+            <p class="caption" id="evidenceCaption">Reported by PF in an email to Meijer dated 29 August 2002.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Acquired Synaesthesia</p>
+        <h2>The mapping seems to keep running even when the camera is off</h2>
+        <p class="lede">The most provocative result is not just "The vOICe helps users navigate." It is that PF and CC describe visual-like experiences from certain sounds even when they are not wearing the device. That matters because it suggests a learned, stable cross-sensory route.</p>
+        <div class="syna-map">
+          <div class="control-row">
+            <button class="chip-btn active" type="button" onclick="setSyna('on', this)">device on</button>
+            <button class="chip-btn" type="button" onclick="setSyna('off', this)">device off</button>
+            <button class="chip-btn" type="button" onclick="setSyna('touch', this)">PF touch case</button>
+          </div>
+          <div class="syna-grid">
+            <div class="syna-node">
+              <strong id="synaInput">Camera image</strong>
+              <p id="synaInputText">Scene structure enters as pixels.</p>
+              <div class="syna-meter"><span style="width: 82%"></span></div>
+              <p class="caption">Surface trigger</p>
+            </div>
+            <div class="syna-node">
+              <strong id="synaRule">The vOICe rules</strong>
+              <p id="synaRuleText">Left-to-right time, height-to-pitch, brightness-to-loudness.</p>
+              <div class="syna-meter"><span style="width: 94%"></span></div>
+              <p class="caption">Learned mapping</p>
+            </div>
+            <div class="syna-node">
+              <strong id="synaOutput">Visual-like experience</strong>
+              <p id="synaOutputText">Edges, light, spatial layout, depth, and movement can be experienced as visual-like.</p>
+              <div class="syna-meter"><span style="width: 76%"></span></div>
+              <p class="caption">Reported phenomenology</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Implications</p>
+        <h2>Why this paper still feels sharp</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>If you build sensory substitution</h3>
+            <p>Stable mappings and user-controlled movement matter. Camera placement is not cosmetic: PF reported that moving the camera from cap to glasses forced her body to relearn the mapping.</p>
+          </div>
+          <div class="card">
+            <h3>If you study consciousness</h3>
+            <p>Visual cortex activation is not enough. You also need careful reports of what the experience is like, and those reports may change with years of use.</p>
+          </div>
+          <div class="card">
+            <h3>If you read the user reports</h3>
+            <p>Do not flatten them into either miracle or metaphor. The paper's best reading is "learned visual-like experience, constrained by sound, movement, touch, and memory."</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Limits</p>
+        <h2>What this paper does not prove</h2>
+        <div class="cards">
+          <div class="card"><h3>Small evidence base</h3><p>The core evidence comes from two expert users, so it is proof-of-principle rather than a population estimate.</p></div>
+          <div class="card"><h3>Prior vision matters</h3><p>Both users had visual experience earlier in life and some residual light perception, so the result may not generalize to congenitally blind users.</p></div>
+          <div class="card"><h3>Reports are central</h3><p>The paper depends on phenomenological reports. It is careful, but subjective reports always require cautious interpretation.</p></div>
+          <div class="card"><h3>Seeing vs spatial imagery</h3><p>A critic could argue the experience is spatial or imagery-like rather than literally visual. The authors argue light, dark, and automaticity make the visual reading plausible.</p></div>
+          <div class="card"><h3>No color signal</h3><p>The device does not encode color. PF's later color reports likely depend on prior object knowledge and memory, not direct color information from sound.</p></div>
+          <div class="card"><h3>Mechanism unresolved</h3><p>The paper points to sensorimotor learning and plasticity, but does not isolate the neural mechanism that produces the experience.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Quiz</p>
+        <h2>Check whether the argument landed</h2>
+        <div class="quiz-box">
+          <h3>1. What makes The vOICe different from a simple spoken object labeler?</h3>
+          <div class="quiz-options">
+            <button type="button" onclick="answerQuiz(this, false, 'A labeler would say object names. The vOICe encodes the visual field itself as a sound pattern.')">It names objects out loud.</button>
+            <button type="button" onclick="answerQuiz(this, true, 'Right. It turns visual structure into a learnable soundscape: position, height, brightness, and time.')">It converts image structure into a soundscape.</button>
+            <button type="button" onclick="answerQuiz(this, false, 'The paper is not about restoring the eyes. The route is camera -> sound -> learned interpretation.')">It repairs damaged eyes.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+        <div class="quiz-box">
+          <h3>2. Why does the paper emphasize PF and CC's previous visual experience?</h3>
+          <div class="quiz-options">
+            <button type="button" onclick="answerQuiz(this, true, 'Right. Prior visual knowledge likely helped fill in shapes, perspective, and colors that the soundscape alone did not specify.')">Because memory may help turn sound into visual-like experience.</button>
+            <button type="button" onclick="answerQuiz(this, false, 'No. The paper is cautious because previous vision may be a necessary support, not a problem to ignore.')">Because it makes the reports irrelevant.</button>
+            <button type="button" onclick="answerQuiz(this, false, 'The device has a fixed encoding scheme. The prior-vision point is about interpretation, not changing the hardware.')">Because The vOICe changes its algorithm for sighted memories.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+        <div class="quiz-box">
+          <h3>3. What is the acquired synaesthesia claim?</h3>
+          <div class="quiz-options">
+            <button type="button" onclick="answerQuiz(this, false, 'The paper says the experiences are triggered and learned, not spontaneous hallucinations.')">The users started hallucinating without triggers.</button>
+            <button type="button" onclick="answerQuiz(this, false, 'The paper says not all sounds trigger it. vOICe-like sounds matter most.')">Every sound became a detailed picture.</button>
+            <button type="button" onclick="answerQuiz(this, true, 'Exactly. After training, certain sounds could trigger visual-like experiences even when the device was not being worn.')">The learned sound-to-vision mapping could fire without the device.</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-feedback">
+      <section>
+        <p class="eyebrow">comment/feedback</p>
+        <h2>Use this tab to review the explainer in place</h2>
+        <p class="lede">Highlight text, select an element, or open the floating panel to leave notes. Submitted batches are saved locally, then Codex can process them into concrete edits while preserving the current tab and anchor.</p>
+        <div class="feedback-grid">
+          <div class="card">
+            <h3>Open the panel</h3>
+            <p>Use the launcher or the button below to open the feedback panel while reading the page.</p>
+          </div>
+          <div class="card">
+            <h3>Attach a note</h3>
+            <p>Highlight confusing text or select a visual block so the feedback points at the exact thing that needs work.</p>
+          </div>
+          <div class="card">
+            <h3>Submit batch</h3>
+            <p>Send related comments together. The local feedback history records which comments were handled.</p>
+          </div>
+        </div>
+        <p style="margin-top: 18px;"><button class="feedback-button" disabled>feedback panel is local-only</button></p>
+        <div class="path-box">papers/visual-experiences-blind-ssd/feedback/inbox.jsonl</div>
+        <div class="callout orange">
+          <strong>Local review copy:</strong> this file keeps the feedback runtime when served through the bundled local server. A public GitHub Pages copy should strip the local feedback script before publishing.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Source paper: Ward, J., &amp; Meijer, P. (2010). Visual experiences in the blind induced by an auditory sensory substitution device. Consciousness and Cognition, 19, 492-500.
+  </footer>
+
+  <script>
+    const heroText = {
+      ez: {
+        kicker: "braindead",
+        title: "Visual experiences in the blind induced by an auditory sensory substitution device",
+        subtitle: "The whole paper in 5 minutes &#129504;&#128165;"
+      },
+      normal: {
+        kicker: "braingood",
+        title: "Can a learned sound code become visual experience?",
+        subtitle: "The rigorous version: device mapping, case evidence, adaptation timeline, synaesthesia claim, limitations, and quiz."
+      },
+      feedback: {
+        kicker: "comment/feedback",
+        title: "Review the explainer without losing your place",
+        subtitle: "Leave targeted notes on text, visuals, or missing explanations; the local inbox keeps the review loop grounded."
+      }
+    };
+
+    function switchTab(id, btn) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+      const panel = document.getElementById("tab-" + id);
+      if (panel) panel.classList.add("active");
+      document.querySelectorAll(".tab-btn").forEach(tab => tab.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      document.body.classList.add("mode-" + id);
+      const copy = heroText[id] || heroText.ez;
+      document.getElementById("heroKicker").textContent = copy.kicker;
+      document.getElementById("heroTitle").textContent = copy.title;
+      document.getElementById("heroSubtitle").innerHTML = copy.subtitle;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleCard(card) {
+      card.classList.toggle("open");
+    }
+
+    const shapeData = {
+      slash: (x, y) => y === 7 - Math.round(x * 7 / 15),
+      x: (x, y) => y === Math.round(x * 7 / 15) || y === 7 - Math.round(x * 7 / 15),
+      plus: (x, y) => x === 8 || y === 4,
+      door: (x, y) => (x === 4 && y >= 2) || (x === 11 && y >= 2) || (y === 2 && x >= 4 && x <= 11)
+    };
+    let currentShape = "slash";
+    let scanTimer = null;
+
+    function buildBoards() {
+      const camera = document.getElementById("cameraBoard");
+      const sound = document.getElementById("soundBoard");
+      if (!camera || !sound) return;
+      camera.querySelectorAll(".camera-cell").forEach(cell => cell.remove());
+      sound.innerHTML = "";
+      const fn = shapeData[currentShape];
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 16; x++) {
+          const cell = document.createElement("span");
+          cell.className = "camera-cell" + (fn(x, y) ? " lit" : "");
+          camera.appendChild(cell);
+        }
+      }
+      for (let x = 0; x < 16; x++) {
+        const col = document.createElement("div");
+        col.className = "sound-column";
+        for (let y = 0; y < 8; y++) {
+          const dot = document.createElement("span");
+          dot.className = "sound-dot" + (fn(x, 7 - y) ? " on" : "");
+          col.appendChild(dot);
+        }
+        sound.appendChild(col);
+      }
+      setScan(0);
+    }
+
+    function setSoundShape(shape, btn) {
+      currentShape = shape;
+      document.querySelectorAll("#soundscape-widget .chip-btn[data-shape]").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      buildBoards();
+    }
+
+    function setScan(col) {
+      const line = document.getElementById("scanLine");
+      const caption = document.getElementById("scanCaption");
+      if (!line) return;
+      const board = document.getElementById("cameraBoard");
+      if (board) {
+        const inner = Math.max(0, board.clientWidth - 16);
+        line.style.width = (inner / 16) + "px";
+        line.style.left = (8 + col * inner / 16) + "px";
+      }
+      if (caption) caption.textContent = "Column " + (col + 1) + " is heard " + (col === 0 ? "first" : "after the previous columns") + ".";
+    }
+
+    function playScan() {
+      if (scanTimer) window.clearInterval(scanTimer);
+      let col = 0;
+      setScan(col);
+      scanTimer = window.setInterval(() => {
+        col += 1;
+        if (col >= 16) {
+          window.clearInterval(scanTimer);
+          scanTimer = null;
+          setScan(0);
+          return;
+        }
+        setScan(col);
+      }, 160);
+    }
+
+    const timelineData = {
+      flat: {
+        title: "Flat sketch / dirty glasses",
+        body: "PF first described the experience as shapes and placements without fine detail, like dirty glasses or a black-and-white chalk sketch. CC similarly reported bright bands, vertical objects, and texture/edge information from a static soundscape.",
+        bullets: ["Edges and contrast came before rich object detail.", "Touch and prior visual memory helped turn sound into recognizable objects.", "The paper treats this as visual-like phenomenology, while staying cautious."],
+        art: "flat"
+      },
+      depth: {
+        title: "Depth appears after the flat stage",
+        body: "Both users reported depth only after earlier flat visual-like experiences. PF described a sink and rooms suddenly becoming \"down\" and \"across from me\" rather than a flat drawing.",
+        bullets: ["Depth is not explicitly encoded by the soundscape.", "The authors connect this to perspective, shading, movement, and active exploration.", "CC first had distortions such as a road looking like a car driving up a building."],
+        art: "depth"
+      },
+      motion: {
+        title: "Movement becomes smooth enough to use",
+        body: "The vOICe refreshes slowly by ordinary visual standards, yet PF and CC reported that the experience stopped feeling like a jerky sequence during normal walking or use.",
+        bullets: ["PF compared the adaptation to a flip-book whose gaps disappear.", "Fast motion remained limited; PF found a bicycle exceeded the device's update rate.", "The paper suggests prediction from self-movement may stabilize the experience."],
+        art: "motion"
+      },
+      color: {
+        title: "Color is late, partial, and memory-driven",
+        body: "The vOICe does not encode color. PF alone reported color emerging years later, mainly for known things such as strawberries, grass, bark, and leaves.",
+        bullets: ["PF said her mind used memory to color everything it could.", "Unknown clothing colors remained guesses or greyish-black.", "This supports the paper's claim that prior visual knowledge is part of the experience."],
+        art: "color"
+      }
+    };
+
+    function showTimeline(id, btn) {
+      const data = timelineData[id] || timelineData.flat;
+      document.querySelectorAll(".timeline-tabs button").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.getElementById("timelineTitle").textContent = data.title;
+      document.getElementById("timelineBody").textContent = data.body;
+      const list = document.getElementById("timelineBullets");
+      list.innerHTML = "";
+      data.bullets.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      });
+      renderPercept(data.art);
+    }
+
+    function renderPercept(kind) {
+      const board = document.getElementById("perceptBoard");
+      if (!board) return;
+      board.innerHTML = '<div class="percept-layer"></div>';
+      if (kind === "flat") {
+        [["18%","30%","58%","-12deg"],["22%","58%","48%","8deg"],["52%","42%","32%","78deg"],["60%","64%","26%","0deg"]].forEach(v => {
+          const line = document.createElement("span");
+          line.className = "sketch-line";
+          line.style.left = v[0];
+          line.style.top = v[1];
+          line.style.width = v[2];
+          line.style.transform = "rotate(" + v[3] + ")";
+          board.appendChild(line);
+        });
+      } else if (kind === "depth") {
+        const floor = document.createElement("div");
+        floor.className = "depth-floor";
+        board.appendChild(floor);
+        [["42%","24%","25%","0deg"],["32%","48%","38%","12deg"],["55%","50%","28%","-16deg"]].forEach(v => {
+          const line = document.createElement("span");
+          line.className = "sketch-line";
+          line.style.left = v[0];
+          line.style.top = v[1];
+          line.style.width = v[2];
+          line.style.transform = "rotate(" + v[3] + ")";
+          board.appendChild(line);
+        });
+      } else if (kind === "motion") {
+        const positions = [
+          ["34px", "86px", "0.16"],
+          ["78px", "86px", "0.36"],
+          ["122px", "86px", "0.72"]
+        ];
+        for (let i = 0; i < 3; i++) {
+          const ghost = document.createElement("div");
+          ghost.className = "motion-ghost";
+          ghost.style.left = positions[i][0];
+          ghost.style.top = positions[i][1];
+          ghost.style.opacity = positions[i][2];
+          board.appendChild(ghost);
+        }
+        const line = document.createElement("span");
+        line.className = "sketch-line";
+        line.style.left = "28%";
+        line.style.top = "62%";
+        line.style.width = "54%";
+        line.style.transform = "rotate(0deg)";
+        board.appendChild(line);
+      } else {
+        [["18%","26%","72px","72px","#ef4444"],["50%","22%","80px","62px","#22c55e"],["34%","58%","118px","38px","#f59e0b"]].forEach(v => {
+          const patch = document.createElement("div");
+          patch.className = "color-patch";
+          patch.style.left = v[0];
+          patch.style.top = v[1];
+          patch.style.width = v[2];
+          patch.style.height = v[3];
+          patch.style.background = v[4];
+          board.appendChild(patch);
+        });
+      }
+    }
+
+    const evidenceData = {
+      light: {
+        title: "Light and greyscale",
+        body: "PF was explicit that The vOICe was not \"just sound\" for her. She described clear white light, greys, blacks, and line drawings rather than only object inference.",
+        quote: "\"There IS true light perception generated by The vOICe.\"",
+        caption: "Reported by PF in an email to Meijer dated 29 August 2002."
+      },
+      depth: {
+        title: "Depth",
+        body: "PF described a moment at a sink when the flat drawing gained depth. CC also reported depth, including an early perspective distortion where a road seemed like a car driving up a building.",
+        quote: "\"That flat drawing now has depth to it. I can sense it.\"",
+        caption: "PF presentation, April 2002; depth event dated to late 2000."
+      },
+      movement: {
+        title: "Smooth movement",
+        body: "Even though The vOICe normally refreshes at one image per second, both users said the experience eventually stopped feeling like separate snapshots during ordinary movement.",
+        quote: "\"I don't see the second break anymore... it's like using a flip-book.\"",
+        caption: "PF interview, December 2007."
+      },
+      color: {
+        title: "Color from memory",
+        body: "The device does not encode color. PF's later color reports therefore matter because they show memory and prior visual knowledge filling in what the auditory signal cannot directly provide.",
+        quote: "\"My mind just colors it in.\"",
+        caption: "PF interview, December 2007."
+      },
+      off: {
+        title: "Device-off synaesthesia",
+        body: "Both users reported visual-like experiences from certain sounds without wearing The vOICe. The authors interpret this as possible acquired synaesthesia caused by long-term device learning.",
+        quote: "\"The shapes are consistent and can be reproduced by the same sound.\"",
+        caption: "CC email to Ward, November 2007."
+      }
+    };
+
+    function showEvidence(id, btn) {
+      const data = evidenceData[id] || evidenceData.light;
+      document.querySelectorAll(".evidence-nav button").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.getElementById("evidenceTitle").textContent = data.title;
+      document.getElementById("evidenceBody").textContent = data.body;
+      document.getElementById("evidenceQuote").textContent = data.quote;
+      document.getElementById("evidenceCaption").textContent = data.caption;
+    }
+
+    function setSyna(mode, btn) {
+      document.querySelectorAll(".syna-map .chip-btn").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      const copy = {
+        on: ["Camera image", "Scene structure enters as pixels.", "The vOICe rules", "Left-to-right time, height-to-pitch, brightness-to-loudness.", "Visual-like experience", "Edges, light, spatial layout, depth, and movement can be experienced as visual-like."],
+        off: ["vOICe-like sound", "Some ordinary or synthetic sounds resemble parts of the learned device code.", "Internalized mapping", "The learned rules are not fully disconnected when the camera is off.", "Sound-induced visual form", "Users report monochrome arcs, disks, squares, or other stable shapes."],
+        touch: ["Touched object", "PF manipulates a known object without wearing the device.", "Stored multimodal shape", "Touch links to remembered object form rather than the device's pitch-height code.", "Visual image in the head", "PF reports automatic touch-induced visual imagery after The vOICe experience."]
+      }[mode];
+      document.getElementById("synaInput").textContent = copy[0];
+      document.getElementById("synaInputText").textContent = copy[1];
+      document.getElementById("synaRule").textContent = copy[2];
+      document.getElementById("synaRuleText").textContent = copy[3];
+      document.getElementById("synaOutput").textContent = copy[4];
+      document.getElementById("synaOutputText").textContent = copy[5];
+    }
+
+    function setBandsMode(mode, btn) {
+      const plain = document.getElementById("bandsTablePlain");
+      const science = document.getElementById("bandsTableScience");
+      if (!plain || !science) return;
+      (mode === "science" ? plain : science).classList.add("hidden");
+      (mode === "science" ? science : plain).classList.remove("hidden");
+      document.querySelectorAll(".bands-mode-toggle button").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    function answerQuiz(button, correct, message) {
+      const box = button.closest(".quiz-box");
+      if (!box) return;
+      box.querySelectorAll(".quiz-options button").forEach(btn => {
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = true;
+      });
+      button.classList.add(correct ? "correct" : "wrong");
+      const feedback = box.querySelector(".quiz-feedback");
+      feedback.textContent = message;
+      feedback.classList.add("visible");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    (function setupTermTips() {
+      const tip = document.createElement("div");
+      tip.className = "term-tip";
+      document.body.appendChild(tip);
+      let activeTerm = null;
+
+      document.querySelectorAll(".term[title]").forEach(t => {
+        t.setAttribute("data-def", t.getAttribute("title"));
+        t.removeAttribute("title");
+      });
+
+      function showTip(term) {
+        const text = term.getAttribute("data-def");
+        if (!text) return;
+        tip.textContent = text;
+        const r = term.getBoundingClientRect();
+        tip.style.left = (r.left + window.scrollX) + "px";
+        tip.style.top = (r.bottom + window.scrollY + 10) + "px";
+        tip.classList.add("visible");
+        requestAnimationFrame(() => {
+          const tr = tip.getBoundingClientRect();
+          if (tr.right > window.innerWidth - 12) {
+            tip.style.left = (window.innerWidth - tr.width - 12 + window.scrollX) + "px";
+          }
+        });
+        if (activeTerm && activeTerm !== term) activeTerm.classList.remove("active");
+        term.classList.add("active");
+        activeTerm = term;
+      }
+
+      function hideTip() {
+        tip.classList.remove("visible");
+        if (activeTerm) activeTerm.classList.remove("active");
+        activeTerm = null;
+      }
+
+      document.addEventListener("mouseover", e => {
+        const term = e.target.closest(".term");
+        if (term) showTip(term);
+      });
+      document.addEventListener("mouseout", e => {
+        const term = e.target.closest(".term");
+        if (!term) return;
+        const next = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".term");
+        if (next === term) return;
+        hideTip();
+      });
+      document.addEventListener("click", e => {
+        const term = e.target.closest(".term");
+        if (term) {
+          e.preventDefault();
+          if (activeTerm === term) hideTip(); else showTip(term);
+        } else if (activeTerm) {
+          hideTip();
+        }
+      });
+      window.addEventListener("scroll", () => { if (activeTerm) hideTip(); }, { passive: true });
+    })();
+
+    buildBoards();
+    renderPercept("flat");
+  </script>
+</body>
+</html>
