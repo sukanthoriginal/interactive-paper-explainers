@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuffler 1953 Retina - Interactive Explainer</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #5f6b7a;
+      --paper: #ffffff;
+      --body: #f7f7f4;
+      --line: #dfe3e6;
+      --navy: #14345b;
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --teal: #0f766e;
+      --teal-light: #ccfbf1;
+      --green: #047857;
+      --green-light: #d1fae5;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --rose: #be123c;
+      --rose-light: #ffe4e6;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --gray-light: #f3f4f6;
+      --shadow: 0 16px 36px rgba(15, 23, 42, 0.10);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    .hero {
+      color: #fff;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      padding: 56px 24px 40px;
+      transition: background 0.24s ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #071827 0%, #14345b 54%, #0f766e 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #292524 0%, #7c2d12 100%);
+    }
+
+    .hero-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.42);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 750;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      max-width: 820px;
+      font-size: clamp(2rem, 6vw, 3.15rem);
+      line-height: 1.08;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 20px;
+      max-width: 820px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.06rem;
+      line-height: 1.55;
+      opacity: 0.94;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      opacity: 0.94;
+    }
+
+    .hero-meta span {
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero-visual {
+      min-height: 300px;
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(8px);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .mini-retina {
+      min-height: 260px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .mini-retina-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.86);
+    }
+
+    .mini-retina-board {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(190px, 1fr);
+      gap: 16px;
+      align-items: center;
+    }
+
+    .mini-field {
+      position: relative;
+      aspect-ratio: 1;
+      min-height: 210px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.96) 0 24%, rgba(255,255,255,0.28) 25% 42%, rgba(15,118,110,0.34) 43% 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 16px 28px rgba(15,23,42,0.18);
+    }
+
+    .mini-field::before {
+      content: "";
+      position: absolute;
+      inset: 29%;
+      border: 2px solid rgba(20,52,91,0.58);
+      border-radius: 50%;
+    }
+
+    .mini-electrode {
+      position: absolute;
+      left: 42%;
+      top: -4%;
+      width: 16px;
+      height: 64%;
+      background: linear-gradient(90deg, rgba(17,24,39,0.78), rgba(255,255,255,0.7), rgba(17,24,39,0.68));
+      transform: rotate(-38deg);
+      border-radius: 999px;
+      opacity: 0.8;
+    }
+
+    .mini-spot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 46px;
+      height: 46px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #fef08a;
+      box-shadow: 0 0 26px rgba(254,240,138,0.9);
+      animation: orbitSpot 6s ease-in-out infinite;
+    }
+
+    .mini-plus,
+    .mini-minus {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 900;
+      background: rgba(255,255,255,0.92);
+      color: #111827;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.15);
+    }
+
+    .mini-plus {
+      left: 47%;
+      top: 47%;
+    }
+
+    .mini-minus {
+      left: 72%;
+      top: 58%;
+    }
+
+    .mini-trace {
+      min-height: 210px;
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: var(--radius);
+      background: rgba(6,16,28,0.46);
+      padding: 14px;
+    }
+
+    .trace-label {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .trace-line {
+      position: relative;
+      height: 56px;
+      border-bottom: 2px solid rgba(255,255,255,0.55);
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    .trace-line span {
+      position: absolute;
+      bottom: -1px;
+      width: 3px;
+      background: #fff;
+      border-radius: 3px 3px 0 0;
+      animation: spikePulse 1.4s infinite ease-in-out;
+    }
+
+    .trace-line span:nth-child(1) { left: 7%; height: 44px; animation-delay: 0s; }
+    .trace-line span:nth-child(2) { left: 14%; height: 52px; animation-delay: 0.08s; }
+    .trace-line span:nth-child(3) { left: 20%; height: 48px; animation-delay: 0.16s; }
+    .trace-line span:nth-child(4) { left: 30%; height: 42px; animation-delay: 0.24s; }
+    .trace-line span:nth-child(5) { left: 67%; height: 38px; animation-delay: 0.32s; }
+    .trace-line span:nth-child(6) { left: 73%; height: 46px; animation-delay: 0.40s; }
+    .trace-line span:nth-child(7) { left: 82%; height: 34px; animation-delay: 0.48s; }
+
+    @keyframes orbitSpot {
+      0%, 100% { left: 50%; top: 50%; }
+      35% { left: 72%; top: 57%; }
+      62% { left: 50%; top: 50%; }
+      80% { left: 35%; top: 48%; }
+    }
+
+    @keyframes spikePulse {
+      0%, 100% { opacity: 0.55; transform: scaleY(0.82); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 0.94rem;
+      font-weight: 750;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 30px 24px 64px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    section {
+      margin: 0 0 28px;
+    }
+
+    .section-head {
+      margin: 0 0 16px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .section-head h2,
+    .section-head h3 {
+      margin: 0;
+      line-height: 1.12;
+      font-weight: 500;
+    }
+
+    .section-head h2 {
+      font-size: 1.75rem;
+    }
+
+    .section-head h3 {
+      font-size: 1.36rem;
+    }
+
+    .section-note {
+      margin: 0;
+      max-width: 460px;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .plain-panel,
+    .evidence-panel,
+    .tool-panel,
+    .feedback-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .card h4,
+    .card h5 {
+      margin: 0 0 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.2;
+      font-size: 1rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .metric strong {
+      display: block;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.3rem;
+      line-height: 1.1;
+      color: var(--navy);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .term-decoder {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.9fr) minmax(0, 1.1fr) minmax(210px, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+      padding: 14px;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .term-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+    }
+
+    .term-card h4 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    .term-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .retina-stack {
+      display: grid;
+      gap: 6px;
+    }
+
+    .retina-layer {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .retina-layer.output {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e3a8a;
+    }
+
+    .cell-dot-row {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .cell-dot-row span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #cbd5e1;
+    }
+
+    .cell-dot-row span.active {
+      width: 16px;
+      height: 16px;
+      background: var(--navy);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+    }
+
+    .stimulus-to-spikes {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .light-spot-demo {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fef08a 0 28%, #dcfce7 29% 58%, #e0f2fe 59% 100%);
+      border: 1px solid #bfdbfe;
+    }
+
+    .light-spot-demo::after {
+      content: "light spot";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.68rem;
+      font-weight: 850;
+      color: #713f12;
+      white-space: nowrap;
+    }
+
+    .pattern-lines {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pattern-row {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .spike-ruler {
+      position: relative;
+      height: 34px;
+      border-radius: 6px;
+      background: #0b1220;
+      overflow: hidden;
+    }
+
+    .spike-ruler::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    .light-window {
+      position: absolute;
+      left: 28%;
+      right: 26%;
+      top: 0;
+      bottom: 0;
+      background: rgba(250,204,21,0.18);
+      border-left: 1px solid rgba(250,204,21,0.55);
+      border-right: 1px solid rgba(250,204,21,0.55);
+    }
+
+    .spike-ruler span {
+      position: absolute;
+      bottom: 8px;
+      width: 2px;
+      height: 18px;
+      background: #f8fafc;
+      border-radius: 999px;
+    }
+
+    .optic-wire {
+      display: grid;
+      gap: 8px;
+    }
+
+    .wire-path {
+      height: 42px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #dbeafe 0 20%, #14345b 20% 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wire-path::before,
+    .wire-path::after {
+      content: "";
+      position: absolute;
+      top: 9px;
+      width: 10px;
+      height: 24px;
+      border-radius: 999px;
+      background: #fef08a;
+      box-shadow: 0 0 12px rgba(254,240,138,0.9);
+    }
+
+    .wire-path::before {
+      left: 38%;
+    }
+
+    .wire-path::after {
+      left: 62%;
+    }
+
+    .wire-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 750;
+    }
+
+    .ez-section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .ez-section h2 {
+      margin: 0 0 12px;
+      font-size: 1.5rem;
+      line-height: 1.18;
+      font-weight: 500;
+    }
+
+    .ez-big {
+      font-size: 1.18rem;
+      line-height: 1.72;
+      margin: 0 0 14px;
+    }
+
+    .ez-emoji-block {
+      display: grid;
+      gap: 8px;
+      margin: 16px 0;
+      padding: 14px;
+      border: 1px solid #fbcfe8;
+      border-radius: var(--radius);
+      background: #fdf2f8;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .ez-emoji-block div {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      align-items: start;
+      color: #4a044e;
+    }
+
+    .ez-analogy {
+      margin: 16px 0 0;
+      padding: 16px;
+      border-left: 5px solid #f59e0b;
+      background: #fffbeb;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 1.05rem;
+    }
+
+    .ez-tldr {
+      background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+      border: 1px solid #f59e0b;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .ez-tldr h2 {
+      margin: 0 0 10px;
+      font-size: 1.45rem;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    .paper-img {
+      width: 100%;
+      display: block;
+      max-height: 620px;
+      object-fit: contain;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+    }
+
+    .paper-img.tall {
+      max-height: 780px;
+    }
+
+    .caption {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      line-height: 1.38;
+    }
+
+    .concept-card {
+      cursor: pointer;
+      transition: border-color 0.16s, transform 0.16s;
+    }
+
+    .concept-card:hover,
+    .concept-card:focus-within {
+      border-color: var(--blue);
+      transform: translateY(-1px);
+    }
+
+    .concept-card button {
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .concept-card .more {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .concept-card.open .more {
+      display: block;
+    }
+
+    .apparatus-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      background: #e0f2fe;
+      color: #075985;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .flow-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 13px;
+      min-height: 106px;
+    }
+
+    .flow-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--navy);
+    }
+
+    .mini-matrix {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    .mini-matrix span {
+      min-height: 18px;
+      border-radius: 3px;
+      background: var(--gray-light);
+    }
+
+    .mini-matrix span.hot {
+      background: #fbbf24;
+    }
+
+    .simulator {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.92fr) minmax(0, 1.08fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .control-stack {
+      display: grid;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .control-row label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 7px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      font-weight: 750;
+    }
+
+    .control-row output {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    .switch-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .switch-row button,
+    .scenario-btn,
+    .quiz button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 9px 10px;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .switch-row button.active,
+    .scenario-btn.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    .response-board {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-board {
+      position: relative;
+      min-height: 360px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #f8fafc, #eef7f4);
+      overflow: hidden;
+      padding: 18px;
+    }
+
+    .retina-field {
+      position: relative;
+      width: min(340px, 92%);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(254,252,232,0.98) 0 24%, rgba(254,243,199,0.86) 25% 37%, rgba(209,250,229,0.92) 38% 100%);
+      box-shadow: inset 0 0 0 2px rgba(20,52,91,0.13), 0 12px 26px rgba(15,23,42,0.08);
+    }
+
+    .retina-field::before,
+    .retina-field::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .retina-field::before {
+      inset: 28%;
+      border: 2px dashed rgba(20,52,91,0.52);
+    }
+
+    .retina-field::after {
+      inset: 9%;
+      border: 1px solid rgba(15,118,110,0.36);
+    }
+
+    .zone-label {
+      position: absolute;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 850;
+      background: rgba(255,255,255,0.86);
+      color: var(--navy);
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+    }
+
+    .zone-label.center {
+      left: 50%;
+      top: 44%;
+      transform: translate(-50%, -50%);
+    }
+
+    .zone-label.surround {
+      right: 7%;
+      top: 62%;
+    }
+
+    .moving-spot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 54px;
+      height: 54px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #fde047;
+      border: 2px solid rgba(161,98,7,0.35);
+      box-shadow: 0 0 28px rgba(250,204,21,0.85);
+      transition: left 0.2s ease, top 0.2s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+    }
+
+    .ganglion-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--navy);
+      box-shadow: 0 0 0 6px rgba(20,52,91,0.12);
+      z-index: 2;
+    }
+
+    .electrode-arm {
+      position: absolute;
+      left: 22%;
+      top: 0;
+      width: 12px;
+      height: 62%;
+      background: linear-gradient(90deg, #374151, #f8fafc, #111827);
+      transform: rotate(-38deg);
+      border-radius: 999px;
+      opacity: 0.55;
+      transform-origin: top center;
+    }
+
+    .sim-output {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .response-type {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .response-type strong {
+      display: block;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.5rem;
+      line-height: 1.12;
+      color: var(--navy);
+    }
+
+    .response-type p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .spike-scope {
+      position: relative;
+      min-height: 138px;
+      border-radius: var(--radius);
+      background: #0b1220;
+      border: 1px solid #111827;
+      overflow: hidden;
+      padding: 14px;
+    }
+
+    .flash-window {
+      position: absolute;
+      left: 24%;
+      right: 30%;
+      top: 0;
+      bottom: 0;
+      background: rgba(250,204,21,0.10);
+      border-left: 1px solid rgba(250,204,21,0.4);
+      border-right: 1px solid rgba(250,204,21,0.4);
+    }
+
+    .scope-axis {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 74px;
+      height: 2px;
+      background: rgba(255,255,255,0.36);
+    }
+
+    .scope-spikes {
+      position: absolute;
+      inset: 18px 14px 34px;
+    }
+
+    .scope-spikes span {
+      position: absolute;
+      bottom: 24px;
+      width: 3px;
+      border-radius: 3px 3px 0 0;
+      background: #f8fafc;
+    }
+
+    .scope-labels {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,0.72);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .claim-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .claim {
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #eef2ff;
+      color: #312e81;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .two-spot {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.08fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .scenario-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .spot-diagram {
+      position: relative;
+      min-height: 380px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+      padding: 18px;
+    }
+
+    .spot-field {
+      width: min(320px, 90%);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      position: relative;
+      background:
+        radial-gradient(circle, #fef9c3 0 24%, #ffedd5 25% 39%, #ccfbf1 40% 100%);
+      border: 1px solid var(--line);
+    }
+
+    .spot-a,
+    .spot-b {
+      position: absolute;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 900;
+      border: 2px solid rgba(17,24,39,0.22);
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .spot-a {
+      left: 45%;
+      top: 43%;
+      width: 54px;
+      height: 54px;
+      background: #fde047;
+    }
+
+    .spot-b {
+      left: 64%;
+      top: 58%;
+      width: 78px;
+      height: 78px;
+      background: #bae6fd;
+    }
+
+    .balance-scale {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .balance-bar {
+      min-height: 24px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .balance-fill {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, var(--green), var(--amber));
+      transition: width 0.18s ease;
+    }
+
+    .scenario-explain {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: var(--muted);
+    }
+
+    .latency-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .latency-ramp {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .ramp-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 96px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+    }
+
+    .ramp-line {
+      height: 13px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .ramp-line span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #60a5fa, #f59e0b);
+    }
+
+    .limit-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+    }
+
+    .limit-row span:first-child {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--amber-light);
+      color: var(--amber);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 900;
+    }
+
+    .quiz {
+      display: grid;
+      gap: 16px;
+    }
+
+    .quiz-question {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .quiz-question h4 {
+      margin: 0 0 12px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .quiz button {
+      text-align: left;
+    }
+
+    .quiz button.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .quiz button.wrong {
+      border-color: var(--rose);
+      background: var(--rose-light);
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      color: var(--muted);
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .feedback-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .feedback-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .primary-btn {
+      border: 1px solid var(--navy);
+      background: var(--navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    code {
+      border-radius: 5px;
+      background: #f3f4f6;
+      padding: 2px 5px;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 920px) {
+      .hero-inner,
+      .mini-retina-board,
+      .grid-2,
+      .cards,
+      .simulator,
+      .two-spot,
+      .latency-board {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3,
+      .metric-grid,
+      .claim-strip,
+      .feedback-steps,
+      .term-decoder {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-label {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        padding: 34px 16px 20px;
+      }
+
+      .hero-inner {
+        gap: 18px;
+      }
+
+      .hero h1 {
+        font-size: 1.92rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.98rem;
+      }
+
+      main {
+        padding: 22px 14px 48px;
+      }
+
+      .hero-visual {
+        min-height: 172px;
+        padding: 10px;
+      }
+
+      .mini-retina {
+        min-height: 150px;
+        gap: 8px;
+      }
+
+      .mini-retina-board {
+        grid-template-columns: minmax(120px, 1fr) minmax(130px, 1fr);
+        gap: 10px;
+      }
+
+      .mini-field {
+        min-height: 142px;
+      }
+
+      .mini-trace {
+        min-height: 142px;
+        padding: 10px;
+      }
+
+      .trace-line {
+        height: 36px;
+        margin: 8px 0;
+      }
+
+      .trace-label {
+        font-size: 0.68rem;
+        margin-bottom: 7px;
+      }
+
+      .mini-plus,
+      .mini-minus {
+        width: 28px;
+        height: 28px;
+        font-size: 0.78rem;
+      }
+
+      .tab-bar {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        white-space: nowrap;
+        padding: 8px 14px;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-note {
+        margin-top: 8px;
+      }
+
+      .grid-3,
+      .metric-grid,
+      .claim-strip,
+      .feedback-steps,
+      .term-decoder,
+      .sim-output {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual,
+      .field-board,
+      .spot-diagram {
+        min-height: auto;
+      }
+    }
+  
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body class="mode-ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker">Journal of Neurophysiology, 1953</div>
+        <h1>Discharge Patterns and Functional Organization of Mammalian Retina</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta">
+          <span>Stephen W. Kuffler</span>
+          <span>cat retina</span>
+          <span>single ganglion cells</span>
+          <span>center-surround receptive fields</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Animated retinal receptive field and spike train">
+        <div class="mini-retina">
+          <div class="mini-retina-label">light position changes the message</div>
+          <div class="mini-retina-board">
+            <div class="mini-field">
+              <div class="mini-electrode"></div>
+              <div class="mini-spot"></div>
+              <div class="mini-plus">on</div>
+              <div class="mini-minus">off</div>
+            </div>
+            <div class="mini-trace">
+              <div class="trace-label">ganglion cell output</div>
+              <div class="trace-line" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="trace-label">same cell, different spot, different pattern</div>
+              <div class="trace-line" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Explainer tabs">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <div id="tab-ez" class="tab-content active">
+      <section class="ez-section">
+        <h2>The retina is not a camera cable</h2>
+        <p class="ez-big">Kuffler is studying <strong>the retina</strong>, the thin light-sensing sheet at the back of the eye. The old easy story would be: light hits a tiny spot, and that spot sends a simple message down one wire.</p>
+        <p class="ez-big">This paper says: actually, the first serious editing has already happened inside the eye. A single nerve cell is listening to a whole little neighborhood, and different parts of that neighborhood can argue with each other.</p>
+        <div class="ez-emoji-block">
+          <div><span>👁️</span><span>The eye is already doing computation before the brain gets the message.</span></div>
+          <div><span>💡</span><span>A tiny light spot can make the same cell fire when light appears, when light disappears, or both.</span></div>
+          <div><span>🎛️</span><span>Change the lighting setup, and the message can change too.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> Imagine one doorbell connected to a whole porch. Stepping on the welcome mat rings it one way, stepping near the edge rings it another way, and two people stepping at once can cancel each other out.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>The magic map is center versus surround</h2>
+        <p class="ez-big">Kuffler found that each recorded cell had a <strong>favorite middle zone</strong> and a surrounding ring that tended to do the opposite job.</p>
+        <p class="ez-big">For one cell, light in the middle might shout "light just came on!" while light around it might shout "light just went away!" Other cells flipped that arrangement.</p>
+        <div class="grid-2">
+          <div>
+            <img class="paper-img" src="assets/fig6-center-surround-map.jpg" alt="Kuffler Figure 6 showing a center-surround receptive field map">
+            <p class="caption">Paper evidence: Kuffler's Figure 6 maps one ganglion cell's receptive field. Crosses mark on responses, circles mark off responses, and mixed symbols mark on-off responses.</p>
+          </div>
+          <div class="ez-emoji-block">
+            <div><span>🎯</span><span>The center is the most sensitive part.</span></div>
+            <div><span>⭕</span><span>The surround pushes in the opposite direction.</span></div>
+            <div><span>⚖️</span><span>The final spike train is the balance between those two pushes.</span></div>
+          </div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> It is like a thermostat with one hand on heat and one hand on cooling. What you see at the output depends on which hand is stronger right now.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>The same cell can look like different "types"</h2>
+        <p class="ez-big">Before this, people often talked as if a retinal nerve fiber was an <strong>on cell</strong>, an <strong>off cell</strong>, or an <strong>on-off cell</strong>. Kuffler shows that this can be misleading.</p>
+        <p class="ez-big">Move the light spot, make it bigger, change the background brightness, or wait for the eye to adapt, and the same cell can look like a different kind of cell.</p>
+        <div class="ez-emoji-block">
+          <div><span>📍</span><span>Light in one place gives one pattern.</span></div>
+          <div><span>🔦</span><span>A bigger or brighter light recruits more of the neighborhood.</span></div>
+          <div><span>🌗</span><span>Dim background lets the surround speak louder; bright background often quiets it.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> Do not label the whole kitchen "sweet" or "salty" after tasting one spoonful. The dish changes when you stir in more ingredients.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>Two spots can fight</h2>
+        <p class="ez-big">Kuffler used two separate light beams. One spot could make the cell fire at light-on, while another spot could make it fire at light-off. When both were flashed together, one response could suppress the other.</p>
+        <div class="grid-2">
+          <div>
+            <img class="paper-img" src="assets/fig8-two-spot-interaction.jpg" alt="Kuffler Figure 8 showing two light spots suppressing each other's responses">
+            <p class="caption">Paper evidence: Figure 8 shows that two separated spots inside one receptive field can reduce or suppress each other's spike patterns.</p>
+          </div>
+          <div class="ez-emoji-block">
+            <div><span>🥊</span><span>Center and surround are not passive zones; they interact.</span></div>
+            <div><span>🧯</span><span>An off response can be suppressed by light in another area.</span></div>
+            <div><span>🧩</span><span>The output is a combined message, not a raw photocopy of light.</span></div>
+          </div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> It is like two people voting into the same microphone. If one is loud enough, you mostly hear that person. If both are strong, the message gets mixed.</div>
+      </section>
+
+      <section class="ez-tldr">
+        <h2>TL;DR</h2>
+        <p class="ez-big">Kuffler's big discovery is that the mammalian retina is already comparing light across space. A ganglion cell does not simply report "light here"; it reports a push-pull contrast between a center and a surround, shaped by brightness, adaptation, and timing.</p>
+      </section>
+    </div>
+
+    <div id="tab-normal" class="tab-content">
+      <section>
+        <div class="section-head">
+          <h2>The Question</h2>
+          <p class="section-note">What exactly does one optic-nerve output cell send to the brain?</p>
+        </div>
+        <div class="plain-panel">
+          <p>Kuffler begins from a very direct premise: the optic nerve fibers carry all visual information leaving the retina, so understanding the discharge pattern of single retinal ganglion cells is a necessary step toward understanding vision.</p>
+          <div class="term-decoder" data-cf-change="ch-discharge-pattern-decoder" aria-label="Visual definition of discharge pattern and single retinal ganglion cell">
+            <div class="term-card">
+              <h4>Single retinal ganglion cell = one output neuron</h4>
+              <div class="retina-stack" aria-hidden="true">
+                <div class="retina-layer"><span>input</span><span>photoreceptors catch light</span></div>
+                <div class="retina-layer"><span>middle</span><span>retinal circuits compare spots</span></div>
+                <div class="retina-layer output"><span>output</span><span class="cell-dot-row"><span></span><span class="active"></span><span></span> one ganglion cell</span></div>
+              </div>
+              <p>Kuffler recorded one cell at a time. That cell's axon is one optic-nerve fiber carrying a message toward the brain.</p>
+            </div>
+            <div class="term-card">
+              <h4>Discharge pattern = when the cell fires spikes</h4>
+              <div class="stimulus-to-spikes">
+                <div class="light-spot-demo" aria-hidden="true"></div>
+                <div class="pattern-lines" aria-hidden="true">
+                  <div class="pattern-row"><span>before</span><div class="spike-ruler"><span style="left: 13%; height: 8px;"></span></div></div>
+                  <div class="pattern-row"><span>light on</span><div class="spike-ruler"><div class="light-window"></div><span style="left: 32%;"></span><span style="left: 39%;"></span><span style="left: 47%;"></span><span style="left: 56%;"></span></div></div>
+                  <div class="pattern-row"><span>light off</span><div class="spike-ruler"><div class="light-window"></div><span style="left: 74%;"></span><span style="left: 80%;"></span><span style="left: 87%;"></span></div></div>
+                </div>
+              </div>
+              <p>It is not a picture. It is a time code: quiet, bursts at light-on, bursts at light-off, or both.</p>
+            </div>
+            <div class="term-card">
+              <h4>What the experiment asks</h4>
+              <div class="optic-wire" aria-hidden="true">
+                <div class="wire-path"></div>
+                <div class="wire-labels"><span>retina</span><span>spike train</span><span>brain</span></div>
+              </div>
+              <p>If one light spot changes this timing pattern, Kuffler treats that spot as part of the cell's receptive field and maps whether it causes on, off, or on-off discharge.</p>
+            </div>
+          </div>
+          <p>The paper asks whether mammalian retinal ganglion cells have fixed response types, such as on, off, or on-off, or whether those patterns are produced by a more flexible organization inside each receptive field.</p>
+          <div class="metric-grid">
+            <div class="metric"><strong>32 pages</strong><span>Journal of Neurophysiology, volume 16, pages 37-68.</span></div>
+            <div class="metric"><strong>cat retina</strong><span>The eye remained unopened and was stimulated through its normal optics.</span></div>
+            <div class="metric"><strong>0.1-0.2 mm</strong><span>Typical small spot sizes used to explore receptive field subdivisions.</span></div>
+            <div class="metric"><strong>1-2 mm</strong><span>Common mapped receptive-field diameters with the stated method.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Key Concepts</h2>
+          <p class="section-note">Click each card to expand the mechanism behind the term.</p>
+        </div>
+        <div class="cards">
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>Receptive field</h4>
+              <p>The retinal area whose stimulation can influence one ganglion cell.</p>
+            </button>
+            <div class="more">Kuffler broadens the practical definition: the field includes not only areas that directly cause spikes, but also areas that suppress or modify spikes from the same cell.</div>
+          </div>
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>On and off responses</h4>
+              <p>Spikes can occur when light appears, when it disappears, or both.</p>
+            </button>
+            <div class="more">The important move is that Kuffler does not treat these as permanent labels for whole fibers. A single cell can show different patterns when different field subdivisions are stimulated.</div>
+          </div>
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>Center-surround antagonism</h4>
+              <p>The middle and surround tend to push the ganglion cell in opposite ways.</p>
+            </button>
+            <div class="more">A cell can be on-center/off-surround or off-center/on-surround. Kuffler reports that the center identity did not convert under changes of illumination, but the contribution of the surround changed strongly.</div>
+          </div>
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>Adaptation level</h4>
+              <p>Background illumination changes which parts of the field contribute.</p>
+            </button>
+            <div class="more">Higher background illumination tends to shrink the effective field and suppress the surround contribution first. Dark adaptation expands the active field and reveals more mixed or surround-driven responses.</div>
+          </div>
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>Interaction</h4>
+              <p>Two spots inside one field can mutually suppress or reshape responses.</p>
+            </button>
+            <div class="more">Figure 8 is the clean teaching case: a center spot and a surround spot can each evoke a response alone, yet together reduce or suppress each other's discharges.</div>
+          </div>
+          <div class="card concept-card">
+            <button type="button" onclick="toggleConcept(this)">
+              <h4>Spike train</h4>
+              <p>The ganglion cell's message is a timing pattern of electrical impulses.</p>
+            </button>
+            <div class="more">Kuffler measured latency and frequency. In selected on-center stimulation, he reports latent periods down to about 15 msec and peak discharge rates over 800/sec.</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Interactive Widget</h2>
+          <p class="section-note">Move the spot and change illumination conditions to see why the same cell can look like different response types.</p>
+        </div>
+        <div class="tool-panel simulator" data-cf-change="ch-retina-simulator">
+          <div class="control-stack">
+            <div class="control-row">
+              <label for="fieldType">field type <output id="fieldTypeOut">on-center</output></label>
+              <div class="switch-row">
+                <button type="button" class="active" id="onCenterBtn" onclick="setFieldType('on')">on-center</button>
+                <button type="button" id="offCenterBtn" onclick="setFieldType('off')">off-center</button>
+              </div>
+            </div>
+            <div class="control-row">
+              <label for="spotPosition">spot position <output id="spotPositionOut">center</output></label>
+              <input id="spotPosition" type="range" min="0" max="100" value="18" oninput="updateSimulator()">
+            </div>
+            <div class="control-row">
+              <label for="spotSize">spot size <output id="spotSizeOut">small</output></label>
+              <input id="spotSize" type="range" min="12" max="92" value="28" oninput="updateSimulator()">
+            </div>
+            <div class="control-row">
+              <label for="spotIntensity">spot intensity <output id="spotIntensityOut">moderate</output></label>
+              <input id="spotIntensity" type="range" min="0" max="100" value="58" oninput="updateSimulator()">
+            </div>
+            <div class="control-row">
+              <label for="backgroundLight">background illumination <output id="backgroundLightOut">photopic</output></label>
+              <input id="backgroundLight" type="range" min="0" max="100" value="55" oninput="updateSimulator()">
+            </div>
+          </div>
+          <div class="response-board">
+            <div class="field-board">
+              <div class="retina-field" id="retinaField">
+                <div class="electrode-arm"></div>
+                <div class="moving-spot" id="movingSpot"></div>
+                <div class="ganglion-dot"></div>
+                <div class="zone-label center" id="centerLabel">on center</div>
+                <div class="zone-label surround" id="surroundLabel">off surround</div>
+              </div>
+            </div>
+            <div class="sim-output">
+              <div class="response-type">
+                <strong id="responseName">on response</strong>
+                <p id="responseExplanation">The small spot mostly lands in the on-center, so spikes appear during the light flash.</p>
+              </div>
+              <div class="spike-scope" aria-label="Simulated spike train">
+                <div class="flash-window"></div>
+                <div class="scope-axis"></div>
+                <div class="scope-spikes" id="scopeSpikes"></div>
+                <div class="scope-labels"><span>before</span><span>flash on</span><span>flash off</span><span>after</span></div>
+              </div>
+            </div>
+            <div class="claim-strip">
+              <div class="claim">Small centered spots reveal the center response cleanly.</div>
+              <div class="claim">Larger or stronger spots recruit more surround.</div>
+              <div class="claim">Bright background tends to shrink the effective field.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Method</h2>
+          <p class="section-note">The experiment was a carefully controlled bench for drawing a functional map of one ganglion cell at a time.</p>
+        </div>
+        <div class="plain-panel apparatus-flow">
+          <div class="flow-row">
+            <div class="flow-label">surface layer</div>
+            <div class="flow-box">
+              <strong>Unopened cat eye</strong>
+              The normal cornea, lens, and vitreous stayed in the optical path. A contact lens protected the cornea, and the fundus was directly observed.
+            </div>
+            <div class="flow-box">
+              <strong>Multibeam ophthalmoscope</strong>
+              One light source set background illumination. Two glow-modulator light sources projected independently controlled spots.
+            </div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-label">data layer</div>
+            <div class="flow-box">
+              <strong>Positioned light samples</strong>
+              Each flash had a location, diameter, brightness, duration, and adaptation context. Kuffler used spot movement to sample subregions.
+              <div class="mini-matrix" aria-hidden="true">
+                <span class="hot"></span><span></span><span></span><span></span><span class="hot"></span><span></span><span></span>
+                <span></span><span></span><span class="hot"></span><span></span><span></span><span></span><span></span>
+                <span></span><span class="hot"></span><span></span><span></span><span></span><span class="hot"></span><span></span>
+              </div>
+            </div>
+            <div class="flow-box">
+              <strong>Single-cell spike traces</strong>
+              Microelectrodes recorded ganglion cell potentials. Kuffler distinguished ganglion cell signals from axon potentials by waveform and receptive-field location.
+              <div class="mini-matrix" aria-hidden="true">
+                <span></span><span class="hot"></span><span></span><span class="hot"></span><span class="hot"></span><span></span><span></span>
+                <span></span><span></span><span></span><span class="hot"></span><span></span><span></span><span class="hot"></span>
+                <span class="hot"></span><span></span><span></span><span></span><span></span><span class="hot"></span><span></span>
+              </div>
+            </div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-label">inference</div>
+            <div class="flow-box">
+              <strong>Map the field</strong>
+              Areas that caused or suppressed discharge were assigned to the receptive field. The center was usually most sensitive with small spots.
+            </div>
+            <div class="flow-box">
+              <strong>Test interaction</strong>
+              Two spots were flashed separately and together to test whether zones summed, suppressed, or delayed each other.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Results</h2>
+          <p class="section-note">The headline result is not one number. It is a map plus a balance rule.</p>
+        </div>
+        <div class="grid-2">
+          <div class="evidence-panel">
+            <img class="paper-img" src="assets/fig3-field-expansion.jpg" alt="Kuffler Figure 3 showing receptive field expansion with stronger spot intensities">
+            <p class="caption">Figure 3: with a 0.2 mm exploring spot, stronger stimuli expanded the mapped receptive-field boundary from about 5 times threshold to 50 times and 500 times threshold.</p>
+          </div>
+          <div class="evidence-panel">
+            <img class="paper-img" src="assets/fig5-center-spikes.jpg" alt="Kuffler Figure 5 showing center portion spike records">
+            <p class="caption">Figure 5: the same small spot produced a strong maintained on discharge near the center, but weaker or absent responses when shifted away from it.</p>
+          </div>
+          <div class="evidence-panel">
+            <img class="paper-img" src="assets/fig6-center-surround-map.jpg" alt="Kuffler Figure 6 showing distribution of discharge patterns within a receptive field">
+            <p class="caption">Figure 6: Kuffler's canonical map. The central region gave on discharges, the surround gave off discharges, and the transition zone gave on-off discharges. Other cells could reverse center and surround polarity.</p>
+          </div>
+          <div class="evidence-panel">
+            <img class="paper-img" src="assets/fig8-two-spot-interaction.jpg" alt="Kuffler Figure 8 showing interaction of two light spots">
+            <p class="caption">Figure 8: spot A and spot B each evoked a response alone. Together, they could suppress the off response, suppress the on response, or mutually reduce each other depending on relative intensity.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h3>Two-Spot Interaction Board</h3>
+          <p class="section-note">This is Figure 8 translated into a controllable mental model.</p>
+        </div>
+        <div class="tool-panel two-spot" data-cf-change="ch-two-spot-board">
+          <div>
+            <div class="scenario-list">
+              <button type="button" class="scenario-btn active" onclick="setScenario('centerStrong', this)">center stronger: off suppressed</button>
+              <button type="button" class="scenario-btn" onclick="setScenario('surroundStrong', this)">surround stronger: on suppressed</button>
+              <button type="button" class="scenario-btn" onclick="setScenario('bothStrong', this)">both strong: mutual reduction</button>
+            </div>
+            <div class="scenario-explain" id="scenarioExplain">Spot A in the center gives an on response. Spot B in the surround gives an off response. When A is stronger, the combined flash mostly preserves the on burst and suppresses the off burst.</div>
+          </div>
+          <div class="spot-diagram">
+            <div class="spot-field">
+              <div class="spot-a" id="spotA">A</div>
+              <div class="spot-b" id="spotB">B</div>
+              <div class="ganglion-dot"></div>
+            </div>
+            <div class="balance-scale">
+              <span>on push</span>
+              <div class="balance-bar"><div class="balance-fill" id="balanceFill"></div></div>
+              <span>off push</span>
+            </div>
+            <div class="spike-scope" aria-label="Two-spot simulated output">
+              <div class="flash-window"></div>
+              <div class="scope-axis"></div>
+              <div class="scope-spikes" id="twoSpotSpikes"></div>
+              <div class="scope-labels"><span>A alone</span><span>B alone</span><span>A+B</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h3>Latency And Frequency</h3>
+          <p class="section-note">Kuffler used spot specificity to expose very fast retinal discharge behavior.</p>
+        </div>
+        <div class="latency-board">
+          <div class="plain-panel">
+            <p>When Kuffler flashed a 0.2 mm spot into an on-center region, stronger stimulation shortened latency and increased discharge frequency. In Figure 9, latency moved from 93 msec near threshold to 15 msec at the strongest illustrated condition, with a peak frequency over 800/sec.</p>
+            <p>He also emphasizes that larger or stronger stimuli can produce apparently anomalous effects. If the added light recruits an opposing surround, the response can be delayed, weakened, or even shifted toward a different pattern.</p>
+            <div class="latency-ramp">
+              <div class="ramp-row"><span>a</span><div class="ramp-line"><span style="width: 28%"></span></div><span>93 msec</span></div>
+              <div class="ramp-row"><span>b</span><div class="ramp-line"><span style="width: 52%"></span></div><span>36 msec</span></div>
+              <div class="ramp-row"><span>c</span><div class="ramp-line"><span style="width: 72%"></span></div><span>22 msec</span></div>
+              <div class="ramp-row"><span>d</span><div class="ramp-line"><span style="width: 92%"></span></div><span>15 msec</span></div>
+            </div>
+          </div>
+          <div class="evidence-panel">
+            <img class="paper-img tall" src="assets/fig9-10-latency-frequency.jpg" alt="Kuffler Figures 9 and 10 showing latency and discharge frequency records">
+            <p class="caption">Figures 9 and 10: high-frequency bursts and shorter latent periods appear when stimulation is concentrated on the relevant receptive-field region.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Implications</h2>
+          <p class="section-note">Why this paper became a foundational retina result.</p>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <h4>If you study vision</h4>
+            <p>Visual processing starts inside the retina. The optic nerve already carries contrast-shaped, context-sensitive messages.</p>
+          </div>
+          <div class="card">
+            <h4>If you build models</h4>
+            <p>A simple pixel-to-wire model misses the push-pull local comparison. Center-surround filters are a natural computational abstraction.</p>
+          </div>
+          <div class="card">
+            <h4>If you read old physiology</h4>
+            <p>Labels like on, off, and on-off can be experimental outcomes, not permanent cell identities. Always ask what part of the field was stimulated.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Limits</h2>
+          <p class="section-note">Kuffler is careful about what the method can and cannot prove.</p>
+        </div>
+        <div class="limit-list">
+          <div class="limit-row"><span>1</span><div><strong>Sampling bias.</strong> The microelectrode method favored larger ganglion-cell potentials, so it may not represent every retinal output cell equally.</div></div>
+          <div class="limit-row"><span>2</span><div><strong>Optical scatter.</strong> Mammalian eye optics blur and scatter small light spots. Kuffler repeatedly warns that field boundaries are approximate.</div></div>
+          <div class="limit-row"><span>3</span><div><strong>Adaptation drift.</strong> Background sensitivity changes over time, especially in dark adaptation. Stable thresholds and "steady state" conditions were hard to maintain.</div></div>
+          <div class="limit-row"><span>4</span><div><strong>Cat-specific anatomy.</strong> Most work was near the tapetum and within several millimeters of the optic disc. The cat has no fovea, so foveal generalization was speculative.</div></div>
+          <div class="limit-row"><span>5</span><div><strong>No direct bipolar-cell recordings.</strong> The paper infers pathways and interactions from ganglion-cell output; it does not observe every intermediate retinal neuron directly.</div></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Quiz</h2>
+          <p class="section-note">Three checks for whether the mechanism has clicked.</p>
+        </div>
+        <div class="quiz">
+          <div class="quiz-question">
+            <h4>1. Why does Kuffler avoid calling a ganglion cell simply an "on fiber" or "off fiber"?</h4>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, false)">Because he could not isolate single units.</button>
+              <button type="button" onclick="answerQuiz(this, true)">Because the same cell's pattern could change when different receptive-field subdivisions were stimulated.</button>
+              <button type="button" onclick="answerQuiz(this, false)">Because cats do not have retinal ganglion cells.</button>
+            </div>
+            <div class="quiz-feedback">Correct answer: the same cell can show on, off, or on-off behavior depending on spot location, size, intensity, background, and adaptation. The stable part is better described as center polarity plus surround polarity.</div>
+          </div>
+          <div class="quiz-question">
+            <h4>2. What usually happens to the surround contribution under higher background illumination?</h4>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, false)">It becomes the only active part of the receptive field.</button>
+              <button type="button" onclick="answerQuiz(this, false)">It converts every on-center field into an off-center field.</button>
+              <button type="button" onclick="answerQuiz(this, true)">It tends to drop out first, making the effective receptive field shrink.</button>
+            </div>
+            <div class="quiz-feedback">Kuffler reports that increased background illumination shrank receptive fields and suppressed the surround-type response first, whether that surround was predominantly on or off.</div>
+          </div>
+          <div class="quiz-question">
+            <h4>3. In Figure 8, why can flashing two spots together reduce a response that either spot evokes alone?</h4>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, true)">Because center and surround pathways converge on the same ganglion cell with opposing influence.</button>
+              <button type="button" onclick="answerQuiz(this, false)">Because the light sources physically turn each other off.</button>
+              <button type="button" onclick="answerQuiz(this, false)">Because two spots always add more spikes than one spot.</button>
+            </div>
+            <div class="quiz-feedback">The paper's two-spot experiments show interaction inside one receptive field. Depending on relative strength, one region can suppress the discharge driven by the other, or both can reduce each other.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="tab-feedback" class="tab-content">
+      <section>
+        <div class="section-head">
+          <h2>comment/feedback</h2>
+          <p class="section-note">Local review is wired through the repository feedback runtime.</p>
+        </div>
+        <div class="feedback-panel">
+          <p>Use the feedback panel to highlight text, select page elements, attach notes, and submit a batch. Submitted comments are written locally for Codex to process against this explainer.</p>
+          <div class="feedback-steps">
+            <div class="card">
+              <h4>Open the panel</h4>
+              <p>Use the floating feedback button, or the button below, to bring up the review panel.</p>
+            </div>
+            <div class="card">
+              <h4>Attach a note</h4>
+              <p>Highlight confusing text or select a visual block, then describe what should change.</p>
+            </div>
+            <div class="card">
+              <h4>Submit batch</h4>
+              <p>The local server appends feedback to <code>kuffler-1953-retina/feedback/inbox.jsonl</code>.</p>
+            </div>
+          </div>
+          <div class="feedback-actions">
+            <button class="primary-btn" type="button" disabled>feedback panel is local-only</button>
+            <span class="caption">Inbox path: <code>papers/kuffler-1953-retina/feedback/inbox.jsonl</code></span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const heroSubtitles = {
+      ez: "The whole paper in 5 minutes 🧠💥",
+      normal: "The rigorous version: receptive fields, push-pull circuitry, and interactive traces",
+      feedback: "Review surface for comments, highlights, and iteration"
+    };
+
+    let fieldType = "on";
+    let currentScenario = "centerStrong";
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab-content").forEach((el) => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
+      document.getElementById("tab-" + tab).classList.add("active");
+      btn.classList.add("active");
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      document.body.classList.add(tab === "normal" ? "mode-normal" : tab === "feedback" ? "mode-feedback" : "mode-ez");
+      document.getElementById("heroSubtitle").textContent = heroSubtitles[tab];
+    }
+
+    function toggleConcept(btn) {
+      btn.closest(".concept-card").classList.toggle("open");
+    }
+
+    function labelFor(value, low, mid, high) {
+      if (value < 34) return low;
+      if (value < 67) return mid;
+      return high;
+    }
+
+    function setFieldType(type) {
+      fieldType = type;
+      document.getElementById("onCenterBtn").classList.toggle("active", type === "on");
+      document.getElementById("offCenterBtn").classList.toggle("active", type === "off");
+      updateSimulator();
+    }
+
+    function addSpikes(target, pattern) {
+      const el = document.getElementById(target);
+      el.innerHTML = "";
+      pattern.forEach((spike) => {
+        const s = document.createElement("span");
+        s.style.left = spike.x + "%";
+        s.style.height = spike.h + "px";
+        el.appendChild(s);
+      });
+    }
+
+    function patternFor(kind, strength) {
+      const dense = [
+        {x: 25, h: 42}, {x: 29, h: 50}, {x: 33, h: 48}, {x: 37, h: 44},
+        {x: 42, h: 38}, {x: 49, h: 34}, {x: 56, h: 29}
+      ];
+      const off = [
+        {x: 66, h: 36}, {x: 71, h: 46}, {x: 76, h: 44}, {x: 82, h: 32}, {x: 88, h: 26}
+      ];
+      const mixed = [
+        {x: 26, h: 34}, {x: 34, h: 38}, {x: 71, h: 36}, {x: 79, h: 32}, {x: 86, h: 24}
+      ];
+      const weak = [
+        {x: 31, h: 22}, {x: 75, h: 24}, {x: 84, h: 18}
+      ];
+      if (strength < 0.25) return weak;
+      if (kind === "on") return dense;
+      if (kind === "off") return off;
+      return mixed;
+    }
+
+    function updateSimulator() {
+      const pos = Number(document.getElementById("spotPosition").value);
+      const size = Number(document.getElementById("spotSize").value);
+      const intensity = Number(document.getElementById("spotIntensity").value);
+      const background = Number(document.getElementById("backgroundLight").value);
+
+      document.getElementById("spotPositionOut").textContent = labelFor(pos, "center", "transition", "surround");
+      document.getElementById("spotSizeOut").textContent = labelFor(size, "small", "medium", "large");
+      document.getElementById("spotIntensityOut").textContent = labelFor(intensity, "dim", "moderate", "strong");
+      document.getElementById("backgroundLightOut").textContent = labelFor(background, "dark-adapted", "photopic", "bright");
+      document.getElementById("fieldTypeOut").textContent = fieldType === "on" ? "on-center" : "off-center";
+
+      const spot = document.getElementById("movingSpot");
+      const angle = (pos / 100) * Math.PI * 2.0 - Math.PI / 2;
+      const radius = 4 + pos * 0.31;
+      const x = 50 + Math.cos(angle) * radius;
+      const y = 50 + Math.sin(angle) * radius;
+      spot.style.left = x + "%";
+      spot.style.top = y + "%";
+      spot.style.width = size + "px";
+      spot.style.height = size + "px";
+      spot.style.opacity = 0.55 + intensity / 220;
+
+      const centerLabel = document.getElementById("centerLabel");
+      const surroundLabel = document.getElementById("surroundLabel");
+      centerLabel.textContent = fieldType === "on" ? "on center" : "off center";
+      surroundLabel.textContent = fieldType === "on" ? "off surround" : "on surround";
+
+      const centerWeight = Math.max(0, 1 - pos / 58);
+      const rawSurround = Math.max(0, (pos - 22) / 70) + Math.max(0, (size - 38) / 80);
+      const backgroundShrink = 1 - background / 135;
+      const surroundWeight = Math.max(0, rawSurround * backgroundShrink);
+      const drive = (intensity / 100) * (0.55 + size / 150);
+      const centerDrive = centerWeight * drive;
+      const surroundDrive = surroundWeight * drive;
+      const net = fieldType === "on" ? centerDrive - surroundDrive : surroundDrive - centerDrive;
+      const absNet = Math.min(1, Math.abs(net));
+
+      let responseName;
+      let explanation;
+      let patternKind;
+      if (Math.abs(net) < 0.16) {
+        responseName = "on-off or weak mixed response";
+        explanation = "Center and surround contributions are close enough that the cell produces a mixed or reduced discharge.";
+        patternKind = "mixed";
+      } else if (net > 0) {
+        responseName = fieldType === "on" ? "on response" : "surround-driven on response";
+        explanation = fieldType === "on"
+          ? "The spot mostly recruits the on-center, so spikes cluster during the light flash."
+          : "The spot recruits the on-surround more than the off-center, so the output shifts toward an on pattern.";
+        patternKind = "on";
+      } else {
+        responseName = fieldType === "on" ? "surround-driven off response" : "off response";
+        explanation = fieldType === "on"
+          ? "The spot recruits the off-surround more than the on-center, so spikes appear mainly after the flash ends."
+          : "The spot mostly recruits the off-center, so spikes appear mainly when the light is withdrawn.";
+        patternKind = "off";
+      }
+
+      document.getElementById("responseName").textContent = responseName;
+      document.getElementById("responseExplanation").textContent = explanation;
+      addSpikes("scopeSpikes", patternFor(patternKind, absNet));
+    }
+
+    function setScenario(name, btn) {
+      currentScenario = name;
+      document.querySelectorAll(".scenario-btn").forEach((el) => el.classList.remove("active"));
+      btn.classList.add("active");
+      const explain = document.getElementById("scenarioExplain");
+      const fill = document.getElementById("balanceFill");
+      const spotA = document.getElementById("spotA");
+      const spotB = document.getElementById("spotB");
+
+      if (name === "centerStrong") {
+        explain.textContent = "Spot A in the center gives an on response. Spot B in the surround gives an off response. When A is stronger, the combined flash mostly preserves the on burst and suppresses the off burst.";
+        fill.style.width = "34%";
+        spotA.style.transform = "scale(1.18)";
+        spotB.style.transform = "scale(0.82)";
+        addSpikes("twoSpotSpikes", patternFor("on", 0.85));
+      } else if (name === "surroundStrong") {
+        explain.textContent = "Kuffler reversed the balance by weakening A and strengthening B. Now the surround can suppress the center's on response, leaving mostly the off-side discharge.";
+        fill.style.width = "72%";
+        spotA.style.transform = "scale(0.78)";
+        spotB.style.transform = "scale(1.18)";
+        addSpikes("twoSpotSpikes", patternFor("off", 0.85));
+      } else {
+        explain.textContent = "When both influences are strong, neither simply wins. The result is mutual reduction: a weaker on-off trace rather than the sum of both separate responses.";
+        fill.style.width = "50%";
+        spotA.style.transform = "scale(1.05)";
+        spotB.style.transform = "scale(1.05)";
+        addSpikes("twoSpotSpikes", patternFor("mixed", 0.65));
+      }
+    }
+
+    function answerQuiz(btn, correct) {
+      const question = btn.closest(".quiz-question");
+      question.querySelectorAll("button").forEach((el) => {
+        el.classList.remove("correct", "wrong");
+      });
+      btn.classList.add(correct ? "correct" : "wrong");
+      question.querySelector(".quiz-feedback").classList.add("show");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    updateSimulator();
+    setScenario("centerStrong", document.querySelector(".scenario-btn"));
+  </script>
+</body>
+</html>
