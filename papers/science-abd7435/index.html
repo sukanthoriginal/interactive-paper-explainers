@@ -604,6 +604,112 @@
       box-shadow: 0 0 0 6px rgba(255, 242, 168, 0.5), 0 0 22px rgba(183, 121, 31, 0.68);
     }
 
+    .v1-causality-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 7px;
+      align-items: stretch;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #f2d889;
+      background: var(--amber-soft);
+    }
+
+    .v1-causality-step {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(183, 121, 31, 0.22);
+      color: #5f3b00;
+      font-size: 0.78rem;
+    }
+
+    .v1-causality-step strong {
+      color: var(--ink);
+      font-size: 0.8rem;
+    }
+
+    .v1-mini-map {
+      min-height: 58px;
+      position: relative;
+      border-radius: 7px;
+      border: 1px solid #e6c56d;
+      background:
+        linear-gradient(#f4df9c 1px, transparent 1px),
+        linear-gradient(90deg, #f4df9c 1px, transparent 1px),
+        white;
+      background-size: 18px 18px;
+    }
+
+    .v1-mini-map::after {
+      content: "owned patch";
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      background: rgba(255, 242, 168, 0.9);
+      border: 1px solid #e6c56d;
+      font-size: 0.62rem;
+      font-weight: 760;
+    }
+
+    .v1-cortex-tile {
+      min-height: 58px;
+      border-radius: 7px;
+      border: 1px solid #f2b8ab;
+      background: var(--coral-soft);
+      display: grid;
+      place-items: center;
+      color: #7f1d1d;
+      font-weight: 860;
+      box-shadow: inset 0 0 0 8px rgba(255,255,255,0.38);
+    }
+
+    .v1-zap-icon {
+      min-height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      border: 1px solid #f2b8ab;
+      background: white;
+      color: var(--coral);
+      font-size: 1.7rem;
+      font-weight: 900;
+    }
+
+    .v1-eye-view {
+      min-height: 58px;
+      position: relative;
+      border-radius: 7px;
+      border: 1px solid #1e293b;
+      background: #0f172a;
+    }
+
+    .v1-mini-map .seen-dot,
+    .v1-eye-view .seen-dot {
+      position: absolute;
+      left: 62%;
+      top: 56%;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #fff2a8;
+      border: 2px solid var(--amber);
+      box-shadow: 0 0 0 5px rgba(255, 242, 168, 0.45), 0 0 18px rgba(183, 121, 31, 0.7);
+    }
+
+    .v1-strip-arrow {
+      align-self: center;
+      color: #8a5a08;
+      font-weight: 900;
+    }
+
     .v4-meter {
       display: grid;
       gap: 5px;
@@ -1195,8 +1301,13 @@
         grid-template-columns: 1fr;
       }
 
+      .v1-causality-strip {
+        grid-template-columns: 1fr;
+      }
+
       .rf-flow-arrow,
-      .role-arrow {
+      .role-arrow,
+      .v1-strip-arrow {
         justify-self: center;
         transform: rotate(90deg);
       }
@@ -1464,8 +1575,33 @@
                       The needle electrically activates nearby V1 neurons, so the monkey perceives a fake light-dot there.
                     </div>
                   </div>
+                  <div class="v1-causality-strip" data-cf-change="ch-v1-map-phosphene-causality" aria-label="Why V1 stimulation makes a phosphene in a specific visual location">
+                    <div class="v1-causality-step">
+                      <strong>1. Screen location</strong>
+                      <div class="v1-mini-map"><span class="seen-dot"></span></div>
+                      The paper first learns which visual-field patch this cortex spot responds to.
+                    </div>
+                    <div class="v1-strip-arrow">→</div>
+                    <div class="v1-causality-step">
+                      <strong>2. V1 map tile</strong>
+                      <div class="v1-cortex-tile">V1<br>owner</div>
+                      V1 is useful because nearby V1 tissue is organized as a map of seen space.
+                    </div>
+                    <div class="v1-strip-arrow">→</div>
+                    <div class="v1-causality-step">
+                      <strong>3. Electrode current</strong>
+                      <div class="v1-zap-icon">↯</div>
+                      The implant stimulates neurons around one needle, not the eye or the screen.
+                    </div>
+                    <div class="v1-strip-arrow">→</div>
+                    <div class="v1-causality-step">
+                      <strong>4. Perceived dot</strong>
+                      <div class="v1-eye-view"><span class="seen-dot"></span></div>
+                      The monkey experiences a phosphene at that mapped patch.
+                    </div>
+                  </div>
                 </div>
-                <p>A Utah array is a tiny square bed of needle electrodes. The 14 red arrays were put in V1 because V1 is the first detailed map of visual space; stimulating one electrode there made one artificial light-dot, or phosphene, appear at that electrode's mapped location.</p>
+                <p data-cf-id="el-55">A Utah array is a tiny square bed of needle electrodes. The 14 red arrays were put in V1 because V1 gives an early, address-like map of visual space: one electrode sits near neurons for one small screen patch. Sending current through that electrode activates that local V1 patch, so the monkey sees one artificial light-dot, or phosphene, at the matching mapped location.</p>
               </div>
               <div class="decoder-card role-card-wide" data-cf-change="ch-v4-readout-listening-loop">
                 <h4>2 Utah arrays in V4 = the readout microphone</h4>
