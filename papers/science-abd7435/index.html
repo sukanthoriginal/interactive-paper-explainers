@@ -469,6 +469,10 @@
       padding: 14px;
     }
 
+    .decoder-card.rf-card-wide {
+      grid-column: 1 / -1;
+    }
+
     .decoder-card h4 {
       margin: 0 0 8px;
       font-size: 1rem;
@@ -507,9 +511,42 @@
 
     .rf-mini {
       display: grid;
-      grid-template-columns: 104px 1fr;
       gap: 10px;
-      align-items: center;
+    }
+
+    .rf-map-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+      margin-top: 10px;
+    }
+
+    .rf-map-step {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .rf-map-step strong {
+      display: block;
+      font-size: 0.86rem;
+      color: var(--ink);
+    }
+
+    .rf-map-step span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .rf-flow-arrow {
+      align-self: center;
+      color: var(--muted);
+      font-weight: 900;
     }
 
     .rf-screen {
@@ -524,6 +561,90 @@
       border: 1px solid var(--line);
     }
 
+    .rf-screen.input::before {
+      content: "";
+      position: absolute;
+      left: 56%;
+      top: 8%;
+      width: 7px;
+      height: 78%;
+      border-radius: 999px;
+      background: var(--teal);
+      opacity: 0.72;
+    }
+
+    .rf-screen.input::after,
+    .rf-screen.output::after {
+      content: "same screen patch";
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      font-size: 0.68rem;
+      color: #7c4a03;
+      background: rgba(255, 243, 205, 0.9);
+      border: 1px solid #f2d889;
+      border-radius: 999px;
+      padding: 2px 6px;
+    }
+
+    .rf-electrode-tile {
+      border-radius: 8px;
+      border: 1px solid #f2b8ab;
+      background:
+        linear-gradient(#f8c9bf 1px, transparent 1px),
+        linear-gradient(90deg, #f8c9bf 1px, transparent 1px),
+        var(--coral-soft);
+      background-size: 18px 18px;
+      min-height: 88px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rf-electrode-tile::before {
+      content: "E";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--coral);
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 0 0 6px rgba(220, 91, 73, 0.18);
+    }
+
+    .rf-electrode-tile::after {
+      content: "spikes most here";
+      position: absolute;
+      left: 8px;
+      bottom: 7px;
+      color: #7f1d1d;
+      font-size: 0.68rem;
+      font-weight: 760;
+    }
+
+    .spike-ticks {
+      position: absolute;
+      right: 10px;
+      top: 14px;
+      display: flex;
+      align-items: end;
+      gap: 3px;
+      height: 38px;
+    }
+
+    .spike-ticks i {
+      display: block;
+      width: 4px;
+      height: var(--h);
+      border-radius: 999px;
+      background: #7f1d1d;
+    }
+
     .rf-spot {
       position: absolute;
       left: 62%;
@@ -534,6 +655,10 @@
       background: #fff2a8;
       border: 2px solid var(--amber);
       box-shadow: 0 0 18px rgba(183, 121, 31, 0.5);
+    }
+
+    .rf-screen.output .rf-spot {
+      box-shadow: 0 0 0 6px rgba(255, 242, 168, 0.48), 0 0 24px rgba(183, 121, 31, 0.72);
     }
 
     .threshold-ladder {
@@ -936,6 +1061,15 @@
         grid-template-columns: 1fr;
       }
 
+      .rf-map-board {
+        grid-template-columns: 1fr;
+      }
+
+      .rf-flow-arrow {
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+
       .threshold-step {
         grid-template-columns: 62px 1fr auto;
       }
@@ -1181,11 +1315,29 @@
                 </div>
                 <p>Those two arrays were mainly listening, not drawing. V4 is a later visual area, so if a V1 zap was strong enough to become a seen dot, the downstream V4 population response rose too.</p>
               </div>
-              <div class="decoder-card">
+              <div class="decoder-card rf-card-wide">
                 <h4>Receptive field = which screen patch this electrode owns</h4>
-                <div class="rf-mini">
-                  <div class="rf-screen" aria-label="Visual field grid with one receptive field spot"><span class="rf-spot"></span></div>
-                  <p><strong>Visible input:</strong> bars or dots appear on a screen. <strong>Hidden map:</strong> one V1 electrode fires most for one small patch. <strong>Stimulation output:</strong> zap that electrode and the monkey should see a dot in that same patch.</p>
+                <div class="rf-mini" data-cf-change="ch-rf-screen-electrode-phosphene">
+                  <p data-cf-id="el-59">Think of one V1 electrode as owning one tiny address on the screen. The paper first found that address with real visual input, then used the same address when it electrically drew a fake dot.</p>
+                  <div class="rf-map-board" aria-label="Receptive-field mapping from screen input to V1 electrode to phosphene output">
+                    <div class="rf-map-step">
+                      <strong>1. Show real bars/dots</strong>
+                      <div class="rf-screen input" aria-label="Screen with a bar crossing the electrode's receptive field"><span class="rf-spot"></span></div>
+                      <span>A bar crosses one lower-right screen patch.</span>
+                    </div>
+                    <div class="rf-flow-arrow">→</div>
+                    <div class="rf-map-step">
+                      <strong>2. Find the V1 owner</strong>
+                      <div class="rf-electrode-tile" aria-label="One V1 electrode tile fires most for that patch"><div class="spike-ticks"><i style="--h:14px;"></i><i style="--h:28px;"></i><i style="--h:36px;"></i><i style="--h:22px;"></i></div></div>
+                      <span>This electrode fires most for that patch: that is its receptive field.</span>
+                    </div>
+                    <div class="rf-flow-arrow">→</div>
+                    <div class="rf-map-step">
+                      <strong>3. Zap the owner</strong>
+                      <div class="rf-screen output" aria-label="Screen location where the monkey should perceive a phosphene"><span class="rf-spot"></span></div>
+                      <span>The monkey should perceive a phosphene at the same patch.</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="decoder-card">
