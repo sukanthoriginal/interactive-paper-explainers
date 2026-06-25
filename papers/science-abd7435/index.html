@@ -473,6 +473,10 @@
       grid-column: 1 / -1;
     }
 
+    .decoder-card.role-card-wide {
+      grid-column: 1 / -1;
+    }
+
     .decoder-card h4 {
       margin: 0 0 8px;
       font-size: 1rem;
@@ -501,6 +505,128 @@
 
     .chip-array.readout {
       background: var(--ink);
+    }
+
+    .array-role-board {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .role-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 7px;
+      align-items: stretch;
+    }
+
+    .role-tile {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #f8fafc;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .role-tile strong {
+      display: block;
+      color: var(--ink);
+      font-size: 0.82rem;
+    }
+
+    .role-arrow {
+      align-self: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .needle-bed {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 3px;
+      padding: 8px;
+      border-radius: 8px;
+      background: var(--coral-soft);
+      border: 1px solid #f2b8ab;
+    }
+
+    .needle-bed i {
+      aspect-ratio: 1;
+      border-radius: 999px;
+      background: var(--coral);
+      box-shadow: inset 0 0 0 1px rgba(127, 29, 29, 0.18);
+    }
+
+    .needle-bed i.hot {
+      background: var(--amber);
+      box-shadow: 0 0 0 4px rgba(255, 242, 168, 0.72), 0 0 12px rgba(183, 121, 31, 0.6);
+    }
+
+    .visual-patch {
+      min-height: 78px;
+      position: relative;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(#dbe4f0 1px, transparent 1px),
+        linear-gradient(90deg, #dbe4f0 1px, transparent 1px),
+        white;
+      background-size: 22px 22px;
+    }
+
+    .visual-patch::before {
+      content: "lower-right patch";
+      position: absolute;
+      right: 7px;
+      bottom: 6px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255, 243, 205, 0.94);
+      border: 1px solid #f2d889;
+      color: #7c4a03;
+      font-size: 0.66rem;
+    }
+
+    .visual-patch .seen-dot {
+      position: absolute;
+      left: 62%;
+      top: 56%;
+      width: 17px;
+      height: 17px;
+      border-radius: 999px;
+      background: #fff2a8;
+      border: 2px solid var(--amber);
+      box-shadow: 0 0 0 6px rgba(255, 242, 168, 0.5), 0 0 22px rgba(183, 121, 31, 0.68);
+    }
+
+    .v4-meter {
+      display: grid;
+      gap: 5px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #b7d5d0;
+      background: var(--teal-soft);
+    }
+
+    .v4-meter span {
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal) var(--w), rgba(16, 118, 110, 0.15) var(--w));
+    }
+
+    .role-fact {
+      margin: 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: white;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 0.84rem;
     }
 
     .decoder-arrow {
@@ -1065,7 +1191,12 @@
         grid-template-columns: 1fr;
       }
 
-      .rf-flow-arrow {
+      .role-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .rf-flow-arrow,
+      .role-arrow {
         justify-self: center;
         transform: rotate(90deg);
       }
@@ -1298,20 +1429,69 @@
           <div class="implant-decoder" data-cf-change="ch-v1-v4-array-decoder">
             <h3>Decode that implant sentence literally</h3>
             <div class="decoder-grid">
-              <div class="decoder-card">
+              <div class="decoder-card role-card-wide" data-cf-change="ch-v1-array-write-map">
                 <h4>14 Utah arrays in V1 = the write head</h4>
                 <div class="chip-row" aria-label="Fourteen V1 stimulation arrays">
                   <span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span>
                   <span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span>
                   <span class="decoder-arrow">→</span><strong>V1</strong>
                 </div>
+                <div class="array-role-board" aria-label="How a V1 Utah array writes one phosphene">
+                  <div class="role-flow">
+                    <div class="role-tile">
+                      <strong>Utah array</strong>
+                      <div class="needle-bed" aria-label="One 8 by 8 Utah array with one active needle">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i class="hot"></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                      </div>
+                      64 tiny needles per array; 14 arrays gave 896 V1 electrodes.
+                    </div>
+                    <div class="role-arrow">→</div>
+                    <div class="role-tile">
+                      <strong>Why V1?</strong>
+                      V1 is laid out like a visual-space map. One small cortex spot corresponds to one small seen-space patch.
+                    </div>
+                    <div class="role-arrow">→</div>
+                    <div class="role-tile">
+                      <strong>What is stimulated?</strong>
+                      <div class="visual-patch"><span class="seen-dot"></span></div>
+                      The needle electrically activates nearby V1 neurons, so the monkey perceives a fake light-dot there.
+                    </div>
+                  </div>
+                </div>
                 <p>A Utah array is a tiny square bed of needle electrodes. The 14 red arrays were put in V1 because V1 is the first detailed map of visual space; stimulating one electrode there made one artificial light-dot, or phosphene, appear at that electrode's mapped location.</p>
               </div>
-              <div class="decoder-card">
+              <div class="decoder-card role-card-wide" data-cf-change="ch-v4-readout-listening-loop">
                 <h4>2 Utah arrays in V4 = the readout microphone</h4>
                 <div class="chip-row" aria-label="Two V4 readout arrays">
                   <span class="chip-array readout"></span><span class="chip-array readout"></span>
                   <span class="decoder-arrow">→</span><strong>V4</strong>
+                </div>
+                <div class="array-role-board" aria-label="What the V4 arrays listened to during V1 stimulation">
+                  <div class="role-flow">
+                    <div class="role-tile">
+                      <strong>Input</strong>
+                      A V1 electrode is zapped to draw one phosphene.
+                    </div>
+                    <div class="role-arrow">→</div>
+                    <div class="role-tile">
+                      <strong>Hidden brain traffic</strong>
+                      If the fake dot becomes usable visual information, activity travels onward through the visual system.
+                    </div>
+                    <div class="role-arrow">→</div>
+                    <div class="role-tile">
+                      <strong>V4 readout</strong>
+                      <div class="v4-meter" aria-label="V4 response meter rising with visible stimulation"><span style="--w:32%;"></span><span style="--w:58%;"></span><span style="--w:82%;"></span></div>
+                      The two V4 arrays record the downstream response; stronger visible dots make the meter rise.
+                    </div>
+                  </div>
+                  <p class="role-fact">So “listening” means recording V4 neural activity during V1 stimulation, not stimulating V4 to make the dot.</p>
                 </div>
                 <p>Those two arrays were mainly listening, not drawing. V4 is a later visual area, so if a V1 zap was strong enough to become a seen dot, the downstream V4 population response rose too.</p>
               </div>
