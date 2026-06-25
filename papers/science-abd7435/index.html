@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shape perception via a high-channel-count neuroprosthesis in monkey visual cortex</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5b667a;
+      --line: #d8deea;
+      --paper: #f7f8fb;
+      --panel: #ffffff;
+      --teal: #0f766e;
+      --teal-soft: #dff7f2;
+      --coral: #dc5b49;
+      --coral-soft: #ffe5df;
+      --indigo: #3f51b5;
+      --indigo-soft: #e8ebff;
+      --amber: #b7791f;
+      --amber-soft: #fff3cd;
+      --green: #15803d;
+      --green-soft: #dcfce7;
+      --shadow: 0 18px 50px rgba(25, 35, 62, 0.12);
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 62vh;
+      display: grid;
+      align-items: center;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      color: white;
+      transition: background 240ms ease;
+    }
+
+    .hero.hero-normal {
+      background: linear-gradient(135deg, #09203f 0%, #0f766e 56%, #1f3b73 100%);
+    }
+
+    .hero.hero-feedback {
+      background: linear-gradient(135deg, #243b53 0%, #52606d 100%);
+    }
+
+    .hero-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 74px 0 88px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 46px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 840px;
+      font-size: clamp(2.35rem, 6vw, 5.8rem);
+      line-height: 0.96;
+      font-weight: 860;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 22px 0 0;
+      font-size: clamp(1.08rem, 2vw, 1.42rem);
+      max-width: 690px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .paper-meta span {
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background: rgba(255, 255, 255, 0.14);
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.94);
+      font-size: 0.92rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-visual {
+      min-height: 360px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .visual-field {
+      width: min(430px, 100%);
+      aspect-ratio: 1 / 1;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 32px;
+      position: relative;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0 2px, transparent 3px),
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 100% 100%, 54px 54px, 54px 54px;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .field-dot {
+      position: absolute;
+      width: var(--s, 13px);
+      height: var(--s, 13px);
+      left: var(--x);
+      top: var(--y);
+      border-radius: 999px;
+      background: #fff8bd;
+      box-shadow: 0 0 0 5px rgba(255, 248, 189, 0.13), 0 0 22px rgba(255, 248, 189, 0.88);
+      animation: pulse 2.4s ease-in-out infinite;
+      animation-delay: var(--d, 0s);
+    }
+
+    .field-dot.teal {
+      background: #8ff3df;
+      box-shadow: 0 0 0 5px rgba(143, 243, 223, 0.13), 0 0 22px rgba(143, 243, 223, 0.9);
+    }
+
+    .field-dot.coral {
+      background: #ffc0b4;
+      box-shadow: 0 0 0 5px rgba(255, 192, 180, 0.13), 0 0 22px rgba(255, 192, 180, 0.9);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.84; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    .tab-shell {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(247, 248, 251, 0.93);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .tabs {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      padding: 12px 0;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 16px;
+      white-space: nowrap;
+      min-height: 42px;
+      transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    .tab-btn:hover {
+      background: #eef2f7;
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      background: var(--ink);
+      color: white;
+      border-color: var(--ink);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 72px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    section {
+      margin: 36px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      line-height: 1.08;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 560px;
+      color: var(--muted);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--teal);
+      font-weight: 760;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .panel,
+    .ez-section,
+    .concept-card,
+    .quiz-box,
+    .limit-row,
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(28, 38, 61, 0.06);
+    }
+
+    .panel {
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .ez-section {
+      padding: clamp(20px, 3.2vw, 34px);
+      margin-bottom: 22px;
+    }
+
+    .ez-section h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.45rem, 3vw, 2.15rem);
+    }
+
+    .ez-big {
+      font-size: clamp(1.1rem, 2vw, 1.32rem);
+      margin: 0 0 14px;
+      max-width: 920px;
+    }
+
+    .ez-emoji-block {
+      margin: 18px 0;
+      padding: 18px;
+      border-radius: 8px;
+      background: #f7f0ff;
+      border: 1px solid #e7d7ff;
+    }
+
+    .ez-emoji-block ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .ez-emoji-block li {
+      margin: 8px 0;
+      font-size: 1.03rem;
+    }
+
+    .ez-analogy {
+      margin-top: 16px;
+      padding: 18px;
+      background: var(--amber-soft);
+      border: 1px solid #f2d889;
+      border-radius: 8px;
+    }
+
+    .ez-analogy strong {
+      color: #704300;
+    }
+
+    .ez-tldr {
+      padding: clamp(22px, 4vw, 38px);
+      border-radius: 8px;
+      color: #10210f;
+      background: linear-gradient(135deg, #dcfce7 0%, #fef9c3 100%);
+      border: 1px solid #bbf7d0;
+      box-shadow: var(--shadow);
+    }
+
+    .ez-tldr h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.7rem, 4vw, 3rem);
+    }
+
+    .ez-tldr p {
+      margin: 0;
+      font-size: clamp(1.12rem, 2vw, 1.42rem);
+      max-width: 900px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .concept-card {
+      padding: 18px;
+      min-height: 156px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .concept-card button {
+      all: unset;
+      display: block;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .concept-card h3,
+    .metric-card h3,
+    .quiz-box h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .concept-card p,
+    .metric-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .concept-more {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .concept-card.open .concept-more {
+      display: block;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: var(--teal);
+      font-size: 0.82rem;
+      font-weight: 760;
+      margin-bottom: 12px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .neuro-map {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .brain-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brain-svg,
+    .field-svg,
+    .task-svg,
+    .chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .field-panel {
+      background: #0f172a;
+      color: white;
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 312px;
+      display: grid;
+      align-items: center;
+    }
+
+    .field-caption {
+      color: #d9e4f5;
+      margin: 10px 0 0;
+      font-size: 0.94rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      padding: 16px;
+    }
+
+    .metric-card .number {
+      display: block;
+      font-weight: 840;
+      font-size: clamp(1.55rem, 4vw, 2.35rem);
+      line-height: 1;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .seg-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 9px 13px;
+      min-height: 40px;
+    }
+
+    .seg-btn.active {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+    }
+
+    .task-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .task-stage {
+      min-height: 380px;
+      background: #0b1120;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      padding: 16px;
+      color: white;
+    }
+
+    .task-side {
+      display: grid;
+      gap: 12px;
+    }
+
+    .data-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .data-cell {
+      min-height: 36px;
+      border: 1px solid #cfd7e6;
+      border-radius: 6px;
+      background: #f8fafc;
+      padding: 7px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .data-cell.hot {
+      background: var(--coral-soft);
+      border-color: #f7a391;
+      color: #7f1d1d;
+      font-weight: 760;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 54px;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+
+    .bar-track {
+      height: 12px;
+      background: #e8edf5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      width: var(--w);
+      height: 100%;
+      background: var(--c, var(--teal));
+      border-radius: inherit;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .pipe-step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 14px;
+      position: relative;
+      min-height: 190px;
+    }
+
+    .pipe-step h3 {
+      margin: 0 0 8px;
+    }
+
+    .pipe-layer {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      font-size: 0.9rem;
+    }
+
+    .pipe-step::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      width: 18px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .pipe-step:last-child::after {
+      display: none;
+    }
+
+    .limits {
+      display: grid;
+      gap: 10px;
+    }
+
+    .limit-row {
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .limit-row strong {
+      color: var(--coral);
+    }
+
+    .glossary {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid var(--line);
+    }
+
+    .glossary th,
+    .glossary td {
+      padding: 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .glossary th {
+      background: #edf2f7;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .glossary tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .quiz-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .quiz-box {
+      padding: 16px;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .quiz-options button.correct {
+      border-color: #86efac;
+      background: var(--green-soft);
+    }
+
+    .quiz-options button.wrong {
+      border-color: #fecaca;
+      background: #fff1f2;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f5f9;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .feedback-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .feedback-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: white;
+    }
+
+    .feedback-card h3 {
+      margin: 0 0 8px;
+    }
+
+    .feedback-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .feedback-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 10px 18px;
+      background: var(--ink);
+      color: white;
+      font-weight: 760;
+    }
+
+    code.path {
+      display: inline-block;
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      padding: 3px 6px;
+      border-radius: 6px;
+      background: #edf2f7;
+      color: #243b53;
+      font-size: 0.92em;
+    }
+
+    .footer-note {
+      margin-top: 54px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner,
+      .board,
+      .task-board,
+      .brain-board {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-inner {
+        padding: 54px 0 72px;
+      }
+
+      .hero-visual {
+        min-height: auto;
+      }
+
+      .cards,
+      .stats,
+      .pipeline,
+      .feedback-cards,
+      .result-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pipeline .pipe-step::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      main,
+      .tabs,
+      .hero-inner {
+        width: min(100% - 22px, 1120px);
+      }
+
+      .hero h1 {
+        font-size: clamp(2.1rem, 13vw, 3.4rem);
+      }
+
+      .paper-meta span {
+        font-size: 0.84rem;
+      }
+
+      .cards,
+      .stats,
+      .pipeline,
+      .feedback-cards,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-head p {
+        margin-top: 8px;
+      }
+
+      .limit-row {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 78px 1fr 46px;
+      }
+
+      .task-stage {
+        min-height: 310px;
+      }
+
+      .glossary {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body>
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero" id="pageHero">
+    <div class="hero-inner">
+      <div>
+        <h1>Shape perception via a high-channel-count neuroprosthesis in monkey visual cortex</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="paper-meta">
+          <span>Chen, Wang, Fernandez, Roelfsema</span>
+          <span>Science, 2020</span>
+          <span>DOI: 10.1126/science.abd7435</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-field">
+          <span class="field-dot" style="--x: 29%; --y: 30%; --s: 14px; --d: 0s;"></span>
+          <span class="field-dot teal" style="--x: 44%; --y: 38%; --s: 12px; --d: .2s;"></span>
+          <span class="field-dot coral" style="--x: 57%; --y: 43%; --s: 13px; --d: .35s;"></span>
+          <span class="field-dot" style="--x: 34%; --y: 55%; --s: 12px; --d: .55s;"></span>
+          <span class="field-dot teal" style="--x: 49%; --y: 60%; --s: 15px; --d: .7s;"></span>
+          <span class="field-dot" style="--x: 63%; --y: 66%; --s: 12px; --d: .85s;"></span>
+          <span class="field-dot coral" style="--x: 57%; --y: 74%; --s: 11px; --d: 1.1s;"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-shell" aria-label="Explainer tabs">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+      <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+      <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+    </div>
+  </nav>
+
+  <main>
+    <article id="tab-ez" class="tab-panel active">
+      <section class="ez-section">
+        <h2>The big idea</h2>
+        <p class="ez-big"><strong>The scientists tried to draw pictures directly into the brain.</strong> Not by fixing the eye, not by fixing the optic nerve, and not by showing a screen. They put a huge grid of tiny electrodes into the visual part of two monkeys' brains and used little electric taps to create tiny spots of light in what the monkeys saw.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>👁️ The eye was bypassed.</li>
+            <li>💡 One tiny zap could make one little light-dot appear.</li>
+            <li>🧩 Many dots together could become a shape.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> Imagine the brain has a big old stadium light board inside it. Each electrode is one bulb. One bulb is just a dot. Turn on the right bulbs together, and suddenly the brain sees a letter.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>Why this matters</h2>
+        <p class="ez-big"><strong>A lot of blindness happens before visual information reaches the brain.</strong> If the eyes or optic nerves cannot deliver pictures, a brain implant could one day send a rough picture straight to visual cortex, like taking a shortcut around a broken road.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🛣️ The normal road is eye -> optic nerve -> brain.</li>
+            <li>🚧 If that road is broken, a camera-plus-brain implant might go around it.</li>
+            <li>📍 The hard part is knowing which brain spot creates which seen dot.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> This is like replacing a shattered phone camera by plugging a tiny pixel display straight into the phone's image processor. It will not be normal vision, but it could still carry useful shapes.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>What they built</h2>
+        <p class="ez-big"><strong>They implanted a very high-channel-count device.</strong> Sixteen small electrode arrays were connected to one pedestal. Most arrays sat in the first visual area, where early visual maps live. Two arrays sat in a later visual area so the team could listen for whether the artificial dots were being passed onward.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🔌 The implant had 1024 possible channels.</li>
+            <li>🧠 Most electrodes were in the early visual map.</li>
+            <li>📡 Extra electrodes listened downstream for brain activity.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> If the first visual area is a city map, the implant stuck many tiny pushpins into neighborhoods of that map. Press a pushpin, and the monkey saw a dot at the matching place in visual space.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>What the monkeys did</h2>
+        <p class="ez-big"><strong>The monkeys already knew how to report simple dot pictures.</strong> First, the team asked them to look toward a single artificial dot. Then they made two-dot patterns, moving dot sequences, and dotted letters. The key thing: the monkeys often got it right immediately, before there was time to learn a brand-new trick.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>🎯 One dot: look where the fake dot appeared.</li>
+            <li>↕️ Two dots: say whether the pattern was vertical or horizontal.</li>
+            <li>➡️ Three dots: report motion direction.</li>
+            <li>🔤 Many dots: recognize letters like T or L.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> If someone turns on a few bulbs on a scoreboard and you instantly say "that's a T," you are not memorizing random bulbs. You are seeing the pattern as the letter.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>What they found</h2>
+        <p class="ez-big"><strong>Artificial dots could combine into meaningful little pictures.</strong> The monkeys recognized orientation, motion, and letters made from brain-induced dots. The experiment was still far from giving rich human vision, but it showed that a dense cortical implant can create more than isolated flashes.</p>
+        <div class="ez-emoji-block">
+          <ul>
+            <li>✅ Single zaps landed in the expected visual-map locations.</li>
+            <li>✅ Downstream brain activity tracked whether the dot was visible.</li>
+            <li>✅ Multiple zaps formed usable patterns.</li>
+            <li>⚠️ This is a proof of concept, not a ready human device.</li>
+          </ul>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> The paper did not build a television in the brain. It proved the brain can read a crude dot-matrix sign when the dots are written directly into visual cortex.</div>
+      </section>
+
+      <section class="ez-tldr">
+        <h2>TL;DR</h2>
+        <p>Chen and colleagues showed that a 1024-channel implant in monkey visual cortex could create tiny artificial light-dots, and that groups of those dots could be recognized as simple shapes, movements, and letters.</p>
+      </section>
+    </article>
+
+    <article id="tab-normal" class="tab-panel">
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">The Question</span>
+            <h2>Can a cortical prosthesis write useful shape information into visual cortex?</h2>
+          </div>
+          <p>The paper tests whether simultaneous and sequential intracortical stimulation can move beyond isolated phosphenes and become recognizable dot-pattern vision.</p>
+        </div>
+        <div class="panel board">
+          <div>
+            <p>Past cortical stimulation studies showed that a single electrode can evoke a phosphene, a small perceived spot of light. The open question was whether many small, precisely placed phosphenes could be composed into something a subject can interpret quickly.</p>
+            <p>The authors implanted two macaque monkeys with a 1024-channel device: 14 Utah arrays in V1 for stimulation and 2 arrays in V4 for readout. They first mapped receptive fields, calibrated current thresholds, and then tested orientation, motion, and letter perception.</p>
+          </div>
+          <div class="field-panel">
+            <svg class="field-svg" viewBox="0 0 360 260" role="img" aria-label="Schematic of phosphene dots forming a T">
+              <rect x="20" y="18" width="320" height="224" rx="16" fill="#111827" stroke="#334155"/>
+              <g stroke="#243447" stroke-width="1">
+                <path d="M60 20v220M100 20v220M140 20v220M180 20v220M220 20v220M260 20v220M300 20v220"/>
+                <path d="M20 58h320M20 98h320M20 138h320M20 178h320M20 218h320"/>
+              </g>
+              <text x="34" y="42" fill="#cbd5e1" font-size="13">visual field</text>
+              <g fill="#fff2a8" filter="url(#glow)">
+                <circle cx="132" cy="72" r="8"/>
+                <circle cx="172" cy="72" r="8"/>
+                <circle cx="212" cy="72" r="8"/>
+                <circle cx="172" cy="112" r="8"/>
+                <circle cx="172" cy="152" r="8"/>
+                <circle cx="172" cy="192" r="8"/>
+              </g>
+              <defs>
+                <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="4" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+            </svg>
+            <p class="field-caption">The target percept is not a normal image. It is a sparse constellation of light points placed according to the V1 receptive-field map.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Key Concepts</span>
+            <h2>The moving parts</h2>
+          </div>
+          <p>Each card separates the visible object from the hidden neural machinery.</p>
+        </div>
+        <div class="cards">
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">visible dot</span>
+              <h3>Phosphene</h3>
+              <p>A tiny spot of light caused by electrical stimulation, not by light entering the eye.</p>
+              <div class="concept-more">The paper uses phosphenes as artificial pixels. One electrode is roughly one controllable dot, but dots can vary in size, brightness, shape, and perceived distance.</div>
+            </button>
+          </div>
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">map point</span>
+              <h3>Receptive field</h3>
+              <p>The part of visual space that a local patch of visual cortex responds to.</p>
+              <div class="concept-more">If an electrode sits in cortex whose neurons respond to the lower-right visual field, stimulating it should create a phosphene in that lower-right position.</div>
+            </button>
+          </div>
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">implant</span>
+              <h3>Intracortical stimulation</h3>
+              <p>Electrodes penetrate into cortex and activate small nearby neural populations.</p>
+              <div class="concept-more">This differs from surface electrodes, which need larger currents and activate broader tissue. The precision is why a high-density dot map is plausible.</div>
+            </button>
+          </div>
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">readout</span>
+              <h3>V4 as a threshold meter</h3>
+              <p>Activity in a later visual area tracked whether V1 stimulation was perceptible.</p>
+              <div class="concept-more">The V4 neurometric threshold closely matched the monkey's behavioral threshold. That suggests future systems might calibrate many electrodes without constant verbal reports.</div>
+            </button>
+          </div>
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">control</span>
+              <h3>Generalization, not memorization</h3>
+              <p>The monkeys performed above chance early with new electrode combinations.</p>
+              <div class="concept-more">The authors compared early trials and arbitrary dot controls. Familiar letter-like phosphene patterns worked; random novel patterns stayed near chance at first.</div>
+            </button>
+          </div>
+          <div class="concept-card">
+            <button onclick="toggleConcept(this)">
+              <span class="badge">scale</span>
+              <h3>Proof of concept</h3>
+              <p>The study shows feasibility, not a ready human visual prosthesis.</p>
+              <div class="concept-more">The device covered a restricted visual-field region in trained sighted monkeys. Human deployment needs larger coverage, wireless high-channel hardware, and stable long-term electrodes.</div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Implant And Map</span>
+            <h2>From electrodes to positions in visual space</h2>
+          </div>
+          <p>The paper's Figure 1 logic: cortical location predicts where the artificial dot appears.</p>
+        </div>
+        <div class="panel neuro-map">
+          <div class="brain-board">
+            <svg class="brain-svg" viewBox="0 0 520 310" role="img" aria-label="Schematic of array placement in V1 and V4">
+              <rect x="10" y="10" width="500" height="290" rx="18" fill="#f8fafc" stroke="#d8deea"/>
+              <path d="M86 178c18-82 88-136 183-139 104-3 166 43 174 112 8 75-62 128-168 126-110-2-209-34-189-99z" fill="#d9e2ec" stroke="#7b8794" stroke-width="2"/>
+              <path d="M118 185c34-36 92-56 171-58 57-1 99 9 126 31" fill="none" stroke="#52606d" stroke-width="3"/>
+              <g transform="translate(137 150)">
+                <rect x="0" y="0" width="32" height="24" fill="#dc5b49"/>
+                <rect x="36" y="-7" width="32" height="24" fill="#0f766e"/>
+                <rect x="72" y="-12" width="32" height="24" fill="#b7791f"/>
+                <rect x="108" y="-15" width="32" height="24" fill="#3f51b5"/>
+                <rect x="144" y="-16" width="32" height="24" fill="#dc5b49"/>
+                <rect x="180" y="-12" width="32" height="24" fill="#0f766e"/>
+                <rect x="216" y="-5" width="32" height="24" fill="#3f51b5"/>
+                <rect x="18" y="30" width="32" height="24" fill="#0f766e"/>
+                <rect x="54" y="22" width="32" height="24" fill="#3f51b5"/>
+                <rect x="90" y="17" width="32" height="24" fill="#dc5b49"/>
+                <rect x="126" y="15" width="32" height="24" fill="#b7791f"/>
+                <rect x="162" y="18" width="32" height="24" fill="#0f766e"/>
+                <rect x="198" y="24" width="32" height="24" fill="#3f51b5"/>
+                <rect x="255" y="-38" width="28" height="20" fill="#172033"/>
+                <rect x="288" y="-33" width="28" height="20" fill="#172033"/>
+              </g>
+              <line x1="322" y1="117" x2="412" y2="67" stroke="#172033" stroke-width="2"/>
+              <text x="417" y="68" fill="#172033" font-size="20" font-weight="700">V4 readout</text>
+              <line x1="218" y1="187" x2="104" y2="238" stroke="#172033" stroke-width="2"/>
+              <text x="38" y="262" fill="#172033" font-size="20" font-weight="700">V1 stimulation</text>
+            </svg>
+            <div>
+              <div class="stats">
+                <div class="metric-card"><span class="number">1024</span><p>channels in the implant</p></div>
+                <div class="metric-card"><span class="number">16</span><p>Utah arrays total</p></div>
+                <div class="metric-card"><span class="number">14</span><p>arrays in V1</p></div>
+                <div class="metric-card"><span class="number">2</span><p>arrays in V4</p></div>
+              </div>
+              <p style="margin:16px 0 0;color:var(--muted);">Mapped V1 receptive fields covered foveal and parafoveal lower-right visual field regions. The team recovered receptive fields on 820 of 896 V1 electrodes in monkey L and 616 of 896 in monkey A.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Interactive Widget</span>
+            <h2>Build the artificial percept</h2>
+          </div>
+          <p>Each task exposes the surface layer, the hidden electrode selection, and the behavioral result.</p>
+        </div>
+        <div class="panel">
+          <div class="control-row" role="group" aria-label="Phosphene task selector">
+            <button class="seg-btn active" data-task="single" onclick="setTask('single', this)">single dot</button>
+            <button class="seg-btn" data-task="orientation" onclick="setTask('orientation', this)">orientation</button>
+            <button class="seg-btn" data-task="motion" onclick="setTask('motion', this)">motion</button>
+            <button class="seg-btn" data-task="letter" onclick="setTask('letter', this)">letter</button>
+          </div>
+          <div class="task-board">
+            <div class="task-stage">
+              <svg id="taskSvg" class="task-svg" viewBox="0 0 520 360" role="img" aria-label="Interactive phosphene task visual"></svg>
+            </div>
+            <div class="task-side">
+              <div class="metric-card">
+                <h3 id="taskTitle">Single-electrode phosphene</h3>
+                <p id="taskText">The animal fixates, one V1 electrode is stimulated for 167 ms, and the monkey reports the perceived dot by moving its eyes toward that location.</p>
+              </div>
+              <div class="metric-card">
+                <h3>Hidden representation</h3>
+                <p id="taskHidden">One selected V1 electrode maps to one receptive-field position in the lower-right visual field.</p>
+                <div class="data-strip" id="dataStrip"></div>
+              </div>
+              <div class="metric-card">
+                <h3>Reported outcome</h3>
+                <p id="taskOutcome">Saccade endpoints correlated with receptive-field positions: polar angle r = 0.77 in monkey L and r = 0.67 in monkey A.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Calibration</span>
+            <h2>V4 activity worked like a visibility meter</h2>
+          </div>
+          <p>Behavioral thresholds and downstream neural thresholds rose together across electrodes.</p>
+        </div>
+        <div class="panel board">
+          <svg class="chart-svg" viewBox="0 0 560 360" role="img" aria-label="Schematic calibration chart showing behavior and V4 activity thresholds">
+            <rect x="0" y="0" width="560" height="360" rx="12" fill="#ffffff"/>
+            <text x="34" y="34" fill="#172033" font-size="20" font-weight="800">Current up -> phosphene visibility up</text>
+            <line x1="60" y1="290" x2="250" y2="290" stroke="#52606d" stroke-width="2"/>
+            <line x1="60" y1="290" x2="60" y2="80" stroke="#52606d" stroke-width="2"/>
+            <path d="M70 270 C102 265 112 218 130 178 C150 130 180 102 240 96" fill="none" stroke="#dc5b49" stroke-width="5"/>
+            <path d="M70 276 C102 270 115 230 134 183 C154 138 180 106 240 100" fill="none" stroke="#0f766e" stroke-width="4" stroke-dasharray="8 8"/>
+            <line x1="136" y1="290" x2="136" y2="70" stroke="#172033" stroke-width="2" stroke-dasharray="5 5"/>
+            <text x="104" y="315" fill="#172033" font-size="14">C50/R50</text>
+            <text x="70" y="78" fill="#dc5b49" font-size="15" font-weight="700">behavior</text>
+            <text x="172" y="132" fill="#0f766e" font-size="15" font-weight="700">V4 activity</text>
+            <text x="60" y="332" fill="#52606d" font-size="13">current level</text>
+            <text x="16" y="188" fill="#52606d" font-size="13" transform="rotate(-90 16 188)">response</text>
+            <line x1="318" y1="290" x2="510" y2="90" stroke="#3f51b5" stroke-width="4"/>
+            <g fill="#172033">
+              <circle cx="334" cy="276" r="4"/><circle cx="354" cy="256" r="4"/><circle cx="377" cy="233" r="4"/><circle cx="398" cy="210" r="4"/><circle cx="422" cy="186" r="4"/><circle cx="446" cy="162" r="4"/><circle cx="468" cy="141" r="4"/><circle cx="492" cy="116" r="4"/>
+            </g>
+            <text x="316" y="64" fill="#172033" font-size="17" font-weight="800">R50 tracks C50</text>
+            <text x="316" y="86" fill="#52606d" font-size="14">monkey L r = 0.98; monkey A r = 0.96</text>
+          </svg>
+          <div>
+            <p>The saccade-to-phosphene task measured the current at which a monkey reported a phosphene half the time, called C50. At the same time, the team recorded V4 activity and computed an R50 threshold from the neural response.</p>
+            <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:16px;">
+              <div class="metric-card"><span class="number">23 &micro;A</span><p>median threshold in monkey L</p></div>
+              <div class="metric-card"><span class="number">50 &micro;A</span><p>median threshold in monkey A</p></div>
+              <div class="metric-card"><span class="number">0.98</span><p>R50/C50 correlation in monkey L</p></div>
+              <div class="metric-card"><span class="number">0.96</span><p>R50/C50 correlation in monkey A</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Method</span>
+            <h2>The experiment was a staged pipeline</h2>
+          </div>
+          <p>Each stage keeps a surface layer and a data layer visible.</p>
+        </div>
+        <div class="pipeline">
+          <div class="pipe-step">
+            <h3>1. Map cortex</h3>
+            <p>Moving bars found each electrode's receptive field.</p>
+            <div class="pipe-layer"><strong>surface:</strong> bar stimulus on a screen</div>
+            <div class="pipe-layer"><strong>data:</strong> RF center for hundreds of electrodes</div>
+          </div>
+          <div class="pipe-step">
+            <h3>2. Calibrate dots</h3>
+            <p>Single-electrode stimulation measured phosphene thresholds.</p>
+            <div class="pipe-layer"><strong>surface:</strong> one perceived dot</div>
+            <div class="pipe-layer"><strong>data:</strong> C50 behavior and R50 V4 activity</div>
+          </div>
+          <div class="pipe-step">
+            <h3>3. Compose patterns</h3>
+            <p>Electrode sets were chosen so RFs formed orientation, motion, or letters.</p>
+            <div class="pipe-layer"><strong>surface:</strong> dot patterns in visual space</div>
+            <div class="pipe-layer"><strong>data:</strong> simultaneous or sequential pulse commands</div>
+          </div>
+          <div class="pipe-step">
+            <h3>4. Test interpretation</h3>
+            <p>The monkeys reported what they perceived with an eye movement.</p>
+            <div class="pipe-layer"><strong>surface:</strong> saccade to a target</div>
+            <div class="pipe-layer"><strong>data:</strong> accuracy over early and later trials</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Results</span>
+            <h2>Patterns were recognized above chance</h2>
+          </div>
+          <p>These bars show reported session means from the microstimulation conditions.</p>
+        </div>
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>Two-dot orientation</h3>
+            <div class="bar-row"><span>Monkey L</span><div class="bar-track"><div class="bar-fill" style="--w:70%;--c:#0f766e"></div></div><strong>70%</strong></div>
+            <div class="bar-row"><span>Monkey A</span><div class="bar-track"><div class="bar-fill" style="--w:64%;--c:#0f766e"></div></div><strong>64%</strong></div>
+            <p>Novel electrode pairs still produced above-chance horizontal/vertical judgments.</p>
+          </div>
+          <div class="result-card">
+            <h3>Direction of motion</h3>
+            <div class="bar-row"><span>Monkey L</span><div class="bar-track"><div class="bar-fill" style="--w:76%;--c:#3f51b5"></div></div><strong>76%</strong></div>
+            <div class="bar-row"><span>Monkey A</span><div class="bar-track"><div class="bar-fill" style="--w:69%;--c:#3f51b5"></div></div><strong>69%</strong></div>
+            <p>Sequentially stimulated RFs were read as apparent motion direction.</p>
+          </div>
+          <div class="result-card">
+            <h3>Letter recognition</h3>
+            <div class="bar-row"><span>Monkey L</span><div class="bar-track"><div class="bar-fill" style="--w:81%;--c:#dc5b49"></div></div><strong>81%</strong></div>
+            <div class="bar-row"><span>Monkey A</span><div class="bar-track"><div class="bar-fill" style="--w:71%;--c:#dc5b49"></div></div><strong>71%</strong></div>
+            <p>Simultaneous stimulation of 8, 10, or 15 electrodes produced familiar dotted letters.</p>
+          </div>
+          <div class="result-card">
+            <h3>Arbitrary-pattern control</h3>
+            <div class="bar-row"><span>Monkey L</span><div class="bar-track"><div class="bar-fill" style="--w:48.2%;--c:#64748b"></div></div><strong>48%</strong></div>
+            <div class="bar-row"><span>Monkey A</span><div class="bar-track"><div class="bar-fill" style="--w:46.9%;--c:#64748b"></div></div><strong>47%</strong></div>
+            <p>Random non-letter stimulation patterns stayed near chance in the first 100 trials.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Implications</span>
+            <h2>What this changes</h2>
+          </div>
+          <p>The paper moves cortical visual prostheses from isolated flashes toward composable symbols.</p>
+        </div>
+        <div class="cards">
+          <div class="metric-card">
+            <h3>If you build implants</h3>
+            <p>High electrode density matters because the percept is a sparse dot display. Better density means more controllable dots and more useful shapes.</p>
+          </div>
+          <div class="metric-card">
+            <h3>If you calibrate users</h3>
+            <p>Downstream visual activity may reduce the need for exhausting one-electrode-at-a-time subjective reports.</p>
+          </div>
+          <div class="metric-card">
+            <h3>If you read the claim</h3>
+            <p>The result is not restored natural vision. It is evidence that cortical stimulation can create interpretable artificial visual patterns.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Limits</span>
+            <h2>The hard parts still left</h2>
+          </div>
+          <p>The authors are careful: this is promising, but not a deployable human prosthesis.</p>
+        </div>
+        <div class="limits">
+          <div class="limit-row"><strong>Subjects</strong><span>The study used two sighted, highly trained macaques. Blind human users may need different learning and calibration.</span></div>
+          <div class="limit-row"><strong>Coverage</strong><span>The mapped V1 region covered a limited lower-right visual-field area. A useful human device would need larger visual-field coverage.</span></div>
+          <div class="limit-row"><strong>Resolution</strong><span>Letter recognition may be possible with hundreds of electrodes, but fluent reading and crowded object recognition may need thousands.</span></div>
+          <div class="limit-row"><strong>Percept variability</strong><span>Human phosphenes can vary in brightness, color, shape, distance, and may fuse when nearby electrodes are stimulated.</span></div>
+          <div class="limit-row"><strong>Engineering</strong><span>Human use needs wireless high-channel systems and long-lasting biocompatible electrodes that avoid gliosis, trauma, and encapsulation.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Reference</span>
+            <h2>Dual-mode glossary</h2>
+          </div>
+          <p>A compact translation table for the paper's recurring terms.</p>
+        </div>
+        <table class="glossary">
+          <thead>
+            <tr>
+              <th>Term</th>
+              <th>Braindead version</th>
+              <th>Braingood version</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>V1</td><td>The first big brain map of what you see.</td><td>Primary visual cortex, used here for electrical stimulation.</td></tr>
+            <tr><td>V4</td><td>A later visual area that reacts when the fake dot becomes visible.</td><td>Higher visual cortex used as a neural readout for V1 stimulation effects.</td></tr>
+            <tr><td>RF</td><td>Where one brain spot points in visual space.</td><td>Receptive field center mapped with moving bar stimuli.</td></tr>
+            <tr><td>C50</td><td>The zap strength where the monkey reports the dot half the time.</td><td>Psychometric current threshold for phosphene report.</td></tr>
+            <tr><td>R50</td><td>The zap strength where V4 activity reaches halfway up.</td><td>Neurometric threshold derived from downstream V4 responses.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Quiz</span>
+            <h2>Check your read</h2>
+          </div>
+          <p>Each answer reveals the reasoning behind it.</p>
+        </div>
+        <div class="quiz-grid">
+          <div class="quiz-box">
+            <h3>1. Why were V4 electrodes useful?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, false)">They directly created the letter percepts.</button>
+              <button onclick="answerQuiz(this, true)">They provided a downstream neural estimate of V1 phosphene visibility.</button>
+              <button onclick="answerQuiz(this, false)">They replaced the need to map V1 receptive fields.</button>
+            </div>
+            <div class="quiz-feedback">Correct answer: V4 activity tracked the behavioral threshold for V1 stimulation, so it acted like a neural visibility meter.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>2. What made the letter result stronger than a simple training story?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, false)">The monkeys had never seen letters before.</button>
+              <button onclick="answerQuiz(this, true)">They performed early with familiar letter-like patterns, while arbitrary controls stayed near chance.</button>
+              <button onclick="answerQuiz(this, false)">The authors only used visual dot patterns, not microstimulation.</button>
+            </div>
+            <div class="quiz-feedback">Correct answer: the early-trial and arbitrary-pattern controls argue the monkeys perceived letter-like structure rather than memorizing random electrode sets.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>3. What is the cleanest one-sentence claim?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, false)">The implant restored normal vision in monkeys.</button>
+              <button onclick="answerQuiz(this, false)">A single electrode can produce fluent reading.</button>
+              <button onclick="answerQuiz(this, true)">Dense intracortical stimulation can compose phosphenes into recognizable simple patterns.</button>
+            </div>
+            <div class="quiz-feedback">Correct answer: the study is proof of concept for recognizable artificial dot-pattern vision, not natural vision or fluent reading.</div>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <article id="tab-feedback" class="tab-panel">
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Review Surface</span>
+            <h2>comment/feedback</h2>
+          </div>
+          <p>The local review copy can collect comments directly on the page and store them in this paper folder.</p>
+        </div>
+        <div class="panel">
+          <p>Use the floating feedback panel to highlight text, select a page element, attach a note, and submit a batch. Submitted comments are saved locally so Codex can process only the unhandled items and record what changed.</p>
+          <div class="feedback-cards">
+            <div class="feedback-card">
+              <h3>Open the panel</h3>
+              <p>The launcher appears after the feedback runtime is injected and the local server is running.</p>
+            </div>
+            <div class="feedback-card">
+              <h3>Attach a note</h3>
+              <p>Point to a confusing phrase, weak visual, cramped block, or missing paper fact.</p>
+            </div>
+            <div class="feedback-card">
+              <h3>Submit batch</h3>
+              <p>The server writes the batch to the local inbox for this explainer.</p>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Local inbox: <code class="path">/Users/sukanth/Documents/explain-like-brain-dead/papers/science-abd7435/feedback/inbox.jsonl</code></p>
+          <button class="feedback-action" disabled>feedback panel is local-only</button>
+        </div>
+      </section>
+    </article>
+
+    <p class="footer-note">Local explainer for Chen et al., Science 370, 1191-1196 (2020). Built from the provided PDF science.abd7435.pdf.</p>
+  </main>
+
+  <script>
+    const hero = document.getElementById("pageHero");
+    const heroSubtitle = document.getElementById("heroSubtitle");
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(tab => tab.classList.remove("active"));
+      document.getElementById("tab-" + tabId).classList.add("active");
+      btn.classList.add("active");
+      hero.classList.toggle("hero-normal", tabId === "normal");
+      hero.classList.toggle("hero-feedback", tabId === "feedback");
+      if (tabId === "ez") heroSubtitle.textContent = "The whole paper in 5 minutes 🧠💥";
+      if (tabId === "normal") heroSubtitle.textContent = "The rigorous version: maps, thresholds, patterns, and limits";
+      if (tabId === "feedback") heroSubtitle.textContent = "Review the page, leave precise notes, and iterate";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleConcept(button) {
+      button.closest(".concept-card").classList.toggle("open");
+    }
+
+    const taskData = {
+      single: {
+        title: "Single-electrode phosphene",
+        text: "The animal fixates, one V1 electrode is stimulated for 167 ms, and the monkey reports the perceived dot by moving its eyes toward that location.",
+        hidden: "One selected V1 electrode maps to one receptive-field position in the lower-right visual field.",
+        outcome: "Saccade endpoints correlated with receptive-field positions: polar angle r = 0.77 in monkey L and r = 0.67 in monkey A.",
+        cells: ["V1 e-42", "RF: 3.1 deg", "167 ms", "saccade"],
+        hot: [0, 1],
+        dots: [{x: 270, y: 176, r: 9, fill: "#fff2a8"}],
+        lines: []
+      },
+      orientation: {
+        title: "Two-phosphene orientation",
+        text: "Two electrodes were stimulated simultaneously. Their receptive fields were arranged vertically or horizontally, and the monkey reported the orientation.",
+        hidden: "A pair of electrode IDs becomes a two-dot geometry in visual coordinates.",
+        outcome: "Microstimulation accuracy was 70% in monkey L and 64% in monkey A across novel electrode sets.",
+        cells: ["e-12 + e-58", "RF pair", "vertical or horizontal", "target choice"],
+        hot: [0, 2],
+        dots: [{x: 248, y: 122, r: 8, fill: "#fff2a8"}, {x: 248, y: 206, r: 8, fill: "#fff2a8"}],
+        lines: [{x1:248, y1:122, x2:248, y2:206}]
+      },
+      motion: {
+        title: "Apparent motion",
+        text: "Three electrodes were stimulated in sequence so the dots appeared to move across the visual field.",
+        hidden: "A time-ordered electrode list becomes a directional visual trajectory.",
+        outcome: "Direction-of-motion accuracy was 76% in monkey L and 69% in monkey A.",
+        cells: ["e-31", "e-44", "e-79", "sequence"],
+        hot: [0, 1, 2, 3],
+        dots: [{x: 194, y: 214, r: 8, fill: "#fff2a8"}, {x: 248, y: 170, r: 8, fill: "#fff2a8"}, {x: 304, y: 126, r: 8, fill: "#fff2a8"}],
+        lines: [{x1:194, y1:214, x2:248, y2:170}, {x1:248, y1:170, x2:304, y2:126}]
+      },
+      letter: {
+        title: "Letter recognition",
+        text: "Eight, ten, or fifteen electrodes were stimulated simultaneously so their receptive-field centers formed a familiar sparse letter.",
+        hidden: "A set of electrodes is selected because its receptive-field coordinates sketch a letter such as T or L.",
+        outcome: "Letter-task accuracy was 81% in monkey L and 71% in monkey A; arbitrary non-letter controls stayed near chance.",
+        cells: ["8-15 electrodes", "RF coordinates", "50 pulses", "167 ms"],
+        hot: [0, 1, 2],
+        dots: [{x: 186, y: 104, r: 8, fill: "#fff2a8"}, {x: 236, y: 104, r: 8, fill: "#fff2a8"}, {x: 286, y: 104, r: 8, fill: "#fff2a8"}, {x: 236, y: 154, r: 8, fill: "#fff2a8"}, {x: 236, y: 204, r: 8, fill: "#fff2a8"}, {x: 236, y: 254, r: 8, fill: "#fff2a8"}],
+        lines: []
+      }
+    };
+
+    function drawTask(taskId) {
+      const svg = document.getElementById("taskSvg");
+      const data = taskData[taskId];
+      const grid = [];
+      for (let x = 80; x <= 440; x += 40) grid.push(`<path d="M${x} 54V306" stroke="#243447" stroke-width="1"/>`);
+      for (let y = 66; y <= 306; y += 40) grid.push(`<path d="M76 ${y}H450" stroke="#243447" stroke-width="1"/>`);
+      const lines = data.lines.map(line => `<line x1="${line.x1}" y1="${line.y1}" x2="${line.x2}" y2="${line.y2}" stroke="#8ff3df" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 8"/>`).join("");
+      const dots = data.dots.map((dot, i) => `<circle cx="${dot.x}" cy="${dot.y}" r="${dot.r + 10}" fill="${dot.fill}" opacity="0.13"/><circle cx="${dot.x}" cy="${dot.y}" r="${dot.r}" fill="${dot.fill}"><animate attributeName="opacity" values="0.62;1;0.62" dur="${1.2 + i * 0.22}s" repeatCount="indefinite"/></circle>`).join("");
+      const arrows = taskId === "motion" ? `<path d="M307 126l-16 2 9 13" fill="none" stroke="#8ff3df" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>` : "";
+      svg.innerHTML = `
+        <rect x="18" y="18" width="484" height="324" rx="18" fill="#111827" stroke="#334155"/>
+        ${grid.join("")}
+        <text x="36" y="44" fill="#cbd5e1" font-size="15" font-weight="700">surface layer: perceived visual field</text>
+        <text x="36" y="326" fill="#94a3b8" font-size="13">command sequence -> phosphene geometry</text>
+        ${lines}
+        ${arrows}
+        ${dots}
+      `;
+      document.getElementById("taskTitle").textContent = data.title;
+      document.getElementById("taskText").textContent = data.text;
+      document.getElementById("taskHidden").textContent = data.hidden;
+      document.getElementById("taskOutcome").textContent = data.outcome;
+      document.getElementById("dataStrip").innerHTML = data.cells.map((cell, i) => `<div class="data-cell ${data.hot.includes(i) ? "hot" : ""}">${cell}</div>`).join("");
+    }
+
+    function setTask(taskId, button) {
+      document.querySelectorAll(".seg-btn").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      drawTask(taskId);
+    }
+
+    function answerQuiz(button, correct) {
+      const box = button.closest(".quiz-box");
+      box.querySelectorAll(".quiz-options button").forEach(btn => {
+        btn.classList.remove("correct", "wrong");
+        btn.disabled = true;
+      });
+      button.classList.add(correct ? "correct" : "wrong");
+      box.querySelector(".quiz-feedback").classList.add("show");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    drawTask("single");
+  </script>
+</body>
+</html>
