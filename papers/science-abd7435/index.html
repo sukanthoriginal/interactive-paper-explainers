@@ -440,6 +440,130 @@
       font-size: 0.94rem;
     }
 
+    .implant-decoder {
+      grid-column: 1 / -1;
+      margin-top: 4px;
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .implant-decoder h3 {
+      margin: 0;
+      font-size: 1.18rem;
+    }
+
+    .decoder-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .decoder-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .decoder-card h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .decoder-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .chip-array {
+      width: 24px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--coral);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.14);
+    }
+
+    .chip-array.readout {
+      background: var(--ink);
+    }
+
+    .decoder-arrow {
+      color: var(--muted);
+      font-weight: 800;
+      padding: 0 2px;
+    }
+
+    .rf-mini {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rf-screen {
+      position: relative;
+      aspect-ratio: 1 / 0.72;
+      border-radius: 8px;
+      background:
+        linear-gradient(#dbe4f0 1px, transparent 1px),
+        linear-gradient(90deg, #dbe4f0 1px, transparent 1px),
+        white;
+      background-size: 26px 26px;
+      border: 1px solid var(--line);
+    }
+
+    .rf-spot {
+      position: absolute;
+      left: 62%;
+      top: 58%;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff2a8;
+      border: 2px solid var(--amber);
+      box-shadow: 0 0 18px rgba(183, 121, 31, 0.5);
+    }
+
+    .threshold-ladder {
+      display: grid;
+      gap: 7px;
+    }
+
+    .threshold-step {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+
+    .threshold-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--coral) var(--w), #e8edf5 var(--w));
+    }
+
+    .decoder-note {
+      margin: 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--amber-soft);
+      border: 1px solid #f2d889;
+      color: #5f3b00;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -774,6 +898,7 @@
       .stats,
       .pipeline,
       .feedback-cards,
+      .decoder-grid,
       .result-grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -802,8 +927,17 @@
       .stats,
       .pipeline,
       .feedback-cards,
+      .decoder-grid,
       .result-grid {
         grid-template-columns: 1fr;
+      }
+
+      .rf-mini {
+        grid-template-columns: 1fr;
+      }
+
+      .threshold-step {
+        grid-template-columns: 62px 1fr auto;
       }
 
       .section-head {
@@ -1026,6 +1160,45 @@
               </defs>
             </svg>
             <p class="field-caption">The target percept is not a normal image. It is a sparse constellation of light points placed according to the V1 receptive-field map.</p>
+          </div>
+          <div class="implant-decoder" data-cf-change="ch-v1-v4-array-decoder">
+            <h3>Decode that implant sentence literally</h3>
+            <div class="decoder-grid">
+              <div class="decoder-card">
+                <h4>14 Utah arrays in V1 = the write head</h4>
+                <div class="chip-row" aria-label="Fourteen V1 stimulation arrays">
+                  <span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span>
+                  <span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span><span class="chip-array"></span>
+                  <span class="decoder-arrow">→</span><strong>V1</strong>
+                </div>
+                <p>A Utah array is a tiny square bed of needle electrodes. The 14 red arrays were put in V1 because V1 is the first detailed map of visual space; stimulating one electrode there made one artificial light-dot, or phosphene, appear at that electrode's mapped location.</p>
+              </div>
+              <div class="decoder-card">
+                <h4>2 Utah arrays in V4 = the readout microphone</h4>
+                <div class="chip-row" aria-label="Two V4 readout arrays">
+                  <span class="chip-array readout"></span><span class="chip-array readout"></span>
+                  <span class="decoder-arrow">→</span><strong>V4</strong>
+                </div>
+                <p>Those two arrays were mainly listening, not drawing. V4 is a later visual area, so if a V1 zap was strong enough to become a seen dot, the downstream V4 population response rose too.</p>
+              </div>
+              <div class="decoder-card">
+                <h4>Receptive field = which screen patch this electrode owns</h4>
+                <div class="rf-mini">
+                  <div class="rf-screen" aria-label="Visual field grid with one receptive field spot"><span class="rf-spot"></span></div>
+                  <p><strong>Visible input:</strong> bars or dots appear on a screen. <strong>Hidden map:</strong> one V1 electrode fires most for one small patch. <strong>Stimulation output:</strong> zap that electrode and the monkey should see a dot in that same patch.</p>
+                </div>
+              </div>
+              <div class="decoder-card">
+                <h4>Calibrated current threshold = how hard to zap before the dot counts as visible</h4>
+                <div class="threshold-ladder" aria-label="Current threshold ladder">
+                  <div class="threshold-step"><span>low &micro;A</span><span class="threshold-bar" style="--w:28%;"></span><span>miss</span></div>
+                  <div class="threshold-step"><span>C50</span><span class="threshold-bar" style="--w:55%;"></span><span>50%</span></div>
+                  <div class="threshold-step"><span>high &micro;A</span><span class="threshold-bar" style="--w:86%;"></span><span>seen</span></div>
+                </div>
+                <p>The team tuned each electrode's current instead of blasting everything equally. C50 was the current where behavior reported the dot about half the time; R50 was the matching halfway point measured from V4 activity.</p>
+              </div>
+            </div>
+            <p class="decoder-note"><strong>One concrete chain:</strong> pick a V1 electrode → know its receptive-field patch → stimulate it for the task → watch the monkey's eye report and V4 activity to decide whether the artificial dot was visible.</p>
           </div>
         </div>
       </section>
