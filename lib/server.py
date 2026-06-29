@@ -54,6 +54,8 @@ _codex_auto_run_again = False
 _publish_lock = threading.Lock()
 _publish_module = None
 
+GIT_EXEC_PATH = Path("/Library/Developer/CommandLineTools/usr/libexec/git-core")
+
 
 def _touch_activity():
     global _last_activity
@@ -219,10 +221,18 @@ def _assets_differ(source_assets: Path, target_assets: Path) -> bool:
     return False
 
 
+def _repo_cmd_env() -> dict[str, str]:
+    env = os.environ.copy()
+    if GIT_EXEC_PATH.exists():
+        env["PATH"] = f"{GIT_EXEC_PATH}{os.pathsep}{env.get('PATH', '')}"
+    return env
+
+
 def _run_repo_cmd(args: list[str], timeout: int = 60) -> subprocess.CompletedProcess:
     return subprocess.run(
         args,
         cwd=REPO_ROOT,
+        env=_repo_cmd_env(),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
