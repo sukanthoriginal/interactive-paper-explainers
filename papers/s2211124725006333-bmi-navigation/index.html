@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optical BMI Navigation Paper Explainer</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --blue-dark: #1e40af;
+      --gray: #6b7280;
+      --gray-light: #f3f4f6;
+      --gray-dark: #1f2937;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --orange: #d97706;
+      --orange-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --teal: #0d9488;
+      --teal-light: #ccfbf1;
+      --pink: #db2777;
+      --pink-light: #fce7f3;
+      --line: #e5e7eb;
+      --body: #fafafa;
+      --paper: #ffffff;
+      --ink: #111827;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.65;
+    }
+
+    button {
+      font: inherit;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--blue-dark);
+    }
+
+    .hero {
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      transition: background 180ms ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 58%, #0d9488 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #1f2937 0%, #92400e 100%);
+    }
+
+    .hero-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 62px 0 46px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+      gap: 36px;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 750;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(2.1rem, 5vw, 4.2rem);
+      line-height: 1.02;
+      font-weight: 760;
+    }
+
+    .hero-subtitle {
+      margin: 20px 0 0;
+      max-width: 720px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: clamp(1rem, 1.7vw, 1.22rem);
+      line-height: 1.52;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+    }
+
+    .hero-meta span {
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.94);
+    }
+
+    .hero-visual {
+      min-height: 324px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(10px);
+    }
+
+    .maze-demo {
+      height: 286px;
+      position: relative;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+    }
+
+    .maze-path {
+      position: absolute;
+      left: 28px;
+      top: 25px;
+      width: 160px;
+      height: 236px;
+      border: 13px solid #dbeafe;
+      border-bottom: none;
+      border-top-width: 28px;
+      clip-path: polygon(42% 0, 58% 0, 58% 70%, 100% 70%, 100% 92%, 0 92%, 0 70%, 42% 70%);
+      opacity: 0.95;
+    }
+
+    .maze-track {
+      position: absolute;
+      left: 92px;
+      top: 46px;
+      width: 4px;
+      height: 160px;
+      border-radius: 999px;
+      background: var(--purple);
+      box-shadow: 0 0 0 5px rgba(124, 58, 237, 0.12);
+      transform-origin: bottom center;
+      animation: steer 4s ease-in-out infinite;
+    }
+
+    @keyframes steer {
+      0%, 100% { transform: rotate(-6deg); }
+      45% { transform: rotate(7deg); }
+      70% { transform: rotate(16deg); }
+    }
+
+    .maze-mouse {
+      position: absolute;
+      left: 79px;
+      top: 182px;
+      width: 30px;
+      height: 42px;
+      border-radius: 50% 50% 45% 45%;
+      background: #374151;
+      transform: rotate(-8deg);
+    }
+
+    .maze-mouse::before,
+    .maze-mouse::after {
+      content: "";
+      position: absolute;
+      top: -7px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #4b5563;
+    }
+
+    .maze-mouse::before { left: 2px; }
+    .maze-mouse::after { right: 2px; }
+
+    .brain-panel {
+      position: absolute;
+      right: 18px;
+      top: 22px;
+      width: 146px;
+      height: 84px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      padding: 10px;
+    }
+
+    .brain-panel span {
+      border-radius: 50%;
+      background: #16a34a;
+      opacity: 0.42;
+      animation: blink 2.3s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 90ms);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; transform: scale(0.86); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    .decoder-box {
+      position: absolute;
+      right: 35px;
+      top: 126px;
+      width: 114px;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.86rem;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    .decoder-box::before {
+      content: "";
+      position: absolute;
+      left: -68px;
+      top: 50%;
+      width: 68px;
+      height: 2px;
+      background: var(--blue);
+    }
+
+    .decoder-box::after {
+      content: "";
+      position: absolute;
+      left: -72px;
+      top: calc(50% - 4px);
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--blue);
+      border-top: 2px solid var(--blue);
+      transform: rotate(45deg);
+    }
+
+    .command-stack {
+      position: absolute;
+      right: 18px;
+      bottom: 20px;
+      width: 150px;
+      display: grid;
+      gap: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .command {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-dark);
+    }
+
+    .meter {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--gray-dark);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 0.94rem;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--gray-light);
+    }
+
+    .tab-btn.active {
+      background: var(--gray-dark);
+      color: white;
+      border-color: var(--gray-dark);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 38px 0 76px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    section {
+      margin: 0 0 48px;
+    }
+
+    h2,
+    h3,
+    h4 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.18;
+      color: var(--ink);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 1.22rem;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    .lede {
+      max-width: 820px;
+      font-size: 1.14rem;
+      color: #334155;
+    }
+
+    .ez-big {
+      margin: 0 0 18px;
+      max-width: 900px;
+      font-size: clamp(1.28rem, 2.2vw, 1.74rem);
+      line-height: 1.45;
+      color: #111827;
+    }
+
+    .ez-emoji-block {
+      margin: 18px 0 20px;
+      display: grid;
+      gap: 10px;
+      max-width: 900px;
+      padding: 18px;
+      border: 1px solid #fbcfe8;
+      border-radius: 8px;
+      background: #fff7fb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #312033;
+      font-weight: 650;
+    }
+
+    .ez-emoji-block div {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .ez-analogy {
+      max-width: 900px;
+      margin: 16px 0 24px;
+      padding: 16px 18px;
+      border: 1px solid #fde68a;
+      border-left: 5px solid var(--orange);
+      border-radius: 8px;
+      background: #fffbeb;
+      font-size: 1.05rem;
+    }
+
+    .ez-tldr {
+      max-width: 900px;
+      margin-top: 30px;
+      padding: 22px;
+      border-radius: 8px;
+      border: 1px solid #c4b5fd;
+      background: linear-gradient(180deg, #f5f3ff 0%, white 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .ez-tldr h2 {
+      margin-bottom: 8px;
+      color: var(--purple);
+    }
+
+    .callout {
+      padding: 16px 18px;
+      border: 1px solid #bfdbfe;
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-size: 1rem;
+    }
+
+    .callout.green {
+      border-color: #bbf7d0;
+      border-left-color: var(--green);
+      background: #f0fdf4;
+      color: #14532d;
+    }
+
+    .callout.orange {
+      border-color: #fed7aa;
+      border-left-color: var(--orange);
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    }
+
+    .concept-card {
+      text-align: left;
+      width: 100%;
+      min-height: 164px;
+    }
+
+    .concept-card h3 {
+      margin-bottom: 8px;
+      color: var(--blue-dark);
+    }
+
+    .concept-card p {
+      margin: 0;
+      color: #4b5563;
+      font-size: 0.94rem;
+    }
+
+    .concept-detail {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: #111827;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.97rem;
+      line-height: 1.5;
+    }
+
+    .concept-card.open .concept-detail {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 15px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stat-box strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.55rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-box span {
+      display: block;
+      color: var(--gray);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin-top: 20px;
+    }
+
+    .evidence {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+    }
+
+    .evidence img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      background: white;
+    }
+
+    .evidence figcaption {
+      margin: 0;
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.42;
+    }
+
+    .viz-flow {
+      margin: 22px 0;
+      border: 1px solid #c7d2fe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #eef2ff 0%, #ffffff 100%);
+      padding: 18px;
+    }
+
+    .step-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .step-controls button {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #334155;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 750;
+      font-size: 0.86rem;
+    }
+
+    .step-controls button.active {
+      background: var(--blue-dark);
+      color: white;
+      border-color: var(--blue-dark);
+    }
+
+    .loop-board {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .loop-stage {
+      min-height: 360px;
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .loop-stage h3 {
+      color: var(--blue-dark);
+    }
+
+    .surface-data {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .layer-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 12px;
+      min-height: 168px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .layer-box b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .layer-box p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .maze-mini,
+    .pixel-mini,
+    .decoder-mini,
+    .trajectory-mini,
+    .correction-mini {
+      height: 96px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .maze-mini::before {
+      content: "";
+      position: absolute;
+      left: 42%;
+      top: 12%;
+      width: 16%;
+      height: 68%;
+      background: #dbeafe;
+      box-shadow: -34px 55px 0 16px #dbeafe, 34px 55px 0 16px #dbeafe;
+    }
+
+    .maze-mini::after {
+      content: "";
+      position: absolute;
+      left: 48%;
+      top: 22%;
+      width: 4px;
+      height: 58%;
+      border-radius: 999px;
+      background: var(--purple);
+      transform: rotate(7deg);
+    }
+
+    .pixel-mini {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 2px;
+      padding: 8px;
+      background: #0f172a;
+    }
+
+    .pixel-mini span {
+      border-radius: 2px;
+      background: hsl(calc(var(--i) * 17), 70%, 58%);
+      opacity: calc(0.28 + (var(--i) % 5) * 0.12);
+    }
+
+    .decoder-mini {
+      display: grid;
+      align-items: end;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 5px;
+      padding: 12px;
+    }
+
+    .decoder-mini span {
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(180deg, var(--blue), #bfdbfe);
+      height: calc(var(--h) * 1%);
+    }
+
+    .trajectory-mini svg,
+    .correction-mini svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .flow-note {
+      border: 1px solid #bbf7d0;
+      border-left: 5px solid var(--green);
+      border-radius: 8px;
+      background: #f0fdf4;
+      padding: 14px;
+      color: #14532d;
+      font-size: 0.96rem;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .pipe-stage {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 13px;
+      min-height: 190px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .pipe-stage:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      width: 18px;
+      height: 2px;
+      background: var(--blue);
+      z-index: 2;
+    }
+
+    .pipe-stage h4 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 0.96rem;
+    }
+
+    .pipe-stage p {
+      margin: 0;
+      color: #4b5563;
+      font-size: 0.84rem;
+      line-height: 1.42;
+    }
+
+    .pipe-mini {
+      height: 70px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #f8fafc;
+      overflow: hidden;
+    }
+
+    .pipe-mini.frame {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 2px;
+      padding: 8px;
+      background: #111827;
+    }
+
+    .pipe-mini.frame span {
+      background: #22c55e;
+      border-radius: 50%;
+      opacity: 0.35;
+    }
+
+    .pipe-mini.filter {
+      display: grid;
+      gap: 5px;
+      align-content: center;
+      padding: 12px;
+    }
+
+    .pipe-mini.filter span {
+      height: 7px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, #60a5fa 0 8px, #dbeafe 8px 15px);
+    }
+
+    .pipe-mini.weights {
+      background: linear-gradient(90deg, #2563eb 0 12%, #dbeafe 12% 18%, #f8fafc 18% 30%, #fecaca 30% 38%, #dc2626 38% 47%, #f8fafc 47% 100%);
+    }
+
+    .pipe-mini.commands {
+      display: grid;
+      gap: 10px;
+      align-content: center;
+      padding: 12px;
+    }
+
+    .pipe-mini.commands span {
+      height: 11px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .bar-chart {
+      margin-top: 22px;
+      display: grid;
+      gap: 13px;
+      max-width: 760px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 110px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-weight: 750;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .bar-track {
+      height: 18px;
+      position: relative;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+      width: calc(var(--v) * 100%);
+    }
+
+    .bar-error {
+      position: absolute;
+      top: -5px;
+      height: 28px;
+      width: 2px;
+      left: calc(var(--hi) * 100%);
+      background: #111827;
+    }
+
+    .bar-error::before {
+      content: "";
+      position: absolute;
+      top: 13px;
+      right: 0;
+      width: calc((var(--hi) - var(--lo)) * 760px);
+      max-width: 160px;
+      height: 2px;
+      background: #111827;
+      transform: translateX(0);
+    }
+
+    .bar-value {
+      color: var(--gray);
+      font-size: 0.84rem;
+    }
+
+    .mode-widget {
+      margin-top: 20px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--gray-light);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .segmented button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: transparent;
+      color: var(--gray);
+      font-weight: 750;
+      font-size: 0.9rem;
+    }
+
+    .segmented button.active {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+    }
+
+    .mode-board {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .mode-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 14px;
+      min-height: 230px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .mode-panel h4 {
+      margin: 0 0 10px;
+    }
+
+    .mode-panel svg {
+      width: 100%;
+      height: 132px;
+      display: block;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .mode-panel p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .correction-widget {
+      margin-top: 22px;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      background: #fff7ed;
+      padding: 18px;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px;
+      gap: 12px;
+      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 750;
+      color: #7c2d12;
+      margin-bottom: 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--orange);
+    }
+
+    .correction-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .correction-card {
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      background: white;
+      padding: 14px;
+      min-height: 156px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .correction-card b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .gauge {
+      height: 18px;
+      border-radius: 999px;
+      background: #ffedd5;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .gauge span {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f97316, #22c55e);
+      transition: width 120ms ease;
+    }
+
+    .matrix-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .weight-map {
+      min-height: 242px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .weight-grid {
+      height: 146px;
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 3px;
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #f8fafc;
+      margin-bottom: 10px;
+    }
+
+    .weight-grid span {
+      border-radius: 2px;
+      background: hsl(var(--hue), 70%, 58%);
+      opacity: var(--op);
+    }
+
+    .limits-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      align-items: start;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .limit-row b {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+
+    .quiz-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 18px;
+      margin: 14px 0;
+    }
+
+    .quiz-box h3 {
+      font-size: 1.05rem;
+    }
+
+    .answers {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .answers button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: var(--ink);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 650;
+    }
+
+    .answers button.correct {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .answers button.wrong {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1e3a8a;
+    }
+
+    .quiz-feedback.visible {
+      display: block;
+    }
+
+    .feedback-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .feedback-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid var(--gray-dark);
+      border-radius: 8px;
+      background: var(--gray-dark);
+      color: white;
+      padding: 10px 14px;
+      font-weight: 750;
+    }
+
+    .path-chip {
+      display: inline-block;
+      max-width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      color: #111827;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.86rem;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto 40px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 920px) {
+      .hero-inner,
+      .loop-board,
+      .mode-board,
+      .evidence-grid,
+      .matrix-compare {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: 280px;
+      }
+
+      .cards,
+      .stats,
+      .feedback-actions,
+      .correction-display {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+
+      .pipe-stage:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero-inner {
+        padding: 44px 0 34px;
+      }
+
+      .tab-bar {
+        justify-content: flex-start;
+      }
+
+      .cards,
+      .stats,
+      .feedback-actions,
+      .correction-display,
+      .surface-data {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row,
+      .slider-row,
+      .limit-row {
+        grid-template-columns: 1fr;
+      }
+
+      .maze-demo {
+        height: 260px;
+      }
+
+      .brain-panel {
+        width: 126px;
+        right: 12px;
+      }
+
+      .decoder-box {
+        right: 22px;
+      }
+    }
+  
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body class="mode-ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker">Cell Reports 2025 paper explainer</div>
+        <h1>An optical brain-machine interface reveals a causal role of posterior parietal cortex in goal-directed navigation</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta">
+          <span>Sorrell, Wilson, Rule, Yang, Forni, Harvey, O'Leary</span>
+          <span>Cell Reports 44, 115862</span>
+          <span>DOI: 10.1016/j.celrep.2025.115862</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="animated explainer sketch">
+        <div class="maze-demo">
+          <div class="maze-path"></div>
+          <div class="maze-track"></div>
+          <div class="maze-mouse"></div>
+          <div class="brain-panel" aria-hidden="true">
+            <span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span>
+            <span style="--i:8"></span><span style="--i:9"></span><span style="--i:10"></span><span style="--i:11"></span><span style="--i:12"></span><span style="--i:13"></span><span style="--i:14"></span>
+            <span style="--i:15"></span><span style="--i:16"></span><span style="--i:17"></span><span style="--i:18"></span><span style="--i:19"></span><span style="--i:20"></span><span style="--i:21"></span>
+          </div>
+          <div class="decoder-box">decoder</div>
+          <div class="command-stack">
+            <div class="command"><span>heading</span><div class="meter"><span style="width: 66%"></span></div></div>
+            <div class="command"><span>velocity</span><div class="meter"><span style="width: 52%"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <section id="tab-ez" class="tab-panel active">
+      <section>
+        <p class="ez-big"><strong>The big idea:</strong> the scientists put mice in a virtual maze, watched a planning part of the brain light up, and used that brain activity to steer the maze directly. Not the mouse's feet. The brain signal itself.</p>
+        <div class="ez-emoji-block">
+          <div><span>🧠</span><span>The brain area was the <strong>posterior parietal cortex</strong>, a region involved in steering, planning, and choosing where to go.</span></div>
+          <div><span>🎮</span><span>The mouse still saw a virtual maze and still wanted the reward at the correct end.</span></div>
+          <div><span>🕹️</span><span>On special trials, the virtual world moved because of decoded brain activity, not because the ball under the mouse moved it.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> imagine playing a driving game. Usually the steering wheel controls the car. Here, the researchers unplugged the wheel and plugged in a live readout of the driver's navigation brain instead.</div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The trick:</strong> first they let the mouse run normally. While it played the maze, they learned the brain pattern that usually goes with "go forward" and "face this way." Then they froze that decoder and used it as the controller.</p>
+        <div class="ez-emoji-block">
+          <div><span>👀</span><span>Camera-like brain imaging watched many activity spots at once.</span></div>
+          <div><span>🧮</span><span>A simple decoder translated the activity pattern into movement commands.</span></div>
+          <div><span>🔒</span><span>The decoder was fixed, so the mouse did not get a long practice period to invent a new brain trick.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> it is like watching someone's hands on a steering wheel for a while, learning what "left" and "right" look like, then suddenly using that pattern to steer the game yourself.</div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The surprising part:</strong> the mice could use the brain-machine interface right away. They did not need a long "learn the weird new controller" phase. Their normal navigation brain activity was already good enough to move the virtual mouse toward the goal.</p>
+        <div class="ez-emoji-block">
+          <div><span>🚦</span><span>Normal trials and brain-control trials were mixed together.</span></div>
+          <div><span>🏁</span><span>The mice still chose the correct goal more than guessing.</span></div>
+          <div><span>📌</span><span>That matters because a working controller is stronger evidence than a passive brain recording.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> if a car follows your GPS predictions in real time, that is stronger than saying your GPS map happened to match where the car already went.</div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The clever sanity check:</strong> the mouse's feet did not become irrelevant. When the virtual heading went off course, the mouse often tried to correct on the ball. But those foot corrections were not the same thing as the brain signal driving the virtual turn.</p>
+        <div class="ez-emoji-block">
+          <div><span>🛞</span><span>The ball still recorded what the mouse tried to do physically.</span></div>
+          <div><span>↩️</span><span>Those physical corrections showed the mouse was paying attention, not sleepwalking through a memorized routine.</span></div>
+          <div><span>🧭</span><span>The brain decoder seemed closer to "where I intend to head" than to "what my feet are doing this instant."</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> your hands may twitch when a self-driving car drifts, but the car's steering system is still separate from your twitch. The twitch proves you noticed the drift.</div>
+      </section>
+
+      <section>
+        <p class="ez-big"><strong>The punchline:</strong> this paper is trying to fill the missing causal link. Prior work showed this brain area correlates with navigation and that disrupting it hurts navigation. This study shows that directly routing its activity into motion can actually steer a goal-directed task.</p>
+        <div class="ez-emoji-block">
+          <div><span>✅</span><span>It is not "we found a brain signal after the fact."</span></div>
+          <div><span>🔁</span><span>It is "we put that signal inside the control loop."</span></div>
+          <div><span>🧪</span><span>The claim still belongs to this special virtual-reality setup, not every natural behavior in the world.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> hearing engine noise tells you a car is moving. Wiring engine output to the wheels and watching the car drive tells you the engine can actually move it.</div>
+        <div class="ez-tldr">
+          <h2>TL;DR</h2>
+          <p class="ez-big">The paper shows that normal activity in mouse posterior parietal cortex can be decoded fast enough to steer a virtual navigation task, suggesting this brain area is not just watching navigation happen - it can help drive the intended path.</p>
+        </div>
+      </section>
+    </section>
+
+    <section id="tab-normal" class="tab-panel">
+      <section>
+        <h2>The Question</h2>
+        <p class="lede">Posterior parietal cortex activity is full of navigation-related signals: position, heading, movement, visual context, and planned actions. The hard question is causal: does this activity merely report what the animal is doing, or can it directly drive goal-directed navigation?</p>
+        <div class="callout">Sorrell et al. test this by closing the loop: they decode posterior parietal cortex activity in real time and route the decoded heading direction plus forward velocity into the virtual reality engine.</div>
+      </section>
+
+      <section>
+        <h2>Key Concepts</h2>
+        <p class="lede">Click a card to expand the exact role each idea plays in the paper.</p>
+        <div class="cards">
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <h3>Posterior parietal cortex</h3>
+            <p>A cortical area with mixed sensory, motor, and cognitive navigation signals.</p>
+            <div class="concept-detail">The paper focuses on layer 2/3 of mouse posterior parietal cortex. Prior work tied this area to heading, position, choice, course correction, and goal-directed navigation.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <h3>Optical BMI</h3>
+            <p>A brain-machine interface driven by two-photon calcium imaging.</p>
+            <div class="concept-detail">Instead of electrodes, the system uses jGCaMP7f calcium signals imaged at about 30 frames per second. Pixel activity is processed online and decoded into navigation commands.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <h3>Fixed decoder</h3>
+            <p>A linear mapping from neural activity to heading and velocity.</p>
+            <div class="concept-detail">The decoder is trained during normal ball-control trials, then held fixed for BMI trials and later sessions. This avoids making the main result depend on long BMI learning.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <h3>Intended trajectory</h3>
+            <p>The planned path signal inferred from successful closed-loop control.</p>
+            <div class="concept-detail">The authors argue the decoder must capture predictive, action-relevant activity. A passive readout of current state would not update the virtual trajectory correctly in a closed loop.</div>
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Interactive Widget: The Closed Loop</h2>
+        <p class="lede">The core experiment is not a one-way recording. It is a loop where the decoded brain signal changes the virtual world, and the updated world changes the next brain state.</p>
+        <div class="viz-flow">
+          <div class="step-controls" aria-label="closed loop steps">
+            <button class="active" onclick="setLoopStep(0, this)">see cue</button>
+            <button onclick="setLoopStep(1, this)">record PPC</button>
+            <button onclick="setLoopStep(2, this)">decode</button>
+            <button onclick="setLoopStep(3, this)">move VR</button>
+            <button onclick="setLoopStep(4, this)">react</button>
+          </div>
+          <div class="loop-board">
+            <div class="loop-stage" id="loopStage">
+              <h3>1. See cue and maze</h3>
+              <p>The mouse sees a cue in a virtual T-maze and needs to turn into the rewarded arm.</p>
+              <div class="surface-data">
+                <div class="layer-box">
+                  <b>Surface layer</b>
+                  <div class="maze-mini"></div>
+                  <p>Visible object: cue, corridor, T-junction, and goal arm.</p>
+                </div>
+                <div class="layer-box">
+                  <b>Data layer</b>
+                  <div class="trajectory-mini">
+                    <svg viewBox="0 0 220 90" aria-hidden="true">
+                      <path d="M106 80 L106 18 L70 18 M106 18 L150 18" fill="none" stroke="#cbd5e1" stroke-width="14" stroke-linecap="round"/>
+                      <path d="M106 80 C101 56 111 38 145 20" fill="none" stroke="#7c3aed" stroke-width="4"/>
+                    </svg>
+                  </div>
+                  <p>Variables: maze position, heading direction, upcoming choice.</p>
+                </div>
+              </div>
+            </div>
+            <div class="loop-stage">
+              <h3>What the loop tests</h3>
+              <p>The decisive move is routing decoded brain activity back into the virtual reality engine. If posterior parietal cortex activity only reports the current state, the BMI should drift or fail. If it carries a predictive navigation command, it can keep steering.</p>
+              <div class="flow-note">The fixed decoder makes the test sharper: the mice were not given a long period to learn an arbitrary new controller.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Method: From Brain Movie To Virtual Motion</h2>
+        <p class="lede">The decoder was deliberately simple and fast. The authors used full-frame pixel activity rather than waiting for perfect cell segmentation, then decoded heading direction and forward velocity for real-time control.</p>
+        <div class="stats">
+          <div class="stat-box"><strong>5</strong><span>male mice, 8-12 weeks old before surgery</span></div>
+          <div class="stat-box"><strong>30 Hz</strong><span>two-photon acquisition and closed-loop update rate</span></div>
+          <div class="stat-box"><strong>225 cm</strong><span>virtual corridor length in the T-maze task</span></div>
+          <div class="stat-box"><strong>every 3rd</strong><span>trial was a BMI trial during testing</span></div>
+        </div>
+        <div class="pipeline" aria-label="method pipeline">
+          <article class="pipe-stage">
+            <div class="pipe-mini frame"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <h4>1. Image PPC</h4>
+            <p>Layer 2/3 posterior parietal cortex was imaged with jGCaMP7f during virtual navigation.</p>
+          </article>
+          <article class="pipe-stage">
+            <div class="pipe-mini filter"><span></span><span></span><span></span></div>
+            <h4>2. Clean frames</h4>
+            <p>Frames were downsampled, registered, temporally filtered, and spatially filtered online.</p>
+          </article>
+          <article class="pipe-stage">
+            <div class="pipe-mini weights"></div>
+            <h4>3. Train weights</h4>
+            <p>Linear regression learned how activity predicted position, heading, and velocities on held-out ball trials.</p>
+          </article>
+          <article class="pipe-stage">
+            <div class="pipe-mini commands"><span style="width:72%"></span><span style="width:58%"></span></div>
+            <h4>4. Output commands</h4>
+            <p>The BMI used decoded virtual heading direction and forward velocity as control signals.</p>
+          </article>
+          <article class="pipe-stage">
+            <div class="pipe-mini commands"><span style="width:44%"></span><span style="width:82%"></span></div>
+            <h4>5. Drive VR</h4>
+            <p>On BMI trials, the virtual maze updated from decoder output instead of treadmill rotation.</p>
+          </article>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-1-decoder.png" alt="Figure 1 crop showing T-maze, preprocessing pipeline, decoder traces, and decoder weights">
+            <figcaption>Figure 1 evidence: the paper's offline decoder pipeline and performance checks.</figcaption>
+          </figure>
+          <figure class="evidence">
+            <img src="assets/figure-2-protocol.png" alt="Figure 2 crop showing BMI setup, protocol, and behavioral performance">
+            <figcaption>Figure 2 evidence: the closed-loop BMI setup and interleaved ball/BMI testing protocol.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Results: What Worked</h2>
+        <p class="lede">The first result is that posterior parietal cortex activity contained enough information to decode navigation variables. The second, stronger result is that the decoded activity could control behavior in closed loop.</p>
+        <div class="bar-chart" aria-label="decoder performance chart">
+          <div class="bar-row">
+            <div class="bar-label">maze position</div>
+            <div class="bar-track" style="--lo:0.90; --hi:0.92"><span class="bar-fill" style="--v:0.91"></span><span class="bar-error"></span></div>
+            <div class="bar-value">R<sup>2</sup> 0.91 &plusmn; 0.01</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">heading direction</div>
+            <div class="bar-track" style="--lo:0.63; --hi:0.75"><span class="bar-fill" style="--v:0.69"></span><span class="bar-error"></span></div>
+            <div class="bar-value">R<sup>2</sup> 0.69 &plusmn; 0.06</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">forward velocity</div>
+            <div class="bar-track" style="--lo:0.64; --hi:0.70"><span class="bar-fill" style="--v:0.67"></span><span class="bar-error"></span></div>
+            <div class="bar-value">R<sup>2</sup> 0.67 &plusmn; 0.03</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">angular velocity</div>
+            <div class="bar-track" style="--lo:0.49; --hi:0.57"><span class="bar-fill" style="--v:0.53"></span><span class="bar-error"></span></div>
+            <div class="bar-value">R<sup>2</sup> 0.53 &plusmn; 0.04</div>
+          </div>
+        </div>
+        <div class="callout green">Closed-loop result: mice performed above chance from the onset of BMI use, including the first 10 BMI trials across all 5 mice (binomial test, p = 0.0013). Across each mouse's BMI trials, all 5 mice were significantly above chance.</div>
+      </section>
+
+      <section>
+        <h2>Interactive Widget: Ball Control Versus BMI Control</h2>
+        <p class="lede">The important distinction is what drives the virtual maze. In ball trials, treadmill rotation moves the virtual world. In BMI trials, treadmill rotation is recorded but does not drive the maze.</p>
+        <div class="mode-widget">
+          <div class="segmented">
+            <button class="active" onclick="setTrialMode('ball', this)">ball trial</button>
+            <button onclick="setTrialMode('bmi', this)">BMI trial</button>
+          </div>
+          <div class="mode-board">
+            <div class="mode-panel">
+              <h4 id="modeLeftTitle">Physical ball route</h4>
+              <svg viewBox="0 0 300 132" id="modePhysical" aria-hidden="true">
+                <path d="M28 98 C68 42 126 38 160 68 C194 100 246 91 274 42" fill="none" stroke="#7c3aed" stroke-width="8" stroke-linecap="round"/>
+                <circle cx="28" cy="98" r="8" fill="#7c3aed"/><circle cx="274" cy="42" r="8" fill="#7c3aed"/>
+              </svg>
+              <p id="modeLeftText">The ball signal controls virtual heading and forward velocity. Physical movement and virtual motion are coupled.</p>
+            </div>
+            <div class="mode-panel">
+              <h4 id="modeRightTitle">Virtual maze route</h4>
+              <svg viewBox="0 0 300 132" id="modeVirtual" aria-hidden="true">
+                <path d="M36 105 L146 105 L146 32 L248 32" fill="none" stroke="#2563eb" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M36 105 C90 96 128 78 146 32 C178 49 210 45 248 32" fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <p id="modeRightText">The virtual trajectory is the same stream the mouse sees and acts on.</p>
+            </div>
+          </div>
+        </div>
+        <figure class="evidence">
+          <img src="assets/figure-3-ball-vs-bmi.png" alt="Figure 3 crop comparing ball and BMI trajectories and classifier results">
+          <figcaption>Figure 3 evidence: virtual trajectories can look task-appropriate while physical running trajectories differ between ball and BMI trials. Correct trial lengths were comparable: 16.5 &plusmn; 0.8 s for ball and 15.8 &plusmn; 0.7 s for BMI.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>The Correction Test</h2>
+        <p class="lede">The authors needed to rule out a boring explanation: maybe mice simply replayed memorized running patterns. The correction analysis shows the opposite: mice physically reacted when the BMI trajectory deviated.</p>
+        <div class="correction-widget">
+          <div class="slider-row">
+            <label for="deviationSlider">heading deviation</label>
+            <input id="deviationSlider" type="range" min="0" max="100" value="62" oninput="updateCorrection(this.value)">
+            <span id="deviationLabel">large</span>
+          </div>
+          <div class="correction-display">
+            <div class="correction-card">
+              <b>Virtual heading error</b>
+              <div class="gauge"><span id="headingGauge" style="--w:62%"></span></div>
+              <p>The BMI path is offset from the usual ball-control path at the same maze location.</p>
+            </div>
+            <div class="correction-card">
+              <b>Mouse ball correction</b>
+              <div class="gauge"><span id="ballGauge" style="--w:74%"></span></div>
+              <p>The mouse turns the ball in the opposite direction, as if trying to correct the error.</p>
+            </div>
+            <div class="correction-card">
+              <b>Decoder correction</b>
+              <div class="gauge"><span id="decoderGauge" style="--w:34%"></span></div>
+              <p>The decoder output corrects more weakly in the immediate moment, showing a decoupling from raw movement.</p>
+            </div>
+          </div>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-4-corrections.png" alt="Figure 4 crop showing heading deviation and correction correlations">
+            <figcaption>Figure 4 evidence: heading deviation is negatively correlated with ball angular velocity across most maze bins, while decoder output shows weaker immediate correction.</figcaption>
+          </figure>
+          <figure class="evidence">
+            <img src="assets/figure-5-separate-signals.png" alt="Figure 5 crop showing neural activity and separate decoder weights">
+            <figcaption>Figure 5 evidence: PPC contains signals for corrective physical movements, but the BMI heading decoder and ball angular velocity decoder use nearly independent weight patterns.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Distinct Signals Inside PPC</h2>
+        <p class="lede">The paper's most useful mental model is not "PPC equals movement." It is a mixed population where movement-related signals and navigational heading signals can be separated by different decoders.</p>
+        <div class="matrix-compare">
+          <div class="weight-map">
+            <h3>Heading decoder weights</h3>
+            <div class="weight-grid" id="headingWeights" aria-hidden="true"></div>
+            <p>Used online to drive virtual heading during BMI trials.</p>
+          </div>
+          <div class="weight-map">
+            <h3>Corrective movement weights</h3>
+            <div class="weight-grid" id="movementWeights" aria-hidden="true"></div>
+            <p>Trained offline to decode ball angular velocity during correction events.</p>
+          </div>
+        </div>
+        <div class="callout orange">The reported cosine similarity between heading-direction weights and corrective ball-angular-velocity weights was 0.026 &plusmn; 0.01, while cross-validations of the movement decoder were 0.72 &plusmn; 0.02. That is the numeric backbone of the "separate signals" claim.</div>
+      </section>
+
+      <section>
+        <h2>BMI Is A Different Brain State, Not A Total Remap</h2>
+        <p class="lede">The BMI context changed neural activity. Population activity could distinguish ball from BMI trials, and activity was elevated during BMI trials. But the organization was not completely destroyed, which is why the fixed decoder still worked.</p>
+        <div class="stats">
+          <div class="stat-box"><strong>19</strong><span>BMI sessions from 5 mice in the main closed-loop analyses</span></div>
+          <div class="stat-box"><strong>0.79</strong><span>fraction of neurons with increased activity on BMI trials, &plusmn; 0.05</span></div>
+          <div class="stat-box"><strong>50</strong><span>spatial bins used for many trajectory and neural analyses</span></div>
+          <div class="stat-box"><strong>4 days</strong><span>fixed-decoder testing sequence shown across days</span></div>
+        </div>
+        <figure class="evidence">
+          <img src="assets/figure-6-bmi-state.png" alt="Figure 6 crop showing BMI neural activity increases and tuning comparisons">
+          <figcaption>Figure 6 evidence: neural activity increased during BMI trials, but tuning relationships were largely compatible with the decoder.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>Implications</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>If you study circuits</h3>
+            <p>This is a causal assay for a high-level cortical population: put the signal inside the behavioral loop and see whether behavior still works.</p>
+          </article>
+          <article class="card">
+            <h3>If you build BMIs</h3>
+            <p>The result shows that an optical, fixed decoder can drive a complex virtual task without a long retraining phase, at least in this constrained setting.</p>
+          </article>
+          <article class="card">
+            <h3>If you read PPC papers</h3>
+            <p>The findings support the view that posterior parietal cortex carries planned trajectory signals, not merely sensory or motor readouts.</p>
+          </article>
+          <article class="card">
+            <h3>If you worry about causality</h3>
+            <p>The paper complements inhibition studies: disruption asks whether the area is necessary; BMI control asks whether the activity can be sufficient in context.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Limits</h2>
+        <div class="limits-list">
+          <div class="limit-row"><b>BMI context only</b><span>The authors do not claim PPC controls natural behavior in exactly the same way as it controls this BMI setup.</span></div>
+          <div class="limit-row"><b>Performance gap</b><span>Mice performed better on ball trials than BMI trials, likely because decoding was imperfect and calcium signals are slower than spikes.</span></div>
+          <div class="limit-row"><b>Simple decoder</b><span>The linear decoder is efficient and interpretable, but more complex or dynamical decoders might perform better at the cost of speed.</span></div>
+          <div class="limit-row"><b>Optical latency</b><span>The system ran at the two-photon acquisition rate, and calcium indicator dynamics impose their own response limits.</span></div>
+          <div class="limit-row"><b>Small animal set</b><span>The main experiments used five mice, which is typical for this kind of systems neuroscience study but still constrains generalization.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Quiz</h2>
+        <div class="quiz-box">
+          <h3>1. Why is closed-loop BMI control stronger evidence than offline decoding?</h3>
+          <div class="answers">
+            <button onclick="answerQuiz(this, false, 'q1')">Because offline decoding uses too many neurons.</button>
+            <button onclick="answerQuiz(this, true, 'q1')">Because errors feed back into behavior, so a merely passive state readout should fail to steer reliably.</button>
+            <button onclick="answerQuiz(this, false, 'q1')">Because closed-loop trials always have better signal quality.</button>
+          </div>
+          <div class="quiz-feedback" id="q1">Correct: closed-loop control is unforgiving. If decoded activity only mirrors the current state, accumulated errors can destabilize the virtual trajectory.</div>
+        </div>
+        <div class="quiz-box">
+          <h3>2. What did the correction analysis add?</h3>
+          <div class="answers">
+            <button onclick="answerQuiz(this, false, 'q2')">It proved the treadmill was broken during BMI trials.</button>
+            <button onclick="answerQuiz(this, false, 'q2')">It showed mice ignored the virtual environment.</button>
+            <button onclick="answerQuiz(this, true, 'q2')">It showed mice reacted to BMI heading errors, arguing against simple memorized autopilot behavior.</button>
+          </div>
+          <div class="quiz-feedback" id="q2">Correct: the mouse's corrective ball movements reveal online engagement with the virtual trajectory, even though the ball no longer drives the maze.</div>
+        </div>
+        <div class="quiz-box">
+          <h3>3. Why did the authors emphasize a fixed decoder?</h3>
+          <div class="answers">
+            <button onclick="answerQuiz(this, true, 'q3')">It makes immediate performance evidence that natural PPC activity already mapped onto usable navigation commands.</button>
+            <button onclick="answerQuiz(this, false, 'q3')">It lets the mouse learn a completely arbitrary decoder over many weeks.</button>
+            <button onclick="answerQuiz(this, false, 'q3')">It prevents any neural activity from changing during the task.</button>
+          </div>
+          <div class="quiz-feedback" id="q3">Correct: if the decoder had been slowly learned, success could reflect adaptation to a new interface rather than the native navigational content of PPC activity.</div>
+        </div>
+      </section>
+    </section>
+
+    <section id="tab-feedback" class="tab-panel">
+      <section>
+        <h2>comment/feedback</h2>
+        <p class="lede">Use the floating feedback panel to highlight text, select a page element, attach a note, and submit comments in a batch. The local review server saves those comments so Codex can apply scoped edits to this explainer.</p>
+        <div class="feedback-actions">
+          <article class="card">
+            <h3>open the panel</h3>
+            <p>Use the button below or the floating launcher after the feedback runtime is injected.</p>
+          </article>
+          <article class="card">
+            <h3>attach a note</h3>
+            <p>Highlight confusing wording or select a visual block, then write what should change.</p>
+          </article>
+          <article class="card">
+            <h3>submit batch</h3>
+            <p>Send comments together so related edits can be handled in one pass.</p>
+          </article>
+        </div>
+        <p><button class="feedback-button" disabled>feedback panel is local-only</button></p>
+        <p>Local inbox path:</p>
+        <p><span class="path-chip">s2211124725006333-bmi-navigation/feedback/inbox.jsonl</span></p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Source paper: Sorrell et al., "An optical brain-machine interface reveals a causal role of posterior parietal cortex in goal-directed navigation," Cell Reports 44, 115862, 2025.
+  </footer>
+
+  <script>
+    const heroSubtitles = {
+      ez: "The whole paper in 5 minutes 🧠💥",
+      normal: "The rigorous version: decoder, closed-loop control, behavioral checks, neural-state shifts, limits, and quiz.",
+      feedback: "Review surface for inline comments and targeted edits."
+    };
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+      document.getElementById("tab-" + tab).classList.add("active");
+      document.querySelectorAll(".tab-btn").forEach(button => button.classList.remove("active"));
+      btn.classList.add("active");
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      document.body.classList.add("mode-" + tab);
+      document.getElementById("heroSubtitle").textContent = heroSubtitles[tab] || heroSubtitles.ez;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleConcept(card) {
+      card.classList.toggle("open");
+    }
+
+    const loopSteps = [
+      {
+        title: "1. See cue and maze",
+        text: "The mouse sees a cue in a virtual T-maze and needs to turn into the rewarded arm.",
+        leftTitle: "Surface layer",
+        leftClass: "maze-mini",
+        leftText: "Visible object: cue, corridor, T-junction, and goal arm.",
+        rightTitle: "Data layer",
+        rightClass: "trajectory-mini",
+        rightSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M106 80 L106 18 L70 18 M106 18 L150 18" fill="none" stroke="#cbd5e1" stroke-width="14" stroke-linecap="round"/><path d="M106 80 C101 56 111 38 145 20" fill="none" stroke="#7c3aed" stroke-width="4"/></svg>',
+        rightText: "Variables: maze position, heading direction, upcoming choice."
+      },
+      {
+        title: "2. Record PPC activity",
+        text: "Two-photon imaging captures calcium activity from posterior parietal cortex while the task unfolds.",
+        leftTitle: "Surface layer",
+        leftClass: "pixel-mini",
+        leftText: "Visible object: a live movie of bright and dim fluorescence pixels.",
+        rightTitle: "Data layer",
+        rightClass: "decoder-mini",
+        rightText: "Data shape: downsampled frames, processed as pixel intensity vectors."
+      },
+      {
+        title: "3. Decode commands",
+        text: "A linear decoder maps the processed activity vector into virtual heading direction and forward velocity.",
+        leftTitle: "Surface layer",
+        leftClass: "decoder-mini",
+        leftText: "Visible object: weights that say which pixels push each command up or down.",
+        rightTitle: "Data layer",
+        rightClass: "trajectory-mini",
+        rightSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M18 68 H202" stroke="#e5e7eb" stroke-width="8"/><path d="M18 68 C64 36 112 28 202 34" fill="none" stroke="#2563eb" stroke-width="4"/><path d="M18 28 C72 56 126 60 202 48" fill="none" stroke="#0d9488" stroke-width="4"/></svg>',
+        rightText: "Outputs: heading command and forward-velocity command."
+      },
+      {
+        title: "4. Move in VR",
+        text: "On BMI trials, the virtual world updates from decoded activity, bypassing the treadmill signal.",
+        leftTitle: "Surface layer",
+        leftClass: "trajectory-mini",
+        leftSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M34 76 L108 76 L108 18 L184 18" fill="none" stroke="#dbeafe" stroke-width="14" stroke-linecap="round"/><path d="M34 76 C78 70 104 54 108 18 C132 32 160 30 184 18" fill="none" stroke="#059669" stroke-width="4"/></svg>',
+        leftText: "Visible object: the virtual mouse moves through the maze.",
+        rightTitle: "Data layer",
+        rightClass: "trajectory-mini",
+        rightSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M16 74 H204" stroke="#e5e7eb" stroke-width="8"/><circle cx="70" cy="74" r="9" fill="#2563eb"/><circle cx="147" cy="74" r="9" fill="#0d9488"/><path d="M70 74 L147 74" stroke="#111827" stroke-width="3"/></svg>',
+        rightText: "State change: current virtual heading becomes the next sensory input."
+      },
+      {
+        title: "5. Mouse reacts",
+        text: "If the BMI heading deviates, the mouse may physically rotate the ball to correct, even though the ball is no longer controlling VR.",
+        leftTitle: "Surface layer",
+        leftClass: "correction-mini",
+        leftSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M28 45 C72 15 120 72 190 34" fill="none" stroke="#84cc16" stroke-width="5"/><path d="M28 62 C78 66 120 42 190 48" fill="none" stroke="#7c3aed" stroke-width="4" stroke-dasharray="8 8"/></svg>',
+        leftText: "Visible object: ball rotations reveal attempted correction.",
+        rightTitle: "Data layer",
+        rightClass: "trajectory-mini",
+        rightSvg: '<svg viewBox="0 0 220 90" aria-hidden="true"><path d="M28 72 H192" stroke="#fed7aa" stroke-width="12"/><path d="M110 20 V72" stroke="#f97316" stroke-width="4"/><path d="M110 20 l-20 20 M110 20 l20 20" stroke="#f97316" stroke-width="4"/></svg>',
+        rightText: "Inference: physical movement signal and BMI heading signal are separable."
+      }
+    ];
+
+    function makePixelMini() {
+      return Array.from({ length: 84 }, (_, i) => '<span style="--i:' + (i + 1) + '"></span>').join("");
+    }
+
+    function makeDecoderMini() {
+      const heights = [22, 72, 41, 88, 58, 36, 80, 50, 66, 28, 74];
+      return heights.map(h => '<span style="--h:' + h + '"></span>').join("");
+    }
+
+    function setLoopStep(index, btn) {
+      document.querySelectorAll(".step-controls button").forEach(button => button.classList.remove("active"));
+      btn.classList.add("active");
+      const s = loopSteps[index];
+      const leftInner = s.leftSvg || (s.leftClass === "pixel-mini" ? makePixelMini() : s.leftClass === "decoder-mini" ? makeDecoderMini() : "");
+      const rightInner = s.rightSvg || (s.rightClass === "pixel-mini" ? makePixelMini() : s.rightClass === "decoder-mini" ? makeDecoderMini() : "");
+      document.getElementById("loopStage").innerHTML = `
+        <h3>${s.title}</h3>
+        <p>${s.text}</p>
+        <div class="surface-data">
+          <div class="layer-box">
+            <b>${s.leftTitle}</b>
+            <div class="${s.leftClass}">${leftInner}</div>
+            <p>${s.leftText}</p>
+          </div>
+          <div class="layer-box">
+            <b>${s.rightTitle}</b>
+            <div class="${s.rightClass}">${rightInner}</div>
+            <p>${s.rightText}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function setTrialMode(mode, btn) {
+      document.querySelectorAll(".segmented button").forEach(button => button.classList.remove("active"));
+      btn.classList.add("active");
+      const bmi = mode === "bmi";
+      document.getElementById("modeLeftTitle").textContent = bmi ? "Physical ball route" : "Physical ball route";
+      document.getElementById("modeRightTitle").textContent = bmi ? "Decoded virtual route" : "Virtual maze route";
+      document.getElementById("modeLeftText").textContent = bmi
+        ? "The ball is still measured, and the mouse may make corrective movements, but this signal is bypassed."
+        : "The ball signal controls virtual heading and forward velocity. Physical movement and virtual motion are coupled.";
+      document.getElementById("modeRightText").textContent = bmi
+        ? "The virtual trajectory is generated by decoded PPC activity, so it can diverge from the mouse's physical running."
+        : "The virtual trajectory is the same stream the mouse sees and acts on.";
+      document.getElementById("modePhysical").innerHTML = bmi
+        ? '<path d="M30 90 C82 30 118 105 168 40 C204 10 246 66 276 30" fill="none" stroke="#84cc16" stroke-width="8" stroke-linecap="round"/><path d="M30 90 H276" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="6 8"/>'
+        : '<path d="M28 98 C68 42 126 38 160 68 C194 100 246 91 274 42" fill="none" stroke="#7c3aed" stroke-width="8" stroke-linecap="round"/><circle cx="28" cy="98" r="8" fill="#7c3aed"/><circle cx="274" cy="42" r="8" fill="#7c3aed"/>';
+      document.getElementById("modeVirtual").innerHTML = bmi
+        ? '<path d="M36 105 L146 105 L146 32 L248 32" fill="none" stroke="#dbeafe" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 105 C98 98 138 74 146 32 C178 48 214 44 248 32" fill="none" stroke="#059669" stroke-width="5" stroke-linecap="round"/><circle cx="248" cy="32" r="8" fill="#059669"/>'
+        : '<path d="M36 105 L146 105 L146 32 L248 32" fill="none" stroke="#2563eb" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 105 C90 96 128 78 146 32 C178 49 210 45 248 32" fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round"/>';
+    }
+
+    function updateCorrection(value) {
+      const v = Number(value);
+      document.getElementById("deviationLabel").textContent = v < 34 ? "small" : v < 67 ? "moderate" : "large";
+      document.getElementById("headingGauge").style.setProperty("--w", v + "%");
+      document.getElementById("ballGauge").style.setProperty("--w", Math.min(100, v + 12) + "%");
+      document.getElementById("decoderGauge").style.setProperty("--w", Math.max(12, Math.round(v * 0.55)) + "%");
+    }
+
+    function fillWeights(id, seedOffset) {
+      const node = document.getElementById(id);
+      if (!node) return;
+      const cells = [];
+      for (let i = 0; i < 160; i++) {
+        const wave = Math.sin((i + seedOffset) * 1.7) + Math.cos((i * 3 + seedOffset) * 0.31);
+        const hue = wave > 0 ? 210 : 4;
+        const op = Math.min(0.9, 0.18 + Math.abs(wave) * 0.24);
+        cells.push('<span style="--hue:' + hue + '; --op:' + op.toFixed(2) + '"></span>');
+      }
+      node.innerHTML = cells.join("");
+    }
+
+    function answerQuiz(btn, correct, targetId) {
+      const box = btn.closest(".quiz-box");
+      box.querySelectorAll(".answers button").forEach(button => {
+        button.classList.remove("correct", "wrong");
+      });
+      btn.classList.add(correct ? "correct" : "wrong");
+      const feedback = document.getElementById(targetId);
+      feedback.classList.add("visible");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    fillWeights("headingWeights", 3);
+    fillWeights("movementWeights", 29);
+  </script>
+</body>
+</html>
