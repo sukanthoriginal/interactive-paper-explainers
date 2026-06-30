@@ -1,0 +1,31 @@
+[
+  {
+    "id": "batch-2026-06-30-rf-practice",
+    "created_at": "2026-06-30T15:06:04+05:30",
+    "comments": [
+      {
+        "type": "selection",
+        "comment": "i dont understand what this means in practice.",
+        "quote": "Receptive-field size simulator\nV1\n3.9\nA1\n18.0\nIn the paper, mean A1 receptive-field diameter was 10.9 deg; V1 was 3.9 deg. Drag the A1 diameter to feel how quickly \"a cell's patch of visual world\" becomes coarse.\n\nA1 receptive-field diameter\n18.0 deg\n\nA1 did not merely shift its map into the periphery. Even when the authors matched eccentricity below 30 deg, A1 fields were still larger: 9.7 deg versus 3.9 deg.",
+        "anchor": {
+          "cf_id": "el-69",
+          "selector": "[data-cf-id=\"el-69\"]",
+          "tag": "h3",
+          "id": null,
+          "text_snippet": "Receptive-field size simulator",
+          "outer_html": "<h3 data-cf-id=\"el-69\">Receptive-field size simulator</h3>"
+        },
+        "id": "c-1782812160259-l6gk",
+        "created_at": "2026-06-30T09:36:00.259Z"
+      }
+    ],
+    "changes": [
+      {
+        "id": "ch-rf-practice",
+        "title": "Show what receptive-field size means in practice",
+        "anchor": "[data-cf-change=\"ch-rf-practice\"]",
+        "in_response_to": ["c-1782812160259-l6gk"]
+      }
+    ]
+  }
+]
