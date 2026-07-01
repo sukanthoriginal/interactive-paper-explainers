@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beyond Sight - Blind V1 and Image Models</title>
+  <style>
+    :root {
+      --blue: #2563eb;       --blue-light: #dbeafe;     --blue-dark: #1e40af;
+      --gray: #6b7280;       --gray-light: #f3f4f6;     --gray-dark: #1f2937;
+      --green: #059669;      --green-light: #d1fae5;
+      --red: #dc2626;        --red-light: #fee2e2;
+      --orange: #d97706;     --orange-light: #fef3c7;
+      --purple: #7c3aed;     --purple-light: #ede9fe;
+      --teal: #0d9488;       --teal-light: #ccfbf1;
+      --pink: #db2777;       --pink-light: #fce7f3;
+      --line: #e5e7eb;
+      --paper: #ffffff;
+      --body: #fafafa;
+      --navy: #10223f;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    button,
+    .chrome,
+    .tab-bar,
+    .hero-meta,
+    .section-label,
+    .stat-box,
+    .card,
+    .concept-card,
+    .callout,
+    .caption,
+    .quiz-box,
+    .feedback-panel,
+    .task-stepper,
+    .evidence-frame,
+    .feature-table,
+    .result-board,
+    .limits-list,
+    .timeline-board {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: inherit; }
+
+    .hero {
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      transition: background 0.2s ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 54%, #0d9488 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #111827 0%, #0d9488 100%);
+    }
+
+    .hero-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 56px 24px 42px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+      gap: 30px;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 820;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(2.1rem, 5vw, 4.5rem);
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 18px 0 0;
+      max-width: 760px;
+      color: rgba(255,255,255,0.9);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      line-height: 1.45;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .hero-meta span {
+      padding: 7px 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .hero-visual {
+      min-height: 330px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.13);
+      padding: 18px;
+      box-shadow: 0 24px 70px rgba(15,23,42,0.22);
+    }
+
+    .hero-circuit {
+      display: grid;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .hero-row {
+      display: grid;
+      grid-template-columns: 90px repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .hero-label {
+      color: rgba(255,255,255,0.76);
+      font-size: 0.75rem;
+      font-weight: 860;
+      text-transform: uppercase;
+    }
+
+    .hero-node {
+      min-width: 0;
+      min-height: 68px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.14);
+      color: white;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 820;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+      position: relative;
+    }
+
+    .hero-node.hot {
+      background: rgba(255,255,255,0.92);
+      color: #111827;
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .tab-btn {
+      min-height: 54px;
+      padding: 0 24px;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--gray);
+      font-size: 0.92rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      color: var(--pink);
+      border-bottom-color: var(--pink);
+    }
+
+    body.mode-normal .tab-btn.active {
+      color: var(--blue-dark);
+      border-bottom-color: var(--blue-dark);
+    }
+
+    body.mode-feedback .tab-btn.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child { border-bottom: 0; }
+
+    .section-inner {
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .section-inner.narrow { max-width: 840px; }
+
+    .section-label {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: #111827;
+      font-size: clamp(1.7rem, 3.5vw, 2.55rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: #111827;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    .section-note {
+      max-width: 780px;
+      margin-bottom: 22px;
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .ez-section {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .ez-section h2 {
+      color: #111827;
+    }
+
+    .ez-big {
+      font-size: clamp(1.18rem, 2.4vw, 1.58rem);
+      line-height: 1.46;
+      color: #273244;
+    }
+
+    .ez-emoji-block {
+      display: grid;
+      gap: 10px;
+      margin: 24px 0;
+      padding: 18px;
+      border: 1px solid #f9a8d4;
+      border-radius: 8px;
+      background: #fdf2f8;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .ez-emoji-block div {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      color: #4b2443;
+      font-weight: 650;
+    }
+
+    .ez-analogy {
+      margin: 22px 0 0;
+      padding: 18px 20px;
+      border: 1px solid #fcd34d;
+      border-left: 5px solid var(--orange);
+      border-radius: 0 8px 8px 0;
+      background: #fffbeb;
+      color: #68340d;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .ez-tldr {
+      margin-top: 26px;
+      padding: 24px;
+      border: 1px solid #c4b5fd;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fdf2f8, #ede9fe);
+      color: #2f1b56;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.15rem;
+      line-height: 1.5;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .card,
+    .concept-card,
+    .stat-box,
+    .evidence-frame,
+    .quiz-box,
+    .feedback-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+
+    .card,
+    .concept-card {
+      padding: 18px;
+    }
+
+    .card p,
+    .concept-card p {
+      color: #4b5563;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .concept-card {
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .concept-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue);
+      box-shadow: 0 16px 34px rgba(37,99,235,0.10);
+    }
+
+    .card-detail {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: #374151;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .concept-card.open {
+      border-color: var(--blue);
+      background: #f8fbff;
+    }
+
+    .concept-card.open .card-detail { display: block; }
+
+    .hint {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--blue-dark);
+      font-size: 0.78rem;
+      font-weight: 820;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .stat-box {
+      padding: 18px;
+      min-height: 118px;
+    }
+
+    .stat-value {
+      display: block;
+      color: var(--blue-dark);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 8px;
+      color: #4b5563;
+      font-size: 0.85rem;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .callout {
+      margin: 22px 0;
+      padding: 16px 18px;
+      border: 1px solid #bfdbfe;
+      border-left: 5px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      background: var(--blue-light);
+      color: #173264;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .callout.green {
+      border-color: #86efac;
+      border-left-color: var(--green);
+      background: var(--green-light);
+      color: #064e3b;
+    }
+
+    .callout.orange {
+      border-color: #fcd34d;
+      border-left-color: var(--orange);
+      background: var(--orange-light);
+      color: #6b3608;
+    }
+
+    .callout.purple {
+      border-color: #c4b5fd;
+      border-left-color: var(--purple);
+      background: var(--purple-light);
+      color: #3b2076;
+    }
+
+    .paper-figure-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(300px, 0.96fr);
+      gap: 18px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    .evidence-frame {
+      overflow: hidden;
+    }
+
+    .evidence-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      background: white;
+    }
+
+    .evidence-frame.full {
+      grid-column: 1 / -1;
+    }
+
+    .caption {
+      display: block;
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--gray);
+      background: #fbfbfc;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .task-stepper {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(15,23,42,0.07);
+    }
+
+    .step-buttons {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-bottom: 1px solid var(--line);
+      background: #f8fafc;
+    }
+
+    .step-buttons button {
+      min-height: 52px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--gray);
+      font-size: 0.82rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .step-buttons button:last-child { border-right: 0; }
+
+    .step-buttons button.active {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: inset 0 -3px 0 var(--blue);
+    }
+
+    .step-body {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.82fr) minmax(0, 1.18fr);
+      gap: 18px;
+      padding: 20px;
+      align-items: stretch;
+    }
+
+    .step-visual {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mini-brain {
+      width: min(300px, 92%);
+      aspect-ratio: 1.08;
+      position: relative;
+    }
+
+    .brain-shape {
+      position: absolute;
+      inset: 28px 34px 54px 44px;
+      border: 3px solid #94a3b8;
+      border-radius: 48% 52% 44% 56%;
+      background:
+        radial-gradient(circle at 70% 36%, rgba(219,39,119,0.26) 0 11%, transparent 12%),
+        radial-gradient(circle at 44% 52%, rgba(37,99,235,0.14) 0 16%, transparent 17%),
+        #f8fafc;
+    }
+
+    .implant-grid {
+      position: absolute;
+      right: 48px;
+      top: 70px;
+      width: 84px;
+      height: 84px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 3px;
+      padding: 7px;
+      border: 1px solid #64748b;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.13);
+    }
+
+    .implant-grid span {
+      border-radius: 50%;
+      background: #cbd5e1;
+    }
+
+    .implant-grid span.hot { background: var(--pink); }
+
+    .pulse-train {
+      position: absolute;
+      left: 54px;
+      top: 36px;
+      width: 130px;
+      height: 52px;
+      background:
+        linear-gradient(90deg, transparent 0 8%, var(--orange) 8% 11%, transparent 11% 18%, var(--orange) 18% 21%, transparent 21% 29%, var(--orange) 29% 32%, transparent 32% 41%, var(--orange) 41% 44%, transparent 44% 100%);
+      opacity: 0.85;
+    }
+
+    .phosphene-tile {
+      position: absolute;
+      left: 32px;
+      bottom: 28px;
+      width: 98px;
+      height: 98px;
+      border-radius: 8px;
+      background: #050505;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.2);
+    }
+
+    .phosphene-tile::before {
+      content: "";
+      position: absolute;
+      left: 44px;
+      top: 24px;
+      width: 10px;
+      height: 48px;
+      border-radius: 999px;
+      background: white;
+      transform: rotate(-8deg);
+      box-shadow: 0 0 14px rgba(255,255,255,0.7);
+    }
+
+    .signal-raster {
+      width: 88%;
+      height: 170px;
+      display: grid;
+      gap: 4px;
+      align-content: center;
+    }
+
+    .signal-raster span {
+      height: 4px;
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(90deg, #93c5fd 0 7px, transparent 7px 13px, #0d9488 13px 16px, transparent 16px 24px);
+      opacity: 0.74;
+    }
+
+    .signal-raster span:nth-child(2n) { transform: translateX(12px); opacity: 0.55; }
+    .signal-raster span:nth-child(3n) { transform: translateX(-8px); opacity: 0.85; }
+
+    .memory-loop {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 88%;
+    }
+
+    .memory-card {
+      min-height: 96px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      color: #334155;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .memory-card.dark {
+      background: #050505;
+      color: white;
+    }
+
+    .vector-bars {
+      width: 86%;
+      height: 180px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .vector-bars span {
+      width: 18px;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(180deg, var(--blue), #bfdbfe);
+    }
+
+    .score-board {
+      width: 88%;
+      display: grid;
+      gap: 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 94px 1fr;
+      gap: 10px;
+      align-items: center;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .score-track {
+      height: 15px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .score-track span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--orange), var(--green));
+    }
+
+    .step-copy {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .step-copy h3 { font-size: 1.35rem; }
+
+    .surface-data-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .surface-data-box {
+      min-height: 132px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+
+    .surface-data-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blue-dark);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .surface-data-box p {
+      color: #374151;
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+
+    .timeline-board {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .time-pill {
+      display: inline-grid;
+      place-items: center;
+      min-height: 36px;
+      border-radius: 999px;
+      background: var(--gray-light);
+      color: #334155;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .time-track {
+      min-height: 42px;
+      position: relative;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      background: #eff6ff;
+      overflow: hidden;
+    }
+
+    .time-track span {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: inherit;
+    }
+
+    .time-track .stim { left: 0; width: 18%; background: rgba(219,39,119,0.75); }
+    .time-track .delay { left: 18%; width: 58%; background: rgba(37,99,235,0.38); }
+    .time-track .recall { left: 76%; width: 24%; background: rgba(13,148,136,0.7); }
+
+    .feature-table-wrap {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow-x: auto;
+    }
+
+    .bands-mode-toggle {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--gray-light);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .bands-mode-toggle button {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      padding: 8px 15px;
+      color: var(--gray);
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .bands-mode-toggle button.active {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+    }
+
+    .feature-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .feature-table th,
+    .feature-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .feature-table th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .feature-table tr:last-child td { border-bottom: 0; }
+
+    .feature-table-wrap.hidden { display: none; }
+
+    .term {
+      border-bottom: 1px dotted var(--gray);
+      color: #111827;
+      font-weight: 820;
+      cursor: help;
+    }
+
+    .term:hover,
+    .term.active {
+      background: var(--orange-light);
+    }
+
+    .term-tip {
+      position: absolute;
+      z-index: 9999;
+      max-width: 320px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.28);
+    }
+
+    .term-tip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .result-board {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: 190px 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .result-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .result-name {
+      color: #111827;
+      font-size: 0.9rem;
+      font-weight: 850;
+    }
+
+    .result-meter {
+      height: 16px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .result-meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+    }
+
+    .result-note {
+      color: var(--gray);
+      font-size: 0.82rem;
+      font-weight: 760;
+    }
+
+    .mei-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    .mei-explain {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mapping-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mapping-card {
+      min-height: 134px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .mapping-card h4 {
+      margin: 0 0 8px;
+      color: #111827;
+      font-size: 0.92rem;
+    }
+
+    .mapping-card p {
+      color: #4b5563;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .limits-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .limit-row strong {
+      color: var(--red);
+      font-size: 0.92rem;
+    }
+
+    .quiz-box {
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f9fafb;
+      color: #1f2937;
+      text-align: left;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quiz-options button.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: #064e3b;
+    }
+
+    .quiz-options button.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: #7f1d1d;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-light);
+      color: #173264;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+
+    .feedback-panel {
+      padding: 22px;
+    }
+
+    .feedback-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .feedback-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .primary-btn {
+      min-height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue-dark);
+      color: white;
+      padding: 0 18px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    code {
+      border-radius: 5px;
+      background: #f3f4f6;
+      padding: 2px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .ipe-feedback-fallback {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2147483639;
+      border: 0;
+      border-radius: 999px;
+      background: #b14000;
+      color: white;
+      padding: 12px 18px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 880px) {
+      .hero-inner,
+      .paper-figure-grid,
+      .step-body,
+      .timeline-board,
+      .mei-board {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual { min-height: 260px; }
+      .hero-row { grid-template-columns: 78px repeat(3, minmax(0, 1fr)); }
+      .hero-node { min-height: 56px; font-size: 0.74rem; }
+      .step-buttons { grid-template-columns: 1fr; }
+      .step-buttons button { border-right: 0; border-bottom: 1px solid var(--line); }
+      .surface-data-grid,
+      .feedback-steps,
+      .mapping-strip {
+        grid-template-columns: 1fr;
+      }
+      .result-row,
+      .limit-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main { padding: 0 16px 64px; }
+      section { padding: 42px 0; }
+      .hero-inner { padding: 42px 16px 32px; }
+      .hero-circuit { gap: 9px; }
+      .hero-row { grid-template-columns: 1fr; }
+      .hero-node:not(:last-child)::after { content: none; }
+      .tab-btn { flex: 1; padding: 0 8px; font-size: 0.78rem; }
+      .stats { grid-template-columns: 1fr; }
+      .timeline-row { grid-template-columns: 1fr; }
+      .caption { padding-bottom: 76px; }
+    }
+  
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body class="mode-ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker">ICLR Re-Align 2024 workshop - arXiv:2403.12990</div>
+        <h1>Beyond Sight: image models and blind V1</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta">
+          <span>blind visual cortex</span>
+          <span>phosphene perception</span>
+          <span>image-model alignment</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Visual cortex and model alignment route">
+        <div class="hero-circuit">
+          <div class="hero-row">
+            <div class="hero-label">body</div>
+            <div class="hero-node hot">tiny electric pulse</div>
+            <div class="hero-node hot">visual cortex activity</div>
+            <div class="hero-node hot">little light shape</div>
+          </div>
+          <div class="hero-row">
+            <div class="hero-label">model</div>
+            <div class="hero-node">drawn light shape</div>
+            <div class="hero-node">vision network features</div>
+            <div class="hero-node">alignment score</div>
+          </div>
+          <div class="hero-row">
+            <div class="hero-label">question</div>
+            <div class="hero-node">no natural image</div>
+            <div class="hero-node hot">still visual-like?</div>
+            <div class="hero-node">prosthesis clue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Explainer tabs">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <div id="tab-ez" class="tab-panel active">
+      <section class="ez-section">
+        <h2>The paper asks a strange but important question</h2>
+        <p class="ez-big">A person can be blind and still have living activity in the brain area that normally handles seeing. This paper asks whether that area still keeps some visual-style organization inside it.</p>
+        <p class="ez-big">The researchers cannot just show the person photos and record the response. So they use a visual brain implant to make tiny light-like experiences, then ask whether an image-recognition model sees those experiences in a way that matches the brain recordings.</p>
+        <div class="ez-emoji-block">
+          <div><span>👁️</span><span>The eye is not providing ordinary visual input.</span></div>
+          <div><span>⚡</span><span>The implant makes small light sensations inside visual cortex.</span></div>
+          <div><span>🤖</span><span>An image model is used as a measuring stick for visual meaning.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> Imagine an old movie theater with no film projector anymore. If you flash the screen directly with a little lamp, can you tell whether the theater still has a layout made for movies?</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>The person saw tiny artificial light shapes</h2>
+        <p class="ez-big">The implant did not restore normal sight. It produced small artificial light impressions called phosphenes. The participant remembered each little light shape, described it, and helped turn it into a drawing.</p>
+        <p class="ez-big">Those drawings became the bridge between brain and model. The brain side was electrical activity from visual cortex. The model side was what a trained image network did when it was shown the matching drawing.</p>
+        <div class="ez-emoji-block">
+          <div><span>💡</span><span>A phosphene is more like a tiny glow than a full picture.</span></div>
+          <div><span>✍️</span><span>The remembered glow was turned into a black-background drawing.</span></div>
+          <div><span>🌉</span><span>The drawing lets the model and brain be compared on the same thing.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> If the brain hums a tune and the model looks at sheet music for that tune, the question is whether the hum and the sheet music have matching structure.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>The main result: the model and blind visual cortex lined up</h2>
+        <p class="ez-big">The surprising part is that image models were not useless here. The better a model was at normal visual recognition, and the more it already resembled sighted visual brains, the better it tended to match activity in blind visual cortex.</p>
+        <p class="ez-big">The match was strongest right after the implant created the artificial light experience. The remembered-imagined part was weaker, but one slow brain-signal band still showed a real connection.</p>
+        <div class="ez-emoji-block">
+          <div><span>📈</span><span>Better visual models tended to line up better with blind visual cortex.</span></div>
+          <div><span>🔥</span><span>The clearest signal happened during the artificial light experience.</span></div>
+          <div><span>🧠</span><span>Memory and imagination also left traces, but less cleanly.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> The implant is like knocking on a locked room. During the knock, the room echoes in a way that still sounds a bit like a visual room, not a random storage closet.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>They also tried to guess what individual brain sites liked</h2>
+        <p class="ez-big">After showing that one image model matched the recordings pretty well, the authors used it backward. They asked: what picture would make this model predict a strong response from a particular recorded brain site?</p>
+        <p class="ez-big">The answer produced fuzzy grayscale images. These were not perfect readouts of the person's experience, but they often shared visible features with the little light shapes that caused strong responses.</p>
+        <div class="ez-emoji-block">
+          <div><span>🔁</span><span>First they used images to predict brain activity.</span></div>
+          <div><span>🖼️</span><span>Then they searched for images that would strongly drive a brain site.</span></div>
+          <div><span>🔦</span><span>The result is an early clue about what blind V1 sites might prefer.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> It is like learning which radio dial setting makes one speaker buzz, then guessing what kind of sound that speaker is tuned for.</div>
+      </section>
+
+      <section class="ez-section">
+        <h2>What this means, without overclaiming</h2>
+        <p class="ez-big">This paper does not prove that blind visual cortex works just like sighted visual cortex. It also does not prove that an image model can read thoughts.</p>
+        <p class="ez-big">The careful claim is better: even without normal visual input, blind V1 may preserve enough visual-style structure that modern image models can partially line up with it. That could help future visual prostheses create more useful artificial sight.</p>
+        <div class="ez-emoji-block">
+          <div><span>✅</span><span>Real clue: blind visual cortex still has visual-like measurable structure.</span></div>
+          <div><span>⚠️</span><span>Big caution: the dataset is small and depends on drawings of private experiences.</span></div>
+          <div><span>🛠️</span><span>Future use: design stimulation patterns that speak the cortex's remaining visual language.</span></div>
+        </div>
+        <div class="ez-tldr"><strong>TL;DR:</strong> The paper finds early evidence that image-recognition models can partly match activity in blind human V1 during implant-created light sensations. That suggests blind visual cortex may still preserve visual-style structure that could matter for better prosthetic vision.</div>
+      </section>
+    </div>
+
+    <div id="tab-normal" class="tab-panel">
+      <section>
+        <div class="section-inner narrow">
+          <p class="section-label">The Question</p>
+          <h2>Can a vision model help probe visual cortex when there is no natural vision?</h2>
+          <p>The paper studies neural activity from an awake blind human participant implanted with a 96-channel intracortical prosthesis in right parafoveal V1. The central problem is methodological as much as scientific: the participant cannot be shown ordinary visual stimuli, but the implant can evoke phosphenes through electrical stimulation.</p>
+          <p>The authors ask whether deep neural network activations computed from drawings of those phosphenes align with recorded blind V1 activity. If they do, then image models may provide a bridge for studying and eventually interfacing with blind visual cortex.</p>
+          <div class="callout green"><strong>Headline claim:</strong> DNN representations align with blind V1 activity, especially during electrically evoked perception, and better sighted-brain-aligned or higher-ImageNet-accuracy models tend to align better with blind V1.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Key Concepts</p>
+          <h2>The vocabulary you need before the results</h2>
+          <p class="section-note">Click any card to expand it. These concepts carry most of the paper's logic.</p>
+          <div class="cards">
+            <div class="concept-card" onclick="toggleConcept(this)">
+              <h3>Blind V1</h3>
+              <p>Primary visual cortex in a blind participant.</p>
+              <div class="card-detail">The participant lacks natural visual input, but neural activity in V1 persists. The paper asks whether that activity still has visual representational structure.</div>
+              <span class="hint">click to expand</span>
+            </div>
+            <div class="concept-card" onclick="toggleConcept(this)">
+              <h3>Phosphene</h3>
+              <p>An artificial visual percept evoked by stimulation.</p>
+              <div class="card-detail">Here, one of three chosen electrodes was stimulated, reliably producing spatially distinct light-like percepts that the participant later described and drew.</div>
+              <span class="hint">click to expand</span>
+            </div>
+            <div class="concept-card" onclick="toggleConcept(this)">
+              <h3>Representational alignment</h3>
+              <p>A score for whether two systems organize inputs similarly.</p>
+              <div class="card-detail">The authors compare DNN activations and neural activity using representational similarity analysis and cross-validated linear encoding.</div>
+              <span class="hint">click to expand</span>
+            </div>
+            <div class="concept-card" onclick="toggleConcept(this)">
+              <h3>Local field potential</h3>
+              <p>A slower population-level electrical signal.</p>
+              <div class="card-detail">The paper extracts theta, alpha, beta, and gamma local field potential bands, alongside spiking features, to test which neural signals align with DNN representations.</div>
+              <span class="hint">click to expand</span>
+            </div>
+            <div class="concept-card" onclick="toggleConcept(this)">
+              <h3>Maximally exciting image</h3>
+              <p>A model-generated guess about what a neuron site likes.</p>
+              <div class="card-detail">Using a linear map from ResNet-50 to blind V1, the authors optimize grayscale images predicted to drive specific recorded sites strongly.</div>
+              <span class="hint">click to expand</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Interactive Widget</p>
+          <h2>The experiment as a five-step alignment machine</h2>
+          <p class="section-note">Step through the pipeline. The left panel shows the object moving through the experiment; the right panel separates surface experience from hidden data representation.</p>
+          <div class="task-stepper">
+            <div class="step-buttons" aria-label="Experiment steps">
+              <button class="active" type="button" onclick="setTaskStep(0, this)">stimulate</button>
+              <button type="button" onclick="setTaskStep(1, this)">record</button>
+              <button type="button" onclick="setTaskStep(2, this)">remember</button>
+              <button type="button" onclick="setTaskStep(3, this)">model</button>
+              <button type="button" onclick="setTaskStep(4, this)">score</button>
+            </div>
+            <div class="step-body">
+              <div class="step-visual" id="taskVisual" aria-label="Current step visual">
+                <div class="mini-brain">
+                  <div class="pulse-train" aria-hidden="true"></div>
+                  <div class="brain-shape" aria-hidden="true"></div>
+                  <div class="implant-grid" aria-hidden="true">
+                    <span></span><span></span><span></span><span class="hot"></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span class="hot"></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span class="hot"></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                  <div class="phosphene-tile" aria-hidden="true"></div>
+                </div>
+              </div>
+              <div class="step-copy">
+                <h3 id="taskTitle">1. Electrical stimulation creates a phosphene</h3>
+                <div class="surface-data-grid">
+                  <div class="surface-data-box">
+                    <strong>Surface layer</strong>
+                    <p id="taskSurface">The participant experiences a small light-like shape caused by intracortical electrical stimulation.</p>
+                  </div>
+                  <div class="surface-data-box">
+                    <strong>Data layer</strong>
+                    <p id="taskData">One of three selected electrodes is stimulated with a 167 ms cathodic-first biphasic pulse train.</p>
+                  </div>
+                </div>
+                <div class="callout" id="taskTakeaway">The experiment creates a visual percept without natural visual input, giving the researchers a stimulus-like event inside blind V1.</div>
+              </div>
+            </div>
+          </div>
+          <div class="paper-figure-grid">
+            <div class="evidence-frame full">
+              <img src="assets/figure-1-workflow.png" alt="Figure 1 schematic showing stimulation, recording, drawing, image model representations, and alignment function">
+              <span class="caption">Figure 1 evidence: the paper's own schematic shows the two tracks that must be compared: neural representations from blind V1 and image-model representations from the drawn percept.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Method</p>
+          <h2>What was measured and how it became comparable</h2>
+          <div class="stats">
+            <div class="stat-box">
+              <span class="stat-value">96</span>
+              <span class="stat-label">intracortical channels in right parafoveal V1</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">90</span>
+              <span class="stat-label">trials in the working memory task</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">3</span>
+              <span class="stat-label">chosen stimulating electrodes producing distinct phosphenes</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">167 ms</span>
+              <span class="stat-label">duration of the stimulation pulse train</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">244 x 244</span>
+              <span class="stat-label">pixel canvas used for digitized phosphene drawings</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">69</span>
+              <span class="stat-label">Brain-Score models tested for DNN-blind V1 alignment</span>
+            </div>
+          </div>
+
+          <div class="timeline-board">
+            <div class="timeline" aria-label="Working memory task timeline">
+              <div class="timeline-row">
+                <span class="time-pill">stimulation</span>
+                <div class="time-track"><span class="stim"></span></div>
+              </div>
+              <div class="timeline-row">
+                <span class="time-pill">delay</span>
+                <div class="time-track"><span class="delay"></span></div>
+              </div>
+              <div class="timeline-row">
+                <span class="time-pill">recall</span>
+                <div class="time-track"><span class="recall"></span></div>
+              </div>
+              <div class="callout orange"><strong>Task logic:</strong> stimulation evokes the percept, the participant keeps it in working memory for 3-5 s, then an audio cue triggers vivid recall of shape, brightness, and visual-field location.</div>
+            </div>
+            <div class="timeline">
+              <h3>Alignment calculation</h3>
+              <p>The paper uses two comparison routes: representational similarity analysis and linear encoding. For linear encoding, DNN activations are projected with principal components, mapped to neural activity with ridge regression, and scored with Pearson correlation on held-out electrode data.</p>
+              <p>The baseline is important: the authors also compare against drawing-only alignment without DNN features, so the question is whether the model adds visual representational structure beyond the raw drawing.</p>
+            </div>
+          </div>
+
+          <div class="bands-mode-toggle" aria-label="Feature table mode">
+            <button class="active" onclick="setBandsMode('plain', this)">Plain language</button>
+            <button onclick="setBandsMode('science', this)">Scientific (with jargon)</button>
+          </div>
+          <div class="feature-table-wrap" id="bandsTablePlain">
+            <table class="feature-table">
+              <thead><tr><th>Feature</th><th>Plain meaning</th><th>Why it matters here</th></tr></thead>
+              <tbody>
+                <tr><td>Spike count style signals</td><td>Fast "did cells fire?" measurements.</td><td>These directly track neural firing during stimulation.</td></tr>
+                <tr><td>Whole spike-envelope signal</td><td>A threshold-free estimate of spiking energy.</td><td>This was the strongest ResNet-50 stimulation-period match.</td></tr>
+                <tr><td>Slow population rhythms</td><td>Shared electrical rhythms from groups of neurons.</td><td>These matter for delay and recall because imagery may appear more in slower activity.</td></tr>
+                <tr><td>Drawing-only baseline</td><td>How far the phosphene image alone gets without model features.</td><td>DNNs only matter if they beat this baseline.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="feature-table-wrap hidden" id="bandsTableScience">
+            <table class="feature-table">
+              <thead><tr><th>Feature</th><th>Scientific form</th><th>Role in the paper</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term" title="Multi-unit activity: spikes from nearby neurons detected after bandpass filtering and thresholding.">MUA</span></td><td>500-5000 Hz bandpass, spike thresholding, peri-stimulus time histogram.</td><td>Used as one spiking feature set for alignment.</td></tr>
+                <tr><td><span class="term" title="Entire or envelope spiking activity: threshold-free approximation of spiking activity.">ESA</span></td><td>750-7500 Hz bandpass, rectification, lowpass envelope, 10 ms bins.</td><td>In ResNet-50 stimulation, ESA had the strongest average correlation, r = 0.518.</td></tr>
+                <tr><td><span class="term" title="Local field potential: lower-frequency population-level electrical activity.">LFP</span></td><td>Theta 4-8 Hz, alpha 8-13 Hz, beta 13-30 Hz, gamma 30-100 Hz.</td><td>Beta was the only recall-period activity significantly above baseline.</td></tr>
+                <tr><td><span class="term" title="Representational similarity analysis: compares pairwise similarity patterns between systems.">RSA</span> and <span class="term" title="Linear encoding: learns a linear map from model features to neural activity.">linear encoding</span></td><td>Dissimilarity-matrix comparison and cross-validated ridge regression.</td><td>Two complementary ways to score DNN-blind V1 alignment.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Results</p>
+          <h2>Across models, visual competence predicted blind V1 alignment</h2>
+          <p class="section-note">Figure 2 is the paper's main cross-model result. The top row is stimulation-evoked activity; the bottom row is recall. The upward trends mean that models more aligned with sighted brains or better at ImageNet also tended to align better with blind V1.</p>
+          <div class="evidence-frame">
+            <img src="assets/figure-2-alignment.png" alt="Figure 2 showing blind V1 alignment distributions and scatterplots against sighted V1 predictivity, sighted neural predictivity, and ImageNet accuracy">
+            <span class="caption">Figure 2 evidence: electrically evoked blind V1 alignment scores were significantly above drawing-only baseline for all feature sets except LFP gamma. Recall-period alignment was weaker, with LFP beta as the standout above-baseline feature.</span>
+          </div>
+
+          <div class="result-board" aria-label="Result summary meters">
+            <div class="result-row">
+              <div class="result-name">Stimulation vs baseline</div>
+              <div class="result-meter"><span style="width: 86%"></span></div>
+              <div class="result-note">broadly positive</div>
+            </div>
+            <div class="result-row">
+              <div class="result-name">Recall vs baseline</div>
+              <div class="result-meter"><span style="width: 38%"></span></div>
+              <div class="result-note">mostly weak</div>
+            </div>
+            <div class="result-row">
+              <div class="result-name">Sighted neural predictivity link</div>
+              <div class="result-meter"><span style="width: 68%"></span></div>
+              <div class="result-note">moderate positive</div>
+            </div>
+            <div class="result-row">
+              <div class="result-name">ImageNet accuracy link</div>
+              <div class="result-meter"><span style="width: 74%"></span></div>
+              <div class="result-note">moderate positive</div>
+            </div>
+          </div>
+
+          <div class="callout"><strong>Interpretation:</strong> the effect is not simply "the drawing contains the shape." Models that learn richer visual features add predictive structure for blind V1 activity during artificial visual perception.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">ResNet-50 Probe</p>
+          <h2>What changed across stimulation, delay, and recall</h2>
+          <p class="section-note">The focused ResNet-50 analysis asks where the alignment lives in time and signal type.</p>
+          <div class="evidence-frame">
+            <img src="assets/figure-3-resnet-meis.png" alt="Figure 3 showing ResNet-50 blind V1 alignment across stimulation, delay, recall, and phosphene versus MEI examples">
+            <span class="caption">Figure 3 evidence: during the first 200 ms of stimulation, all measured activity types except LFP gamma significantly correlated with ResNet-50 outputs; ESA was strongest on average. During post-stimulation delay, theta, alpha, and beta local field potentials remained significant. During recall, only beta local field potential was significant.</span>
+          </div>
+          <div class="stats">
+            <div class="stat-box">
+              <span class="stat-value">r = 0.518</span>
+              <span class="stat-label">average ESA correlation during stimulation in the ResNet-50 analysis</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">167-367 ms</span>
+              <span class="stat-label">post-stimulation window where theta, alpha, and beta LFP stayed positive</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value">p &lt; 0.01</span>
+              <span class="stat-label">recall-period beta LFP significance reported for ResNet-50</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Interpretability</p>
+          <h2>Using the aligned model backward to ask what blind V1 sites prefer</h2>
+          <div class="mei-board">
+            <div class="evidence-frame">
+              <img src="assets/figure-3-phosphene-mei-strip.png" alt="Figure 3B crop showing nine perceived phosphenes and corresponding maximally exciting images">
+              <span class="caption">Figure 3B crop: top row shows the participant's rendered phosphenes; bottom row shows model-predicted maximally exciting images for the most responsive neural sites.</span>
+            </div>
+            <div class="mei-explain">
+              <p>The authors fit a linear model from the first layer of ResNet-50 to blind V1 activity, then searched for grayscale images predicted to maximize a selected neural site's response. This is a proof of concept, not a finished decoder.</p>
+              <div class="mapping-strip">
+                <div class="mapping-card">
+                  <h4>1. Phosphene</h4>
+                  <p>The artificial percept is drawn as a small grayscale shape on black.</p>
+                </div>
+                <div class="mapping-card">
+                  <h4>2. Neural site</h4>
+                  <p>The paper picks a recording site that fired strongly for that phosphene.</p>
+                </div>
+                <div class="mapping-card">
+                  <h4>3. MEI</h4>
+                  <p>The model searches for an image predicted to drive that site maximally.</p>
+                </div>
+              </div>
+              <div class="callout purple"><strong>Why this matters:</strong> if future datasets are larger and more diverse, this approach could help infer what blind V1 sites are functionally tuned for, which may inform visual prosthesis stimulation strategies.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Implications</p>
+          <h2>What changes if this result holds up?</h2>
+          <div class="cards">
+            <div class="card">
+              <h3>For visual prostheses</h3>
+              <p>DNN-aligned models could help design stimulation patterns that better match the remaining visual representational structure in blind V1.</p>
+            </div>
+            <div class="card">
+              <h3>For blindness and plasticity</h3>
+              <p>The result suggests blind V1 may preserve visual-style processing capacity while also being reorganized by blindness and non-visual use.</p>
+            </div>
+            <div class="card">
+              <h3>For model neuroscience</h3>
+              <p>Brain-like image models may be useful beyond sighted animal datasets, extending representational alignment tools into human neuroprosthetic contexts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner">
+          <p class="section-label">Limits</p>
+          <h2>What the paper does not settle</h2>
+          <div class="limits-list">
+            <div class="limit-row">
+              <strong>One participant</strong>
+              <p>The analysis is exploratory and based on a single blind human participant with an intracortical prosthesis.</p>
+            </div>
+            <div class="limit-row">
+              <strong>Few percepts</strong>
+              <p>The dataset contains a limited number of neural responses and visual percepts, so broad claims about blind V1 tuning need more data.</p>
+            </div>
+            <div class="limit-row">
+              <strong>Drawing dependence</strong>
+              <p>DNN inputs are phosphene drawings refined with a sighted researcher. The method depends on how private percepts are translated into images.</p>
+            </div>
+            <div class="limit-row">
+              <strong>Mechanism unresolved</strong>
+              <p>The paper cannot fully separate preserved visual processing from cortical reorganization or from special mechanisms of electrical stimulation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-inner narrow">
+          <p class="section-label">Quiz</p>
+          <h2>Check your model of the paper</h2>
+          <div class="quiz-box">
+            <h3>1. Why did the authors use phosphene drawings as DNN inputs?</h3>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, false)">Because the participant was shown ordinary photographs.</button>
+              <button type="button" onclick="answerQuiz(this, true)">Because the drawings gave the DNN a visual input corresponding to the participant's artificial percept.</button>
+              <button type="button" onclick="answerQuiz(this, false)">Because the model was trained on the participant's recordings.</button>
+            </div>
+            <div class="quiz-feedback">Correct: the DNN needed an image-like input, and the phosphene drawings were the closest available representation of the participant's perceived light shapes.</div>
+          </div>
+
+          <div class="quiz-box">
+            <h3>2. Which period produced the clearest DNN-blind V1 alignment?</h3>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, true)">The electrical stimulation period.</button>
+              <button type="button" onclick="answerQuiz(this, false)">The recall period only.</button>
+              <button type="button" onclick="answerQuiz(this, false)">Only spontaneous activity before the task.</button>
+            </div>
+            <div class="quiz-feedback">The strongest evidence was during electrically evoked activity. Recall and delay had weaker, more feature-specific evidence.</div>
+          </div>
+
+          <div class="quiz-box">
+            <h3>3. What is the safest interpretation of the MEI images?</h3>
+            <div class="quiz-options">
+              <button type="button" onclick="answerQuiz(this, false)">They are exact reconstructions of what the participant saw.</button>
+              <button type="button" onclick="answerQuiz(this, false)">They prove blind V1 is identical to sighted V1.</button>
+              <button type="button" onclick="answerQuiz(this, true)">They are a proof-of-concept probe of what model-aligned neural sites might prefer.</button>
+            </div>
+            <div class="quiz-feedback">The authors explicitly frame MEIs as promising but preliminary, especially because the dataset is small.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="tab-feedback" class="tab-panel">
+      <section class="feedback-section">
+        <div class="section-inner narrow">
+          <p class="section-label">comment/feedback</p>
+          <h2>Leave review notes on the local page</h2>
+          <div class="feedback-panel">
+            <p>This public GitHub Pages copy is read-only. The live feedback workflow runs in the local server version, where submitted batches are saved locally so Codex can process comments and update this page before the next publish.</p>
+            <div class="feedback-steps">
+              <div class="card">
+                <h3>Open the panel</h3>
+                <p>Use the feedback launcher or the button below to open the floating review panel.</p>
+              </div>
+              <div class="card">
+                <h3>Attach a note</h3>
+                <p>Highlight confusing wording, select a visual block, or leave a general comment.</p>
+              </div>
+              <div class="card">
+                <h3>Submit batch</h3>
+                <p>The server appends your review to the local inbox for processing.</p>
+              </div>
+            </div>
+            <div class="feedback-actions">
+              <button class="primary-btn" type="button" disabled>feedback panel is local-only</button>
+              <span class="caption">Inbox path: <code>papers/2403.12990/feedback/inbox.jsonl</code></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const heroSubtitles = {
+      ez: "The whole paper in 5 minutes 🧠💥",
+      normal: "The rigorous version: prosthesis task, DNN alignment, ResNet-50 probes, and limits",
+      feedback: "Review surface for highlights, element selection, and feedback batches"
+    };
+
+    const taskSteps = [
+      {
+        title: "1. Electrical stimulation creates a phosphene",
+        visual: "brain",
+        surface: "The participant experiences a small light-like shape caused by intracortical electrical stimulation.",
+        data: "One of three selected electrodes is stimulated with a 167 ms cathodic-first biphasic pulse train.",
+        takeaway: "The experiment creates a visual percept without natural visual input, giving the researchers a stimulus-like event inside blind V1."
+      },
+      {
+        title: "2. V1 activity is recorded across the task",
+        visual: "raster",
+        surface: "The participant goes through stimulation, delay, and recall while the implant area is recorded.",
+        data: "Activity is extracted from 96 channels as spiking features and local field potential bands.",
+        takeaway: "The neural representation is not one number; it is a channel-by-time pattern with several possible feature readouts."
+      },
+      {
+        title: "3. The percept is remembered and drawn",
+        visual: "memory",
+        surface: "After repeated trials, the participant describes and draws the perceived phosphene in detail.",
+        data: "The drawing becomes a 244 x 244 grayscale image on black, scaled and placed according to the reported visual field location.",
+        takeaway: "The drawing is the bridge from private perception to an image-like input a DNN can process."
+      },
+      {
+        title: "4. Image models produce latent features",
+        visual: "vector",
+        surface: "A DNN sees the phosphene drawing as an image.",
+        data: "Model activations are projected and used as candidate visual representations for the same percept.",
+        takeaway: "The model is not trained to predict this person's brain; its pre-existing visual features are tested for alignment."
+      },
+      {
+        title: "5. An alignment function scores the match",
+        visual: "score",
+        surface: "The result is a score saying how similarly the model and blind V1 represent the percept.",
+        data: "The paper uses representational similarity analysis and cross-validated ridge regression scored by Pearson correlation.",
+        takeaway: "Better-than-baseline alignment means model features explain neural structure beyond the raw phosphene drawing."
+      }
+    ];
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab-panel").forEach((el) => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
+      document.getElementById("tab-" + tab).classList.add("active");
+      if (btn) btn.classList.add("active");
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      document.body.classList.add(tab === "normal" ? "mode-normal" : tab === "feedback" ? "mode-feedback" : "mode-ez");
+      document.getElementById("heroSubtitle").textContent = heroSubtitles[tab];
+    }
+
+    function toggleConcept(card) {
+      card.classList.toggle("open");
+    }
+
+    function setTaskStep(index, btn) {
+      const step = taskSteps[index];
+      if (!step) return;
+      document.querySelectorAll(".step-buttons button").forEach((button) => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.getElementById("taskTitle").textContent = step.title;
+      document.getElementById("taskSurface").textContent = step.surface;
+      document.getElementById("taskData").textContent = step.data;
+      document.getElementById("taskTakeaway").textContent = step.takeaway;
+      document.getElementById("taskVisual").innerHTML = renderTaskVisual(step.visual);
+    }
+
+    function renderTaskVisual(kind) {
+      if (kind === "raster") {
+        return '<div class="signal-raster" aria-hidden="true">' + Array.from({ length: 24 }, () => "<span></span>").join("") + "</div>";
+      }
+      if (kind === "memory") {
+        return '<div class="memory-loop" aria-hidden="true"><div class="memory-card dark">phosphene</div><div class="memory-card">delay</div><div class="memory-card">audio cue</div><div class="memory-card dark">recall</div></div>';
+      }
+      if (kind === "vector") {
+        const heights = [26, 72, 44, 86, 58, 36, 78, 51, 66, 31, 92, 48];
+        return '<div class="vector-bars" aria-hidden="true">' + heights.map((h) => '<span style="height:' + h + '%"></span>').join("") + "</div>";
+      }
+      if (kind === "score") {
+        return '<div class="score-board" aria-hidden="true"><div class="score-row"><span>drawing only</span><div class="score-track"><span style="width:42%"></span></div></div><div class="score-row"><span>DNN features</span><div class="score-track"><span style="width:76%"></span></div></div><div class="score-row"><span>held-out test</span><div class="score-track"><span style="width:64%"></span></div></div></div>';
+      }
+      return '<div class="mini-brain"><div class="pulse-train" aria-hidden="true"></div><div class="brain-shape" aria-hidden="true"></div><div class="implant-grid" aria-hidden="true">' +
+        Array.from({ length: 64 }, (_, i) => '<span' + ([3, 13, 25].includes(i) ? ' class="hot"' : "") + '></span>').join("") +
+        '</div><div class="phosphene-tile" aria-hidden="true"></div></div>';
+    }
+
+    function setBandsMode(mode, btn) {
+      const plain = document.getElementById("bandsTablePlain");
+      const science = document.getElementById("bandsTableScience");
+      if (!plain || !science) return;
+      plain.classList.toggle("hidden", mode === "science");
+      science.classList.toggle("hidden", mode !== "science");
+      document.querySelectorAll(".bands-mode-toggle button").forEach((button) => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    (function setupTermTips() {
+      const tip = document.createElement("div");
+      tip.className = "term-tip";
+      document.body.appendChild(tip);
+      let activeTerm = null;
+
+      document.querySelectorAll(".term[title]").forEach((term) => {
+        term.setAttribute("data-def", term.getAttribute("title"));
+        term.removeAttribute("title");
+      });
+
+      function show(term) {
+        const text = term.getAttribute("data-def");
+        if (!text) return;
+        tip.textContent = text;
+        const rect = term.getBoundingClientRect();
+        tip.style.left = (rect.left + window.scrollX) + "px";
+        tip.style.top = (rect.bottom + window.scrollY + 10) + "px";
+        tip.classList.add("visible");
+        requestAnimationFrame(() => {
+          const tr = tip.getBoundingClientRect();
+          if (tr.right > window.innerWidth - 12) {
+            tip.style.left = (window.innerWidth - tr.width - 12 + window.scrollX) + "px";
+          }
+        });
+        if (activeTerm && activeTerm !== term) activeTerm.classList.remove("active");
+        term.classList.add("active");
+        activeTerm = term;
+      }
+
+      function hide() {
+        tip.classList.remove("visible");
+        if (activeTerm) activeTerm.classList.remove("active");
+        activeTerm = null;
+      }
+
+      document.addEventListener("mouseover", (event) => {
+        const term = event.target.closest && event.target.closest(".term");
+        if (term) show(term);
+      });
+      document.addEventListener("mouseout", (event) => {
+        const term = event.target.closest && event.target.closest(".term");
+        if (term) hide();
+      });
+      document.addEventListener("click", (event) => {
+        const term = event.target.closest && event.target.closest(".term");
+        if (term) {
+          event.preventDefault();
+          if (activeTerm === term) hide(); else show(term);
+        } else if (activeTerm) {
+          hide();
+        }
+      });
+      window.addEventListener("scroll", hide, { passive: true });
+    })();
+
+    function answerQuiz(btn, correct) {
+      const box = btn.closest(".quiz-box");
+      box.querySelectorAll(".quiz-options button").forEach((button) => {
+        button.classList.remove("correct", "wrong");
+      });
+      btn.classList.add(correct ? "correct" : "wrong");
+      box.querySelector(".quiz-feedback").classList.add("show");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    function ensureFeedbackFallback() {
+      const existingFallback = document.getElementById("ipe-feedback-fallback");
+      const runtimeToggle = document.getElementById("cf-toggle");
+      if (runtimeToggle) {
+        if (existingFallback) existingFallback.remove();
+        return;
+      }
+      if (existingFallback) return;
+      const fallback = document.createElement("button");
+      fallback.id = "ipe-feedback-fallback";
+      fallback.className = "ipe-feedback-fallback";
+      fallback.type = "button";
+      fallback.textContent = "feedback";
+      fallback.addEventListener("click", openFeedbackPanel);
+      document.body.appendChild(fallback);
+    }
+
+    window.setTimeout(ensureFeedbackFallback, 500);
+    window.setTimeout(ensureFeedbackFallback, 1500);
+  </script>
+</body>
+</html>
