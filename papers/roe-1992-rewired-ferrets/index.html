@@ -819,6 +819,141 @@
       box-shadow: 0 10px 24px rgba(13,148,136,0.1);
     }
 
+    .evidence-check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+      align-items: stretch;
+    }
+
+    .evidence-check {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+
+    .check-mini-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .check-node {
+      position: relative;
+      min-height: 96px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #dbe3ef;
+      border-radius: 14px;
+      background: #f8fafc;
+      color: var(--navy);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-align: center;
+      line-height: 1.25;
+      padding: 10px;
+    }
+
+    .check-node::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      width: 12px;
+      border-top: 2px solid var(--teal);
+    }
+
+    .check-node:last-child::after {
+      display: none;
+    }
+
+    .stimulus-node {
+      background:
+        linear-gradient(90deg, transparent 49%, rgba(15,23,42,0.12) 50%, transparent 51%),
+        linear-gradient(0deg, transparent 49%, rgba(15,23,42,0.12) 50%, transparent 51%),
+        white;
+    }
+
+    .stimulus-node span {
+      display: block;
+      width: 10px;
+      height: 58px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.78);
+      transform: rotate(35deg);
+    }
+
+    .spike-node {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .spike-node span {
+      display: block;
+      width: 6px;
+      border-radius: 999px 999px 0 0;
+      background: var(--teal);
+    }
+
+    .compare-node {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .compare-chip {
+      display: block;
+      width: 100%;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 5px 7px;
+      font-size: 0.72rem;
+    }
+
+    .control-list {
+      display: grid;
+      gap: 9px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 9px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .control-dot {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--teal-light);
+      color: var(--teal);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .control-row p {
+      margin: 2px 0 0;
+      color: var(--gray);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
     .result-name {
       color: var(--navy);
       font-weight: 850;
@@ -986,6 +1121,96 @@
       font-size: 0.88rem;
     }
 
+    .rf-resolution-step {
+      display: grid;
+      gap: 12px;
+      border: 1px solid rgba(13,148,136,0.28);
+      border-radius: 16px;
+      background: #f0fdfa;
+      padding: 12px;
+    }
+
+    .rf-resolution-step p {
+      margin: 0;
+      color: var(--gray-dark);
+      font-size: 0.9rem;
+    }
+
+    .rf-resolution-step strong {
+      color: var(--navy);
+    }
+
+    .resolution-compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .resolution-card {
+      min-height: 96px;
+      border: 1px solid #dbe3ef;
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 17px, rgba(15,23,42,0.05) 17px 18px),
+        repeating-linear-gradient(0deg, transparent 0 17px, rgba(15,23,42,0.05) 17px 18px),
+        white;
+      position: relative;
+      overflow: hidden;
+      padding: 8px;
+    }
+
+    .resolution-card::before,
+    .resolution-card::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      width: 7px;
+      height: 44px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.72);
+      transform: rotate(28deg);
+      z-index: 2;
+    }
+
+    .resolution-card::before { left: 42%; }
+    .resolution-card::after { left: 55%; }
+
+    .resolution-patch {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+
+    .resolution-card.v1 .resolution-patch {
+      width: 34px;
+      height: 34px;
+      background: rgba(37,99,235,0.2);
+      border: 2px solid rgba(37,99,235,0.85);
+      box-shadow: -28px 0 0 -2px rgba(37,99,235,0.2), -28px 0 0 0 rgba(37,99,235,0.85);
+    }
+
+    .resolution-card.a1 .resolution-patch {
+      width: 86px;
+      height: 86px;
+      background: rgba(13,148,136,0.18);
+      border: 2px solid rgba(13,148,136,0.9);
+    }
+
+    .resolution-card span {
+      position: relative;
+      z-index: 3;
+      display: inline-block;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px 8px;
+      color: var(--navy);
+      font-size: 0.74rem;
+      font-weight: 850;
+    }
+
     .rf-mini-screen,
     .rf-mini-pool,
     .rf-mini-output {
@@ -1062,7 +1287,7 @@
 
     .figure-pair {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
       margin-top: 22px;
       align-items: start;
@@ -1185,6 +1410,30 @@
       box-shadow: none;
     }
 
+    .cf-launcher {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    .ipe-feedback-fallback {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2147483639;
+      border: 0;
+      border-radius: 999px;
+      background: #b14000;
+      color: white;
+      padding: 12px 18px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
     code {
       border-radius: 5px;
       background: #f3f4f6;
@@ -1197,6 +1446,9 @@
       .pathway-board,
       .comparison-grid,
       .rf-demo,
+      .resolution-compare,
+      .evidence-check-grid,
+      .figure-pair,
       .interpret-grid {
         grid-template-columns: 1fr;
       }
@@ -1286,7 +1538,7 @@
       }
 
       .cf-launcher {
-        transform: scale(0.82);
+        transform: scale(0.82) !important;
         transform-origin: bottom right;
       }
 
@@ -1309,11 +1561,26 @@
         grid-template-columns: 1fr;
       }
 
+      .check-mini-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .check-node::after {
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: -10px;
+        height: 12px;
+        width: 0;
+        border-top: 0;
+        border-left: 2px solid var(--teal);
+      }
+
       .meter-line {
         gap: 4px;
       }
     }
-  
+
     .ipe-home-link {
       position: fixed;
       left: 16px;
@@ -1352,7 +1619,7 @@
   <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
 </head>
 <body class="mode-ez">
-    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+  <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
 <header class="hero">
     <div class="hero-inner">
       <div>
@@ -1413,6 +1680,7 @@
       <section class="ez-section">
         <h2>The hearing cortex did not stay completely deaf to vision</h2>
         <p class="ez-big">The big result is simple: the auditory cortex of these rewired ferrets really did respond to visual stimulation. The authors recorded from single brain cells and found many cells in the hearing cortex that fired when the animal saw light bars or visual patterns.</p>
+        <p class="ez-big">The test was not "can the ferret walk through a maze by sight?" It was more direct: show visual bars and spots, listen to hearing-cortex cells, and ask whether those cells act like visual-cortex cells.</p>
         <p class="ez-big">That already matters. It means the cortex is not as locked into one sense as a schoolbook diagram might make it look. A brain area can accept a very different input if that input arrives early enough in development.</p>
         <div class="ez-emoji-block">
           <div><span>🔌</span><span>The wire route changed early, while the brain was still developing.</span></div>
@@ -1615,6 +1883,53 @@
         </div>
       </section>
 
+      <section data-cf-change="ch-empirical-controls">
+        <div class="section-inner">
+          <p class="section-label">Evidence logic</p>
+          <h2>What test proved "vision-like," and what showed it was A1?</h2>
+          <p class="section-note">The claim has two separate parts. First, the cells had to behave like visual cells. Second, the authors had to rule out the boring explanation that they were accidentally measuring normal visual cortex or a visual-cortex shortcut.</p>
+          <div class="evidence-check-grid">
+            <div class="evidence-check">
+              <h3>1. The empirical test for visual-like tendencies</h3>
+              <div class="check-mini-flow" aria-label="Visual stimulus to A1 spikes to V1-style comparison">
+                <div class="check-node stimulus-node"><span aria-hidden="true"></span><br>bars, spots, motion</div>
+                <div class="check-node spike-node" aria-label="single-unit spikes"><span style="height:28px"></span><span style="height:58px"></span><span style="height:38px"></span><span style="height:72px"></span></div>
+                <div class="check-node compare-node">
+                  <span class="compare-chip">receptive field</span>
+                  <span class="compare-chip">orientation</span>
+                  <span class="compare-chip">direction</span>
+                  <span class="compare-chip">speed</span>
+                </div>
+              </div>
+              <p>They recorded single neurons in rewired primary auditory cortex while showing visual stimuli. A cell counted as visually driven if it fired to light spots, bars, or moving bars.</p>
+              <p>Then they asked whether those cells had V1-like properties: mapped receptive fields, simple/complex/nonoriented classes, orientation tuning, direction tuning, and velocity tuning. Those distributions were compared against normal V1.</p>
+            </div>
+            <div class="evidence-check">
+              <h3>2. The checks that it was auditory cortex, not visual cortex</h3>
+              <div class="control-list">
+                <div class="control-row">
+                  <div class="control-dot">A1</div>
+                  <div><strong>Recording location</strong><p>Electrodes were aimed at primary auditory cortex using cortical landmarks and confirmed with histology.</p></div>
+                </div>
+                <div class="control-row">
+                  <div class="control-dot">MGN</div>
+                  <div><strong>Rewired route</strong><p>The surgery made retinal fibers innervate the medial geniculate nucleus, the auditory thalamic relay that projects to A1.</p></div>
+                </div>
+                <div class="control-row">
+                  <div class="control-dot">no</div>
+                  <div><strong>No visual-cortex shortcut</strong><p>Prior tracer work from this preparation found no new projections from visual cortex into A1.</p></div>
+                </div>
+                <div class="control-row">
+                  <div class="control-dot">cut</div>
+                  <div><strong>Lesion logic</strong><p>Lesions of MGN abolished visual A1 sites, while lesions of visual thalamic areas such as lateral posterior/pulvinar did not.</p></div>
+                </div>
+              </div>
+              <div class="callout orange">So the evidence is anatomical and physiological. This was not a modern "turn off V1 and see what remains" experiment; it was electrode localization plus pathway tracing and lesion controls showing the drive went through MGN into A1.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section>
         <div class="section-inner">
           <p class="section-label">Results</p>
@@ -1680,6 +1995,13 @@
                   <div class="rf-practice-step">
                     <div class="rf-mini-output">A1 area ≈<br><span id="a1AreaRatio">7.8×</span> V1</div>
                     <p><strong>Practical output:</strong> the A1 cell can say “something happened in this broad zone,” but its location signal is coarser than V1.</p>
+                  </div>
+                  <div class="rf-resolution-step" data-cf-change="ch-rf-resolution">
+                    <div class="resolution-compare" aria-label="Spatial resolution comparison between V1 and rewired A1">
+                      <div class="resolution-card v1"><span>V1: separate patches</span><i class="resolution-patch" aria-hidden="true"></i></div>
+                      <div class="resolution-card a1"><span>A1: one broad patch</span><i class="resolution-patch" aria-hidden="true"></i></div>
+                    </div>
+                    <p><strong>Yes: “larger receptive field” means weaker spatial resolution.</strong> Two nearby bars can fall into separate small V1 fields, but the same bars get pooled inside one broad rewired-A1 field, so the cell reports a blurrier location.</p>
                   </div>
                 </div>
                 <div class="slider-row">
@@ -1966,7 +2288,34 @@
       }, 250);
     }
 
+    function ensureFeedbackFallback() {
+      const existingFallback = document.getElementById("ipe-feedback-fallback");
+      const runtimeToggle = document.getElementById("cf-toggle");
+      const hasRuntimeScript = Array.from(document.scripts).some((script) => {
+        const src = script.getAttribute("src") || "";
+        return src === "/lib/feedback.js" || src.endsWith("/lib/feedback.js");
+      });
+      if (!hasRuntimeScript) {
+        if (existingFallback) existingFallback.remove();
+        return;
+      }
+      if (runtimeToggle) {
+        if (existingFallback) existingFallback.remove();
+        return;
+      }
+      if (existingFallback) return;
+      const fallback = document.createElement("button");
+      fallback.id = "ipe-feedback-fallback";
+      fallback.className = "ipe-feedback-fallback";
+      fallback.type = "button";
+      fallback.textContent = "feedback";
+      fallback.addEventListener("click", openFeedbackPanel);
+      document.body.appendChild(fallback);
+    }
+
     updateRfDemo();
+    window.setTimeout(ensureFeedbackFallback, 500);
+    window.setTimeout(ensureFeedbackFallback, 1500);
   </script>
 </body>
 </html>
