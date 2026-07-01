@@ -196,6 +196,8 @@ def publish_copy(source_html: Path, slug: str) -> Path:
     source_assets = source_html.parent / "assets"
     if source_assets.is_dir():
         target_assets = target_dir / "assets"
+        if source_assets.resolve() == target_assets.resolve():
+            return target
         if target_assets.exists():
             shutil.rmtree(target_assets)
         shutil.copytree(source_assets, target_assets)
