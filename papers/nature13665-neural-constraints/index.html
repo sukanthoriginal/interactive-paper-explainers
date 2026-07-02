@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural constraints on learning - interactive explainer</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --blue-dark: #1e40af;
+      --gray: #6b7280;
+      --gray-light: #f3f4f6;
+      --gray-dark: #1f2937;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --orange: #d97706;
+      --orange-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --teal: #0d9488;
+      --teal-light: #ccfbf1;
+      --pink: #db2777;
+      --pink-light: #fce7f3;
+      --ink: #111827;
+      --line: #e5e7eb;
+      --paper: #ffffff;
+      --body: #fafafa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--body);
+      color: var(--gray-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .hero {
+      color: white;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      transition: background 0.2s ease;
+    }
+
+    body.mode-normal .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 58%, #0d9488 100%);
+    }
+
+    body.mode-feedback .hero {
+      background: linear-gradient(135deg, #1f2937 0%, #475569 100%);
+    }
+
+    .hero-inner {
+      max-width: 1160px;
+      min-height: 330px;
+      margin: 0 auto;
+      padding: 46px 24px 36px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .hero-kicker,
+    .eyebrow {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-kicker {
+      margin-bottom: 12px;
+      opacity: 0.86;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4.6vw, 4.35rem);
+      line-height: 1.02;
+      font-weight: 560;
+      max-width: 880px;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 18px 0 0;
+      max-width: 760px;
+      color: rgba(255, 255, 255, 0.88);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1.08rem;
+      line-height: 1.56;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .hero-meta span {
+      padding: 7px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 0.82rem;
+      font-weight: 760;
+    }
+
+    .hero-visual {
+      min-height: 260px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      position: relative;
+      padding: 18px;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+    }
+
+    .neural-grid {
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      gap: 4px;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.3);
+    }
+
+    .neural-grid span {
+      aspect-ratio: 1;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .neural-grid span.hot {
+      background: #fef08a;
+      box-shadow: 0 0 12px rgba(254, 240, 138, 0.75);
+    }
+
+    .hero-plane {
+      position: relative;
+      min-height: 118px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.28));
+      transform: skewY(-8deg);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-plane i {
+      position: absolute;
+      width: 28%;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--c);
+      left: var(--x);
+      top: var(--y);
+      transform: rotate(var(--r));
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      overflow-x: auto;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--gray-dark);
+      cursor: pointer;
+      padding: 9px 16px;
+      font-size: 0.9rem;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue-dark);
+    }
+
+    .tab-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    body.mode-ez .tab-btn.active {
+      background: var(--pink);
+      border-color: var(--pink);
+    }
+
+    body.mode-feedback .tab-btn.active {
+      background: var(--gray-dark);
+      border-color: var(--gray-dark);
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 34px 24px 76px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    section {
+      margin: 0 0 36px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 0.5fr);
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      margin: 0 0 7px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.55rem, 2.4vw, 2.35rem);
+      line-height: 1.14;
+      font-weight: 620;
+      letter-spacing: 0;
+    }
+
+    h3,
+    h4 {
+      color: var(--ink);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 1.08rem;
+      margin: 0 0 8px;
+    }
+
+    h4 {
+      font-size: 0.96rem;
+      margin: 0 0 7px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lede {
+      margin: 0;
+      color: #4b5563;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.56;
+    }
+
+    .panel,
+    .card,
+    .stat-box,
+    .metric-card,
+    .quiz-box,
+    .evidence,
+    .limit-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .concept-card {
+      display: block;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .concept-card .detail {
+      display: none;
+      margin-top: 11px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .concept-card.open .detail {
+      display: block;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-size: 0.72rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stat-box,
+    .metric-card {
+      padding: 15px;
+    }
+
+    .stat-box strong,
+    .metric-card .number {
+      display: block;
+      color: var(--ink);
+      font-size: 1.65rem;
+      line-height: 1;
+      margin-bottom: 6px;
+      font-weight: 880;
+    }
+
+    .stat-box span,
+    .metric-card p {
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.42;
+      margin: 0;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 5px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      background: var(--blue-light);
+      color: #172554;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    .callout.green {
+      border-left-color: var(--green);
+      background: var(--green-light);
+      color: #064e3b;
+    }
+
+    .callout.orange {
+      border-left-color: var(--orange);
+      background: var(--orange-light);
+      color: #7c2d12;
+    }
+
+    .ez-section {
+      margin-bottom: 30px;
+    }
+
+    .ez-big {
+      color: #1f2937;
+      font-size: clamp(1.18rem, 2vw, 1.55rem);
+      line-height: 1.58;
+    }
+
+    .ez-emoji-block {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+      padding: 16px;
+      border: 1px solid #fbcfe8;
+      border-radius: 8px;
+      background: #fff1f2;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .ez-emoji-block div {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .ez-analogy {
+      padding: 16px;
+      border: 1px solid #fde68a;
+      border-left: 5px solid #f59e0b;
+      border-radius: 0 8px 8px 0;
+      background: #fffbeb;
+      color: #713f12;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    .ez-tldr {
+      padding: 22px;
+      border: 2px solid #f9a8d4;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fdf2f8, #f5f3ff);
+    }
+
+    .manifold-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .control-row,
+    .segmented,
+    .step-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .chip-btn,
+    .segmented button,
+    .step-controls button,
+    .quiz-options button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--gray-dark);
+      cursor: pointer;
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      font-weight: 780;
+    }
+
+    .chip-btn.active,
+    .segmented button.active,
+    .step-controls button.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .space-svg {
+      width: 100%;
+      min-height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .mapper-copy {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .layer-box {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .layer-box b {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .layer-box p {
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .mode-compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .route-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .route-card strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--ink);
+      font-size: 1rem;
+    }
+
+    .route-card.within {
+      border-top: 5px solid var(--red);
+    }
+
+    .route-card.outside {
+      border-top: 5px solid var(--blue);
+    }
+
+    .route-mini {
+      height: 150px;
+      margin: 10px 0 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .route-mini .plane {
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      bottom: 34px;
+      height: 62px;
+      background: #fef08a;
+      border: 1px solid #d9c414;
+      transform: skewY(-13deg);
+      opacity: 0.86;
+    }
+
+    .route-mini .arrow {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: 38%;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--c);
+      transform: rotate(var(--r));
+      transform-origin: left center;
+    }
+
+    .route-mini .arrow::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: -5px;
+      width: 12px;
+      height: 12px;
+      border-right: 4px solid var(--c);
+      border-top: 4px solid var(--c);
+      transform: rotate(45deg);
+    }
+
+    .route-mini .off-plane {
+      transform: rotate(72deg);
+      left: 46%;
+      top: 22px;
+      width: 34%;
+      background: var(--blue);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .time-step {
+      position: relative;
+      min-height: 180px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .time-step::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 42px;
+      width: 10px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .time-step:last-child::after {
+      display: none;
+    }
+
+    .time-step .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--gray-dark);
+      color: white;
+      font-weight: 850;
+      margin-bottom: 10px;
+    }
+
+    .time-step h3 {
+      margin-bottom: 8px;
+    }
+
+    .time-step p {
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .evidence {
+      margin: 0;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .evidence img {
+      display: block;
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+
+    .evidence figcaption {
+      margin-top: 10px;
+      color: #4b5563;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .chart-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 84px;
+      gap: 10px;
+      align-items: center;
+      margin: 11px 0;
+      font-size: 0.9rem;
+    }
+
+    .bar-track {
+      height: 13px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--w);
+      background: var(--c);
+      border-radius: inherit;
+    }
+
+    .control-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .check-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .check-card strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .check-card p {
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .limits-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      padding: 14px 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .limit-row b {
+      color: var(--ink);
+    }
+
+    .limit-row span {
+      color: #4b5563;
+      line-height: 1.45;
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .quiz-box {
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      border-radius: 8px;
+      text-align: left;
+      line-height: 1.35;
+      white-space: normal;
+    }
+
+    .quiz-options button.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: #064e3b;
+    }
+
+    .quiz-options button.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: #7f1d1d;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--blue-light);
+      color: #172554;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .quiz-feedback.visible {
+      display: block;
+    }
+
+    .feedback-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .feedback-button {
+      border: none;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      cursor: pointer;
+      padding: 12px 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 850;
+    }
+
+    code,
+    .path {
+      border-radius: 5px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+
+    .footer-note {
+      color: var(--gray);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 860px) {
+      .hero-inner,
+      .section-head,
+      .manifold-board,
+      .mode-compare {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .time-step::after {
+        display: none;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero-inner {
+        min-height: 0;
+        padding: 32px 16px 26px;
+      }
+
+      main {
+        padding: 24px 16px 56px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .hero-visual {
+        min-height: 210px;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+
+      .limit-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+    }
+  
+    .feedback-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .ipe-home-link {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 850;
+      line-height: 1;
+      text-decoration: none;
+    }
+    .ipe-home-link:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 560px) {
+      .ipe-home-link {
+        left: 10px;
+        bottom: 10px;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+    }
+</style>
+<style id="local-feedback-layout">
+    main {
+      padding-bottom: 160px;
+    }
+
+    @media (max-width: 560px) {
+      main {
+        padding-bottom: 190px;
+      }
+
+      .cf-launcher {
+        right: 10px !important;
+        bottom: 72px !important;
+        transform: scale(0.94);
+        transform-origin: bottom right;
+      }
+
+      .cf-tour-bar {
+        bottom: 126px !important;
+      }
+    }
+  </style>
+  <!-- GitHub Pages copy: local feedback runtime stripped by scripts/publish_pages.py. -->
+</head>
+<body class="mode-ez">
+    <a class="ipe-home-link" href="../../" aria-label="Back to all explainers">&larr; all explainers</a>
+<header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker" id="heroKicker">Nature 2014 paper explainer</div>
+        <h1 id="heroTitle">Neural constraints on learning</h1>
+        <p class="hero-subtitle" id="heroSubtitle">The whole paper in 5 minutes 🧠💥</p>
+        <div class="hero-meta">
+          <span>Sadtler et al.</span>
+          <span>Nature 512</span>
+          <span>brain-computer interface</span>
+          <span>motor cortex</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="stylized neural manifold sketch">
+        <div class="neural-grid" aria-hidden="true" id="heroNeuralGrid"></div>
+        <div class="hero-plane" aria-hidden="true">
+          <i style="--x:18%;--y:52%;--r:-8deg;--c:#ef4444;"></i>
+          <i style="--x:31%;--y:34%;--r:22deg;--c:#111827;"></i>
+          <i style="--x:47%;--y:57%;--r:-55deg;--c:#2563eb;"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('ez', this)">braindead</button>
+    <button class="tab-btn" onclick="switchTab('normal', this)">braingood</button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">comment/feedback</button>
+  </nav>
+
+  <main>
+    <section id="tab-ez" class="tab-panel active">
+      <div class="ez-section">
+        <p class="ez-big"><strong>The big idea:</strong> your brain is not a magic keyboard where every possible note is equally easy to play. It is more like a band with habits. Some new songs reuse grooves the band already knows. Other songs ask every musician to invent totally new coordination at once. This paper asks whether learning obeys that difference.</p>
+        <div class="ez-emoji-block">
+          <div><span>🎹</span><span>Some brain activity patterns are natural combinations.</span></div>
+          <div><span>🧗</span><span>Other patterns are technically possible but hard to reach quickly.</span></div>
+          <div><span>🧠</span><span>The paper tests this directly by changing how motor-cortex activity controls a cursor.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> imagine remapping a game controller. If the new controls still use familiar thumb movements, you adapt fast. If the new controls require moving fingers in combinations you never use together, you get stuck.</div>
+      </div>
+
+      <div class="ez-section">
+        <p class="ez-big"><strong>What they did:</strong> two monkeys moved a computer cursor using signals from their motor cortex. The researchers first found the normal patterns in the recorded brain cells. Then they changed the brain-to-cursor rule in two ways.</p>
+        <div class="ez-emoji-block">
+          <div><span>🕹️</span><span>The monkeys were already good at the normal brain-control setup.</span></div>
+          <div><span>🔁</span><span>One change shuffled familiar brain patterns into new cursor directions.</span></div>
+          <div><span>🧩</span><span>The other change demanded new relationships among the cells themselves.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> the easy version says, "same dance steps, new choreography." The hard version says, "invent body movements your joints and muscles do not normally combine."</div>
+      </div>
+
+      <div class="ez-section">
+        <p class="ez-big"><strong>What they found:</strong> the monkeys adapted much better when the new rule stayed inside the brain's normal activity zone. They struggled when success required activity patterns outside that zone, even though those patterns would have moved the cursor correctly.</p>
+        <div class="ez-emoji-block">
+          <div><span>✅</span><span>Inside the familiar zone: learning happened.</span></div>
+          <div><span>🚧</span><span>Outside the familiar zone: learning was much harder during the session.</span></div>
+          <div><span>📌</span><span>The limit was not just confusion about the cursor. It looked like a limit on quickly creating new neural coordination.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> if a pianist knows chords, you can ask for a new chord progression. But if you ask for a new hand anatomy, practice that afternoon will not fix it.</div>
+      </div>
+
+      <div class="ez-section">
+        <p class="ez-big"><strong>The careful part:</strong> the authors checked boring explanations. Maybe one mapping was just initially harder. Maybe the cursor rule was farther away. Maybe individual neurons needed bigger tuning changes. Maybe the monkeys moved their hands. The checks did not explain the main split.</p>
+        <div class="ez-emoji-block">
+          <div><span>🔍</span><span>Initial difficulty was matched.</span></div>
+          <div><span>📐</span><span>The mapping distance checks did not explain it.</span></div>
+          <div><span>🙌</span><span>Hand movement was tiny, so this was not secretly arm control.</span></div>
+        </div>
+        <div class="ez-analogy"><strong>Analogy:</strong> they did not just say, "the blue level was harder." They checked whether the levels had the same starting difficulty, the same kind of map distance, and the same obvious escape routes.</div>
+      </div>
+
+      <div class="ez-section">
+        <p class="ez-big"><strong>The punchline:</strong> learning is not only about wanting the right outcome. It also depends on whether the brain can quickly produce the activity pattern that outcome demands. Existing circuit structure gives learning a preferred road network.</p>
+        <div class="ez-emoji-block">
+          <div><span>🛣️</span><span>Skills related to existing patterns may be easy because they reuse old roads.</span></div>
+          <div><span>🏗️</span><span>Skills outside those patterns may require slower rebuilding.</span></div>
+          <div><span>💡</span><span>The paper turns dimensionality reduction from a visualization trick into a test of what the brain can learn fast.</span></div>
+        </div>
+      </div>
+
+      <div class="ez-tldr">
+        <h2>TL;DR</h2>
+        <p class="ez-big">The monkeys learned new brain-control rules quickly when those rules reused normal motor-cortex activity patterns, but struggled when success required unfamiliar cell-to-cell coordination. The brain can adapt, but it adapts fastest along paths its network already makes available.</p>
+      </div>
+    </section>
+
+    <section id="tab-normal" class="tab-panel">
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The Question</p>
+            <h2>Are some neural activity patterns easier to learn because the circuit already knows them?</h2>
+          </div>
+          <p class="lede">Sadtler et al. used a closed-loop brain-computer interface to separate two kinds of learning: reusing existing population co-modulation patterns versus learning new co-modulation patterns among recorded neurons.</p>
+        </div>
+        <div class="panel">
+          <p>The paper's central object is the <strong>intrinsic manifold</strong>: a low-dimensional subspace that captures the major ways recorded motor-cortex units naturally co-vary during a calibration block. The authors ask whether fast BCI learning is constrained by this manifold.</p>
+          <div class="stats">
+            <div class="stat-box"><strong>2</strong><span>male rhesus macaques, aged 7 and 8 years</span></div>
+            <div class="stat-box"><strong>85-91</strong><span>motor-cortex neural units used each day</span></div>
+            <div class="stat-box"><strong>10D</strong><span>intrinsic manifold used during experiments</span></div>
+            <div class="stat-box"><strong>2D</strong><span>cursor velocity output: horizontal and vertical</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Key Concepts</p>
+            <h2>The moving parts</h2>
+          </div>
+          <p class="lede">Click a card. Each definition ties the vocabulary to the experiment rather than leaving it as math fog.</p>
+        </div>
+        <div class="cards">
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">population</span>
+            <h3>Neural space</h3>
+            <p>One axis per recorded neural unit; a short bin of population activity is one point.</p>
+            <div class="detail">The experiment had 85-91 recorded units, so the full neural space was 85-91 dimensional. The paper uses simplified 3D drawings so humans can see the idea.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">constraint</span>
+            <h3>Intrinsic manifold</h3>
+            <p>The low-dimensional set of natural co-modulation patterns found with factor analysis.</p>
+            <div class="detail">The authors used a 10D manifold. It is not claimed as the true dimensionality of motor cortex; it is the experiment's estimate of the strongest population patterns in this task.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">decoder</span>
+            <h3>Control space</h3>
+            <p>The two-dimensional slice of neural activity that the BCI maps to cursor velocity.</p>
+            <div class="detail">Geometrically, a BCI mapping is a control plane. The experiment changes where that plane sits relative to the intrinsic manifold.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">easy route</span>
+            <h3>Within-manifold perturbation</h3>
+            <p>A new cursor rule that stays inside the existing manifold.</p>
+            <div class="detail">The animal can still use natural co-modulation patterns. What changes is which pattern means which cursor velocity.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">hard route</span>
+            <h3>Outside-manifold perturbation</h3>
+            <p>A new cursor rule that asks for co-modulation patterns outside the familiar manifold.</p>
+            <div class="detail">The cursor rule is still solvable in principle, but fast success requires the recorded units to coordinate in a way not strongly expressed during calibration.</div>
+          </button>
+          <button class="card concept-card" onclick="toggleConcept(this)">
+            <span class="badge">readout</span>
+            <h3>Kalman filter</h3>
+            <p>The decoder that turns estimated factors into cursor velocity.</p>
+            <div class="detail">The key modification was decoding factors rather than raw neural activity directly, making it possible to construct the two perturbation classes cleanly.</div>
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Interactive Widget</p>
+            <h2>Move the control rule inside or outside the manifold</h2>
+          </div>
+          <p class="lede">The reader should see the geometry first: the same neural activity point can drive different cursor velocities depending on how the control space is oriented.</p>
+        </div>
+        <div class="panel manifold-board">
+          <div>
+            <div class="control-row" role="group" aria-label="mapping selector">
+              <button class="chip-btn active" onclick="setMapping('intuitive', this)">intuitive</button>
+              <button class="chip-btn" onclick="setMapping('within', this)">within-manifold</button>
+              <button class="chip-btn" onclick="setMapping('outside', this)">outside-manifold</button>
+            </div>
+            <svg class="space-svg" id="manifoldSvg" viewBox="0 0 560 360" role="img" aria-label="Neural manifold and control space diagram"></svg>
+          </div>
+          <div class="mapper-copy">
+            <div class="layer-box">
+              <b id="mappingTitle">Intuitive mapping</b>
+              <p id="mappingBody">The cursor starts with a rule the monkey can use well. The control space lies inside the intrinsic manifold estimated from natural co-modulation.</p>
+            </div>
+            <div class="layer-box">
+              <b>Surface layer</b>
+              <p id="mappingSurface">The monkey sees a cursor, a center position, and one of eight radial targets.</p>
+            </div>
+            <div class="layer-box">
+              <b>Data layer</b>
+              <p id="mappingData">A vector of spike counts is mapped to factors, then to horizontal and vertical cursor velocity.</p>
+            </div>
+            <div class="callout" id="mappingClaim">The experiment is powerful because the authors can decide which neural patterns count as the correct action.</div>
+          </div>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-1-bci-manifold.jpg" alt="Figure 1 crop showing neural activity, BCI mapping, intrinsic manifold, and within- versus outside-manifold control spaces">
+            <figcaption>Figure 1 evidence: the paper's geometry. Neural activity is mapped through a low-dimensional manifold, and perturbations either stay within that space or depart from it.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Perturbation Logic</p>
+            <h2>Same impairment at first, different learning demand underneath</h2>
+          </div>
+          <p class="lede">Both perturbation types hurt performance at first. The difference is what the monkey has to learn to recover.</p>
+        </div>
+        <div class="mode-compare">
+          <div class="route-card within">
+            <strong>Within-manifold perturbation</strong>
+            <div class="route-mini" aria-hidden="true">
+              <div class="plane"></div>
+              <div class="arrow" style="--x:25%;--y:78px;--r:-18deg;--c:#111827;"></div>
+              <div class="arrow" style="--x:30%;--y:92px;--r:-45deg;--c:#dc2626;"></div>
+            </div>
+            <p><strong>What changes:</strong> which natural factor pattern moves the cursor in which direction.</p>
+            <p><strong>What stays familiar:</strong> the recorded units can keep using their normal co-modulation patterns.</p>
+          </div>
+          <div class="route-card outside">
+            <strong>Outside-manifold perturbation</strong>
+            <div class="route-mini" aria-hidden="true">
+              <div class="plane"></div>
+              <div class="arrow" style="--x:25%;--y:78px;--r:-18deg;--c:#111827;"></div>
+              <div class="arrow off-plane" style="--x:52%;--y:36px;--r:72deg;--c:#2563eb;"></div>
+            </div>
+            <p><strong>What changes:</strong> the cursor-relevant control space leaves the familiar manifold.</p>
+            <p><strong>What becomes hard:</strong> the animal must find new coordination patterns among neural units.</p>
+          </div>
+        </div>
+        <div class="callout orange">The authors interpret the split as a network-level constraint: on the timescale of hours, it is much easier to learn a new readout of existing population patterns than to generate new population patterns.</div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Method</p>
+            <h2>The daily experiment was a closed-loop pipeline</h2>
+          </div>
+          <p class="lede">Every day starts by measuring the animal's current neural repertoire, then asks whether a perturbation can be learned in the same session.</p>
+        </div>
+        <div class="timeline">
+          <article class="time-step">
+            <span class="num">1</span>
+            <h3>Calibration</h3>
+            <p>Estimate the intrinsic manifold with factor analysis and calibrate an intuitive mapping from factors to cursor velocity.</p>
+          </article>
+          <article class="time-step">
+            <span class="num">2</span>
+            <h3>Baseline</h3>
+            <p>The monkey uses the intuitive mapping: 400 trials for monkey J or 250 trials for monkey L.</p>
+          </article>
+          <article class="time-step">
+            <span class="num">3</span>
+            <h3>Perturbation</h3>
+            <p>Switch seamlessly to a within- or outside-manifold mapping: 600 trials for J or 400 for L.</p>
+          </article>
+          <article class="time-step">
+            <span class="num">4</span>
+            <h3>Washout</h3>
+            <p>Return to the intuitive mapping for 200 trials. Brief impairment here becomes an after-effect signal that learning occurred.</p>
+          </article>
+        </div>
+        <div class="stats">
+          <div class="stat-box"><strong>8</strong><span>radial cursor targets, separated by 45 degrees</span></div>
+          <div class="stat-box"><strong>300 ms</strong><span>freeze period before cursor movement begins</span></div>
+          <div class="stat-box"><strong>7,500 ms</strong><span>time limit to acquire the target under BCI control</span></div>
+          <div class="stat-box"><strong>45 ms</strong><span>non-overlapping bins used for spike counts in factor analysis</span></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Results</p>
+            <h2>Within-manifold perturbations recovered; outside-manifold perturbations mostly did not</h2>
+          </div>
+          <p class="lede">The key outcome combines success rate and target acquisition time into an amount-of-learning metric: 0 means no recovery, 1 means full recovery to baseline.</p>
+        </div>
+        <div class="panel">
+          <div class="chart-card">
+            <h3>Analyzed perturbation sessions</h3>
+            <div class="bar-row"><span>Monkey J, within</span><div class="bar-track"><span class="bar-fill" style="--w:72%;--c:#dc2626;"></span></div><strong>n = 28</strong></div>
+            <div class="bar-row"><span>Monkey J, outside</span><div class="bar-track"><span class="bar-fill" style="--w:100%;--c:#2563eb;"></span></div><strong>n = 39</strong></div>
+            <div class="bar-row"><span>Monkey L, within</span><div class="bar-track"><span class="bar-fill" style="--w:36%;--c:#dc2626;"></span></div><strong>n = 14</strong></div>
+            <div class="bar-row"><span>Monkey L, outside</span><div class="bar-track"><span class="bar-fill" style="--w:38%;--c:#2563eb;"></span></div><strong>n = 15</strong></div>
+          </div>
+          <div class="callout green">Figure 2d reports significantly better learning for within-manifold perturbations than outside-manifold perturbations in both monkeys: P &lt; 10^-6 for monkey J and P &lt; 10^-3 for monkey L.</div>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-2-learning-result.jpg" alt="Figure 2 crop showing representative performance traces and amount-of-learning histograms">
+            <figcaption>Figure 2 evidence: black traces show success rate, green traces show acquisition time, and the red/blue histograms summarize learning across sessions.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Controls</p>
+            <h2>The obvious alternative explanations were checked</h2>
+          </div>
+          <p class="lede">The paper is strongest when it shows that the split is not simply because one perturbation class was more awkward at the cursor level.</p>
+        </div>
+        <div class="control-board">
+          <div class="check-card"><strong>Initial impairment</strong><p>Within- and outside-manifold perturbations caused comparable early performance drops. Figure 3a reports P = 0.13 for monkey J and P = 0.93 for monkey L.</p></div>
+          <div class="check-card"><strong>Control-space angle</strong><p>The principal angles between intuitive and perturbed control spaces were comparable: P = 0.11 for monkey J and P = 0.24 for monkey L.</p></div>
+          <div class="check-card"><strong>Preferred-direction change</strong><p>Predicted changes in individual neural-unit preferred direction did not differ meaningfully: P = 0.64 for monkey J and P = 0.50 for monkey L.</p></div>
+          <div class="check-card"><strong>Search-space size</strong><p>For monkey L, the authors constrained outside-manifold perturbations so the search space size matched the within-manifold case.</p></div>
+          <div class="check-card"><strong>Hand movement</strong><p>Extended Data Fig. 5 shows hand speeds during BCI control were minimal compared with a normal point-to-point reaching task.</p></div>
+          <div class="check-card"><strong>After-effects</strong><p>Returning to the intuitive mapping produced larger after-effects after within-manifold exposure, consistent with more learning.</p></div>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-3-controls.jpg" alt="Figure 3 crop showing initial impairment, principal angle, and required preferred direction control histograms">
+            <figcaption>Figure 3 evidence: the two perturbation classes were matched on the main obvious difficulty measures.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Dimensionality</p>
+            <h2>The 10D manifold was a working estimate, not a metaphysical claim</h2>
+          </div>
+          <p class="lede">This is a good place to be precise: the paper does not claim motor cortex is truly ten-dimensional. It says a 10D model captured prominent co-modulation patterns well enough for this experiment.</p>
+        </div>
+        <div class="panel">
+          <div class="stats">
+            <div class="stat-box"><strong>9.81</strong><span>mean estimated intrinsic dimensionality across days, +/- 0.31 s.e.m.</span></div>
+            <div class="stat-box"><strong>88</strong><span>days in the Fig. 4 dimensionality analysis: 58 for monkey J, 30 for monkey L</span></div>
+            <div class="stat-box"><strong>78/88</strong><span>days where 10D likelihood was within one standard error of the best dimensionality</span></div>
+            <div class="stat-box"><strong>top few</strong><span>orthonormalized dimensions captured much of the shared variance</span></div>
+          </div>
+          <p>The authors also note that estimating the manifold incorrectly would tend to weaken, not inflate, the observed difference. Overestimating would contaminate nominal within-manifold sessions; underestimating would contaminate nominal outside-manifold sessions.</p>
+        </div>
+        <div class="evidence-grid">
+          <figure class="evidence">
+            <img src="assets/figure-4-dimensionality.jpg" alt="Figure 4 crop showing log likelihoods, estimated dimensionality histogram, and shared variance curves">
+            <figcaption>Figure 4 evidence: the 10D manifold is a practical experimental choice supported by cross-validated likelihood and shared-variance analyses.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Implications</p>
+            <h2>What this changes</h2>
+          </div>
+          <p class="lede">The result is not just about cursor control. It reframes fast learning as reuse of existing population dynamics.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <h3>If you build BCIs</h3>
+            <p>Decoder changes that align with natural population structure should be easier for users to learn quickly than changes that demand unnatural coordination.</p>
+          </article>
+          <article class="card">
+            <h3>If you study motor learning</h3>
+            <p>The paper gives a network-level reason why related skills are easier than unrelated ones: they can share an intrinsic manifold.</p>
+          </article>
+          <article class="card">
+            <h3>If you use dimensionality reduction</h3>
+            <p>Low-dimensional projections are not merely plotting conveniences. In this experiment, they predicted which causal perturbations were learnable.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Limits</p>
+            <h2>What the paper does not prove</h2>
+          </div>
+          <p class="lede">The claim is sharp, but bounded: fast BCI learning in this controlled motor-cortex setup.</p>
+        </div>
+        <div class="limits-list">
+          <div class="limit-row"><b>Timescale</b><span>The paper tests learning over hours. It explicitly leaves open whether outside-manifold learning could improve over multiple days.</span></div>
+          <div class="limit-row"><b>Task richness</b><span>The estimated dimensionality probably depends on the behavior performed during calibration. A richer task might reveal a richer manifold.</span></div>
+          <div class="limit-row"><b>Subjects</b><span>The experiment used two monkeys, with many perturbation sessions per monkey. The design is within-subject and mechanistic, not a broad population survey.</span></div>
+          <div class="limit-row"><b>Recorded subset</b><span>The manifold is estimated from recorded units, not the whole motor-cortex network. It is an experimentally accessible slice of a larger circuit.</span></div>
+          <div class="limit-row"><b>Linear model</b><span>The manifold was estimated with linear factor analysis. That was enough for the test, but neural constraints could be nonlinear in other settings.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Quiz</p>
+            <h2>Check your read</h2>
+          </div>
+          <p class="lede">Each answer explains the logic, not just the label.</p>
+        </div>
+        <div class="quiz-grid">
+          <div class="quiz-box">
+            <h3>1. What made within-manifold perturbations easier?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, false, 'q1')">They were always smaller cursor rotations.</button>
+              <button onclick="answerQuiz(this, true, 'q1')">They reused existing population co-modulation patterns but changed their cursor meaning.</button>
+              <button onclick="answerQuiz(this, false, 'q1')">They required fewer recorded neural units.</button>
+            </div>
+            <div class="quiz-feedback" id="q1">Correct: the within-manifold rule stayed inside the familiar neural repertoire. The animal had to learn a new association, not a new population pattern.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>2. Why was the BCI design useful for testing learning constraints?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, true, 'q2')">The authors could fully specify which neural activity patterns moved the cursor successfully.</button>
+              <button onclick="answerQuiz(this, false, 'q2')">The monkeys did not need any feedback from the cursor.</button>
+              <button onclick="answerQuiz(this, false, 'q2')">The decoder measured every neuron in motor cortex.</button>
+            </div>
+            <div class="quiz-feedback" id="q2">Correct: because the mapping from recorded neural activity to cursor motion was set by the experimenters, they could ask whether specific pattern classes were learnable.</div>
+          </div>
+          <div class="quiz-box">
+            <h3>3. What is the most careful interpretation of the 10D manifold?</h3>
+            <div class="quiz-options">
+              <button onclick="answerQuiz(this, false, 'q3')">Motor cortex has exactly ten dimensions in all tasks.</button>
+              <button onclick="answerQuiz(this, false, 'q3')">Only ten neurons mattered.</button>
+              <button onclick="answerQuiz(this, true, 'q3')">Ten dimensions captured the prominent co-modulation patterns well enough for this experiment.</button>
+            </div>
+            <div class="quiz-feedback" id="q3">Correct: the authors explicitly avoid claiming a true universal dimensionality. The 10D manifold is an experimentally useful estimate of dominant shared activity structure.</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section id="tab-feedback" class="tab-panel">
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">comment/feedback</p>
+            <h2>Review the explainer in place</h2>
+          </div>
+          <p class="lede">The local version can collect targeted notes, preserve anchors, and let Codex process only unhandled feedback batches.</p>
+        </div>
+        <div class="panel">
+          <p>This tab is the review surface for the explainer. Highlight wording, select an element, or add a general note; submitted batches are saved locally so Codex can process the comments and update this page.</p>
+          <div class="feedback-actions">
+            <div class="card">
+              <h3>Open the panel</h3>
+              <p>Use the launcher or the button below once the local feedback runtime is running.</p>
+            </div>
+            <div class="card">
+              <h3>Attach a note</h3>
+              <p>Highlight confusing text, select a diagram, or leave a general page comment.</p>
+            </div>
+            <div class="card">
+              <h3>Submit batch</h3>
+              <p>The server appends the review to the local inbox for processing.</p>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Local inbox: <code class="path">/Users/sukanth/Documents/explain-like-brain-dead/papers/nature13665-neural-constraints/feedback/inbox.jsonl</code></p>
+          <button class="feedback-button" disabled>feedback panel is local-only</button>
+        </div>
+      </section>
+    </section>
+
+    <p class="footer-note">Local explainer for Sadtler et al., Nature 512, 423-426 (2014), doi:10.1038/nature13665. Built from nature13665.pdf.</p>
+  </main>
+
+  <script>
+    const heroText = {
+      ez: {
+        kicker: "Nature 2014 paper explainer",
+        title: "Neural constraints on learning",
+        subtitle: "The whole paper in 5 minutes 🧠💥"
+      },
+      normal: {
+        kicker: "braingood",
+        title: "When learning follows the brain's existing roads",
+        subtitle: "The rigorous version: manifold geometry, BCI perturbations, controls, limits, and quiz."
+      },
+      feedback: {
+        kicker: "comment/feedback",
+        title: "Review without losing the thread",
+        subtitle: "Leave targeted notes on wording, diagrams, missing evidence, or places where the explanation should become more visual."
+      }
+    };
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+      const panel = document.getElementById("tab-" + tab);
+      if (panel) panel.classList.add("active");
+      document.querySelectorAll(".tab-btn").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.body.classList.remove("mode-ez", "mode-normal", "mode-feedback");
+      document.body.classList.add("mode-" + tab);
+      const copy = heroText[tab] || heroText.ez;
+      document.getElementById("heroKicker").textContent = copy.kicker;
+      document.getElementById("heroTitle").textContent = copy.title;
+      document.getElementById("heroSubtitle").innerHTML = copy.subtitle;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleConcept(card) {
+      card.classList.toggle("open");
+    }
+
+    function buildHeroGrid() {
+      const grid = document.getElementById("heroNeuralGrid");
+      if (!grid) return;
+      const hot = new Set([2, 9, 21, 22, 38, 51, 59, 70, 83, 98, 111, 127, 140, 151, 160, 177, 194, 211, 228, 241, 260, 279, 302]);
+      grid.innerHTML = Array.from({ length: 216 }, (_, i) => "<span" + (hot.has(i) ? " class=\"hot\"" : "") + "></span>").join("");
+    }
+
+    const mappingCopy = {
+      intuitive: {
+        title: "Intuitive mapping",
+        body: "The cursor starts with a rule the monkey can use well. The control space lies inside the intrinsic manifold estimated from natural co-modulation.",
+        surface: "The monkey sees a cursor, a center position, and one of eight radial targets.",
+        data: "A vector of spike counts is mapped to factors, then to horizontal and vertical cursor velocity.",
+        claim: "The experiment is powerful because the authors can decide which neural patterns count as the correct action.",
+        color: "#111827"
+      },
+      within: {
+        title: "Within-manifold perturbation",
+        body: "The control plane is reoriented but remains inside the intrinsic manifold. The same natural population patterns are still available.",
+        surface: "The cursor initially moves incorrectly, so the monkey must relearn which internal pattern pushes toward which target.",
+        data: "The factor-to-kinematics relationship is shuffled; neural-unit-to-factor structure is preserved.",
+        claim: "This is like reassigning familiar chords to new game actions. The band already knows the chords.",
+        color: "#dc2626"
+      },
+      outside: {
+        title: "Outside-manifold perturbation",
+        body: "The control plane departs from the intrinsic manifold, so good cursor control requires unfamiliar co-modulation among recorded units.",
+        surface: "The cursor can still be controlled in principle, but the animal has to search for neural patterns it does not naturally express.",
+        data: "The neural-unit-to-factor relationship is shuffled; the needed control space lies outside the natural manifold.",
+        claim: "This is the hard test: not just learn a new association, but quickly invent a new population pattern.",
+        color: "#2563eb"
+      }
+    };
+
+    function setMapping(mode, btn) {
+      document.querySelectorAll(".control-row .chip-btn").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      const copy = mappingCopy[mode] || mappingCopy.intuitive;
+      document.getElementById("mappingTitle").textContent = copy.title;
+      document.getElementById("mappingBody").textContent = copy.body;
+      document.getElementById("mappingSurface").textContent = copy.surface;
+      document.getElementById("mappingData").textContent = copy.data;
+      document.getElementById("mappingClaim").textContent = copy.claim;
+      drawManifold(mode, copy.color);
+    }
+
+    function drawManifold(mode, color) {
+      const svg = document.getElementById("manifoldSvg");
+      if (!svg) return;
+      const outside = mode === "outside";
+      const within = mode === "within";
+      const perturbPath = outside ? "M292 238 L365 88" : within ? "M242 220 L395 183" : "M206 215 L383 137";
+      const label = outside ? "outside control space" : within ? "within control space" : "intuitive control space";
+      const dots = Array.from({ length: 82 }, (_, i) => {
+        const x = 120 + ((i * 37) % 280);
+        const y = 135 + ((i * 53) % 125);
+        const jitter = Math.sin(i * 1.7) * 16;
+        return `<circle cx="${x + jitter}" cy="${y - jitter * 0.32}" r="2.2" fill="#64748b" opacity="0.5"/>`;
+      }).join("");
+      svg.innerHTML = `
+        <rect x="0" y="0" width="560" height="360" fill="#f8fafc"/>
+        <path d="M82 246 L342 112 L488 176 L232 306 Z" fill="#fef08a" opacity="0.9" stroke="#d9c414" stroke-width="2"/>
+        <path d="M96 238 L356 104 M130 262 L390 128 M166 286 L426 152 M212 304 L468 172" stroke="#eab308" stroke-width="1" opacity="0.55"/>
+        <path d="M122 218 L272 304 M172 190 L326 276 M224 162 L376 248 M278 134 L430 220" stroke="#eab308" stroke-width="1" opacity="0.55"/>
+        ${dots}
+        <circle cx="292" cy="206" r="8" fill="#22c55e" stroke="white" stroke-width="3"/>
+        <path d="M206 215 L383 137" stroke="#111827" stroke-width="5" stroke-linecap="round"/>
+        <path d="${perturbPath}" stroke="${color}" stroke-width="6" stroke-linecap="round" ${outside ? "" : ""}/>
+        <path d="${outside ? "M365 88 l-8 18 M365 88 l-18 2" : within ? "M395 183 l-18 -7 M395 183 l-12 16" : "M383 137 l-18 -4 M383 137 l-10 16"}" stroke="${color}" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <text x="86" y="80" fill="#111827" font-size="18" font-weight="800">neural space</text>
+        <text x="352" y="256" fill="#854d0e" font-size="16" font-weight="800">intrinsic manifold</text>
+        <text x="${outside ? 374 : 332}" y="${outside ? 86 : within ? 182 : 132}" fill="${color}" font-size="15" font-weight="800">${label}</text>
+        <text x="306" y="204" fill="#047857" font-size="14" font-weight="800">current activity point</text>
+      `;
+    }
+
+    function answerQuiz(btn, correct, targetId) {
+      const box = btn.closest(".quiz-box");
+      if (!box) return;
+      box.querySelectorAll(".quiz-options button").forEach(button => {
+        button.classList.remove("correct", "wrong");
+      });
+      btn.classList.add(correct ? "correct" : "wrong");
+      const feedback = document.getElementById(targetId);
+      if (feedback) feedback.classList.add("visible");
+    }
+
+    function openFeedbackPanel() {
+      const toggle = document.getElementById("cf-toggle");
+      if (toggle) {
+        toggle.click();
+        return;
+      }
+      window.setTimeout(() => {
+        const retryToggle = document.getElementById("cf-toggle");
+        if (retryToggle) retryToggle.click();
+      }, 250);
+    }
+
+    buildHeroGrid();
+    drawManifold("intuitive", "#111827");
+  </script>
+</body>
+</html>
