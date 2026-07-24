@@ -2,7 +2,7 @@
 
 A Claude Code skill that turns an academic paper PDF into a single self-contained interactive HTML explainer.
 
-Published explainers live at explainers.sukanthoriginal.com
+Published explainers live at <https://explainers.sukanthoriginal.com>
 
 Published explainers homepage: <https://sukanthoriginal.github.io/interactive-paper-explainers/>
 
