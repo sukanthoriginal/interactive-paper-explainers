@@ -564,6 +564,8 @@ def _watchdog(idle_timeout_s: int):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("artifact_dir", help="directory containing the HTML artifact")
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="interface to bind. Default: 127.0.0.1 (local machine only).")
     ap.add_argument("--port", type=int, default=5050)
     ap.add_argument("--idle-timeout", type=int, default=600,
                     help="exit if no client requests for this many seconds (0 = disable). Default 600 (10 min).")
@@ -603,7 +605,7 @@ def main():
         daemon_threads = True
 
     try:
-        srv = ReuseTCP(("", args.port), FeedbackHandler)
+        srv = ReuseTCP((args.host, args.port), FeedbackHandler)
     except OSError as e:
         print(f"[server] FATAL: port {args.port} is unavailable ({e}).")
         print(f"[server]  - check what's running there:  curl -s http://localhost:{args.port}/info")
@@ -617,7 +619,7 @@ def main():
     ).start()
 
     with srv:
-        print(f"[server] serving {artifact_dir}")
+        print(f"[server] serving {artifact_dir} on http://{args.host}:{args.port}/")
         print(f"[server] open http://localhost:{args.port}/")
         print(f"[server] inbox:   {inbox}")
         print(f"[server] history: {history}")
